@@ -207,8 +207,8 @@ class HolographicRelationalMemory:
             [1, self.dim, self.records, sorted(self.outcomes), sorted(self.doc_freq.items())],
             separators=(",", ":"),
         ).encode("utf-8")
-        mem_f32 = self.memory.to(torch.float32).contiguous().numpy().tobytes()
-        payload = struct.pack("<I", len(meta)) + meta + mem_f32
+        mem_f64 = self.memory.to(torch.float64).contiguous().numpy().astype("<f8", copy=False).tobytes()
+        payload = struct.pack("<I", len(meta)) + meta + mem_f64
         if len(payload) > 40000:
             raise ValueError(f"holographic state exceeds 40000 bytes: {len(payload)}")
         return payload
@@ -222,7 +222,7 @@ class HolographicRelationalMemory:
         if version != 1 or dim != self.dim:
             raise ValueError("incompatible holographic snapshot version or dim")
         mem_bytes = payload[4 + meta_len :]
-        arr = np.frombuffer(mem_bytes, dtype=np.float32).copy()
+        arr = np.frombuffer(mem_bytes, dtype="<f8").copy()
         if arr.size != self.dim:
             raise ValueError("corrupted holographic vector length")
         self.memory = torch.from_numpy(arr.astype(np.float64))
