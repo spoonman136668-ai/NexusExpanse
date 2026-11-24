@@ -119,12 +119,14 @@ def eval_kuramoto_policy(
                         p_neural = torch.from_numpy((compact[obs].astype(np.float64) + 1.0) / totals[obs])
 
                 ctx = span[max(0, i + 1 - 32) : i + 1]
-                p_mem, _ = mem.predict_probs(ctx)
-                p_mix, _ = arb.mix(p_neural, p_mem)
+                p_mem, conf = mem.predict_probs(ctx)
+                w_mem = arb.weight(conf)
+                p_mix = (1.0 - w_mem) * p_neural + w_mem * p_mem
                 total_bits += -math.log2(max(float(p_mix[target].item()), 1e-300))
                 count += 1
 
-                arb.update(float(p_neural[target].item()), float(p_mem[target].item()))
+                if online:
+                    arb.observe(conf, float(p_neural[target].item()), float(p_mem[target].item()))
                 if online:
                     mem.observe_transition(ctx, target)
     elapsed = time.perf_counter() - t0
