@@ -2,6 +2,20 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 test -z "$(git status --porcelain)"
+if test -f evidence/relational-dev-001.json; then
+    exit 0
+fi
+if test -f docs/RELATIONAL_DEV_PREREG.md; then
+    test -s evidence/plasticity-dev-002.json
+    test -s evidence/ablation-dev-002.json
+    mkdir -p results
+    python benchmarks/relational_dev.py --output results/relational-dev-001.json
+    cp results/relational-dev-001.json evidence/
+    git add evidence/relational-dev-001.json
+    git commit -m 'Gate 3: record frozen compositional relation results for seeds 42–44'
+    git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+    exit 0
+fi
 base=bb21fbe53c0299d432e866eb4d016c25b81ee6eb
 mkdir -p results
 git fetch --quiet origin "$base"
