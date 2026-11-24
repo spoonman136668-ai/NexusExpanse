@@ -18,8 +18,7 @@ class EpisodicByteMemory:
       - Computes a smoothed longest-context-first interpolated byte posterior
         (PPM-inspired Dirichlet/Kneser-Ney-like backoff) strictly causally.
       - Supports instant one-shot online learning during streaming inference with
-        zero backprop and zero catastrophic forgetting (old contexts are never
-        overwritten when new domains are ingested).
+        zero backprop; conflicting observations can still degrade old predictions.
     """
 
     def __init__(self, max_order: int = 8, smoothing: float = 0.05) -> None:

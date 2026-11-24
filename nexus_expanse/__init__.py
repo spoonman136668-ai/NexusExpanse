@@ -18,3 +18,9 @@ __all__.append("BoundedEpisodicByteMemory")
 from nexus_expanse.arbitration import ReliabilityArbitrator
 
 __all__.append("ReliabilityArbitrator")
+
+from nexus_expanse.fast_checkpoint import (backbone_identity, snapshot_fast_weights,
+    restore_fast_weights, save_fast_weights, load_fast_weights)
+
+__all__ += ['backbone_identity', 'snapshot_fast_weights', 'restore_fast_weights',
+            'save_fast_weights', 'load_fast_weights']
