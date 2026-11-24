@@ -1,0 +1,8 @@
+# Gate 7A — recent framing and protected HRR (DEV preregistration)
+Use the unchanged Gate 4A fixture and training procedure, seeds 42–44, all original controls plus Gate 6A V1. Match fixture, backbone identity, corruption counts and deterministic control results. No protected holdout; the reused fixture cannot establish general scientific gain.
+
+V2 preserves the D=4096 superposition, existing encoding/traversal, eta, temperature and prior. Maintain the most recent 16 observed-prefix byte sets, framing threshold strictly >0.65 of current window, three-record warmup. Update window only after scoring. Do not delete stored bindings. On strong disagreement (best existing resonance >=0.75 and lead over runner-up >=0.35), multiply delta by 0.05; otherwise use the original delta. No punctuation lists, offset parser or task IDs. Fixed-size bitsets and exact float64 memory; checkpoint <=40000 B. This dampening can impede real concept changes; test rather than assume benefit.
+
+Per seed quality = unseen accuracy >=0.75 AND sparse_support unseen BPB minus V2 unseen BPB >=3.0. Retention = original Gate 4A worst_drift <=0.02 BPB. Engineering = exact fresh-process restore, <=40000 B, matched controls. PASS if all three seeds meet all bars; MIXED if engineering passes and either quality or retention passes on all seeds; FAIL otherwise. Report per-association drift and cold digest. No threshold changes after results.
+
+Run from clean exact Gate 6 import plus prereg commit: `python benchmarks/gate7a_dev.py evidence/gate7a-holographic-v2-dev-001.json`. Exclusive-create evidence; commit it after execution. Do not count isolated smoke tests as benchmark results.
