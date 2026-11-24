@@ -41,3 +41,7 @@ Pass a fresh `ReliabilityArbitrator(bins=1)` as `arbitrator` to `evaluate_stream
 ### v0.6 — interference decomposition (development only)
 
 Optional `ContextBankFastWeightAdapter` uses disjoint hidden-feature slices and causal suffix hashing with the same fast tensor capacity. It did not pass retention on the known A/B fixture. Shared fast weights with decay disabled passed provisional retention and B-learning thresholds in all three seeds; default behavior is unchanged. See `evidence/interference-dev-001.json` and `docs/RESEARCH.md` for controls, caveats and next steps. Source-bound v0.5 fast checkpoints are not automatically compatible with v0.6.
+
+### v0.7 longitudinal development diagnostic
+
+`python benchmarks/longitudinal_dev.py --output results/longitudinal-new.json` (create `results/` first; use a clean tree and new output path). Eight regimes, two acquisition passes, three seeds, two cue conditions and four controls. Target-byte retention gate **FAIL** for all arms; no-decay improves average target prediction but does not prevent forgetting. No observed clamping does not establish absence of long-term saturation. See `docs/RESEARCH.md` and `evidence/longitudinal-dev-001.json` for exact provenance, limitations and full trajectories. No change to model defaults.
