@@ -1,0 +1,95 @@
+{
+  "checkpoint_budget": 40000,
+  "config": {
+    "dim": 32,
+    "dropout": 0.0,
+    "fast_lr": 0.08,
+    "ffn_mult": 2,
+    "max_seq_len": 32,
+    "memory_max_order": 8,
+    "n_heads": 4,
+    "n_layers": 2
+  },
+  "device": "cpu",
+  "epochs": 12,
+  "fixtures": {
+    "a": {
+      "bytes": 208,
+      "sha256": "6c326efee8dd63e664da8373cc91173e574b194a8d0440c2f0c6724358a394b4"
+    },
+    "b": {
+      "bytes": 208,
+      "sha256": "4edfa2a1aafad89191b94973d77fd82b9829dc220b19a6dadc1f5e0c98e27258"
+    },
+    "train": {
+      "bytes": 600,
+      "sha256": "c9b37cab9a1889b4032d0914bbca71d4a5f504257487b5b23169494d3cd893a7"
+    }
+  },
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "qualification": "DEVELOPMENT_ONLY",
+  "runs": [
+    {
+      "a_after_b": 5.762841921793308,
+      "a_after_learning": 5.179885984104581,
+      "a_before": 7.163617762605669,
+      "a_frozen_control": 5.179885984104581,
+      "a_interference_bpb": 0.5829559376887277,
+      "a_reset": 7.163617762605669,
+      "a_restored": 5.179885984104581,
+      "b_after": 3.6266980255471557,
+      "b_before": 4.374200425125493,
+      "backbone_sha256": "b69177eabb1d3f3abfac97f6187eaec8f7829033c3204cd3cd8694137fd24a1c",
+      "checkpoint_bytes": 32966,
+      "fast_tensor_bytes": 32768,
+      "optimizer_steps": 48,
+      "seed": 42,
+      "updates_a": 159,
+      "updates_b": 157
+    },
+    {
+      "a_after_b": 4.095537445354625,
+      "a_after_learning": 3.824354633476587,
+      "a_before": 5.873398380113538,
+      "a_frozen_control": 3.824354633476587,
+      "a_interference_bpb": 0.27118281187803817,
+      "a_reset": 5.873398380113538,
+      "a_restored": 3.824354633476587,
+      "b_after": 3.715017349578187,
+      "b_before": 4.460617836365726,
+      "backbone_sha256": "b9354597f9be4618953521ba4d01eb1f43fee3707a7f68145c70bfbe695cbc76",
+      "checkpoint_bytes": 32966,
+      "fast_tensor_bytes": 32768,
+      "optimizer_steps": 48,
+      "seed": 43,
+      "updates_a": 159,
+      "updates_b": 150
+    },
+    {
+      "a_after_b": 4.613989616542028,
+      "a_after_learning": 4.065431402102012,
+      "a_before": 6.262226491353949,
+      "a_frozen_control": 4.065431402102012,
+      "a_interference_bpb": 0.5485582144400158,
+      "a_reset": 6.262226491353949,
+      "a_restored": 4.065431402102012,
+      "b_after": 3.1138127844119605,
+      "b_before": 3.3902600384279715,
+      "backbone_sha256": "ec52c85e7606468287921dd10185436f6b54367f827d2511d22a65b2e78c84c3",
+      "checkpoint_bytes": 32966,
+      "fast_tensor_bytes": 32768,
+      "optimizer_steps": 48,
+      "seed": 44,
+      "updates_a": 126,
+      "updates_b": 117
+    }
+  ],
+  "schema": "nexus-fast-retention-dev-v1",
+  "scientific_trial_executed": false,
+  "seconds": 1.5068346070002008,
+  "source_sha": "0fdf20cef830fec196d525fc2c5bc615b359c7a4",
+  "source_tree": "e6e7f1cd507921128398ba5760f383ca2e1cc1d1",
+  "threads": 1,
+  "torch": "2.10.0+cpu"
+}
