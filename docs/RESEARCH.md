@@ -18,3 +18,9 @@ Imported report: neural only 3.767148 BPB; static memory 2.307542; online episod
 - Implement bounded and versioned persistent memory serialization; current episodic memory has no memory budget or checkpoint persistence through module state_dict.
 - Benchmark actual sparse compute and full-system cost, including Python memory overhead.
 - Independent qualification, Windows consumer GPU acceptance and any deployment remain separate.
+
+## Development checkpoint (2026-11-24)
+
+- Matched dense/Monarch gated/ungated ablations implemented; see `evidence/ablation-dev-001.json` and notes. The memory-only online arm beats the combined model on the known tiny fixture; no positive Hebbian increment over online memory met the provisional threshold. Preserve this negative result. Stronger real-data training, independent corpus/overlap audit and a prospectively frozen evaluation remain outstanding.
+- Opt-in bounded episodic memory now supports deterministic context eviction, versioned JSON serialization, external restore limits and exact cold-process prediction replay. Context count and serialized bytes are not live memory bytes. Interference and eviction remain known loss mechanisms. No trained model checkpoint or persistent fast-weight lifecycle is established.
+- Next: develop a neural/memory arbitration comparator on development data (including memory-only, fixed blend, and a causal reliability estimator), then freeze a new real-data protocol with strongest trained controls. Do not consume a held-out trial without authority. Independently qualify retention under a fixed memory budget, full-system compute and consumer GPU behavior.

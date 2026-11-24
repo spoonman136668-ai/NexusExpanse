@@ -10,3 +10,7 @@ __all__ = [
     "HebbianFastWeightAdapter",
     "NexusExpanseByteCore",
 ]
+
+from nexus_expanse.persistent_memory import BoundedEpisodicByteMemory
+
+__all__.append("BoundedEpisodicByteMemory")
