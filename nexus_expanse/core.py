@@ -45,6 +45,11 @@ class NexusLayer(nn.Module):
             ffn_kind=ffn_kind,
         )
 
+    def attention_residual(self, x, causal_mask):
+        h = self.attn_norm(x)
+        attn, _ = self.attn(h, h, h, attn_mask=causal_mask, need_weights=False)
+        return x + self.drop(attn)
+
     def forward(
         self,
         x: torch.Tensor,
@@ -52,23 +57,21 @@ class NexusLayer(nn.Module):
         out_norm: nn.LayerNorm,
         emb_weight: torch.Tensor,
         targets: Optional[torch.Tensor] = None,
+        valid_length: Optional[int] = None,
     ) -> Tuple[torch.Tensor, torch.Tensor, float]:
-        h_attn = self.attn_norm(x)
-        attn_out, _ = self.attn(h_attn, h_attn, h_attn, attn_mask=causal_mask, need_weights=False)
-        x = x + self.drop(attn_out)
-
+        x = self.attention_residual(x, causal_mask)
         h_ffn = self.ffn_norm(x)
-        delta, scores, deep = self.ffn(h_ffn)
-        skip_rate = float((~deep).float().mean().item())
+        delta, scores, deep = self.ffn(h_ffn, valid_length=valid_length)
+        skip_rate = float((~deep[:, :valid_length]).float().mean().item())
 
         aux = torch.zeros((), device=x.device)
         if self.ffn.enable_skip and targets is not None:
             with torch.no_grad():
-                pre_logits = F.linear(out_norm(x), emb_weight)
+                pre_logits = F.linear(out_norm(x[:, :valid_length]), emb_weight)
                 pre_nll = F.cross_entropy(
                     pre_logits.reshape(-1, 256), targets.reshape(-1), reduction="none"
-                ).view(x.shape[0], x.shape[1])
-            aux = F.mse_loss(scores, pre_nll)
+                ).view_as(targets)
+            aux = F.mse_loss(scores[:, :valid_length], pre_nll)
 
         x = x + self.ffn_drop(delta)
         return x, aux, skip_rate
@@ -127,25 +130,36 @@ class NexusExpanseByteCore(nn.Module):
         self.episodic = EpisodicByteMemory(max_order=memory_max_order)
         self.fast_weights = HebbianFastWeightAdapter(dim=dim, vocab_size=256, lr=fast_lr)
 
-    def forward_neural(
-        self, tokens: torch.Tensor, targets: Optional[torch.Tensor] = None
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, List[float]]:
-        """Run the tokenless Monarch neural backbone; returns (logits, hidden, aux_loss, skip_rates)."""
-        b, t = tokens.shape
+    def _backbone_inputs(self, tokens):
+        # Fixed eval geometry prevents a length-dependent kernel choice at a hard gate.
+        if not self.training and any(layer.ffn.enable_skip for layer in self.layers):
+            if tokens.shape[1] > self.max_seq_len:
+                raise ValueError("input exceeds position embedding length")
+            tokens = F.pad(tokens, (0, self.max_seq_len - tokens.shape[1]))
+        t = tokens.shape[1]
         pos = torch.arange(t, device=tokens.device).unsqueeze(0)
         mask = torch.triu(torch.ones((t, t), dtype=torch.bool, device=tokens.device), diagonal=1)
         x = self.drop(self.emb(tokens) + self.pos_emb(pos))
 
+        return x, mask
+
+    def forward_neural(
+        self, tokens: torch.Tensor, targets: Optional[torch.Tensor] = None
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, List[float]]:
+        """Run the tokenless Monarch neural backbone; returns (logits, hidden, aux_loss, skip_rates)."""
+        length = tokens.shape[1]
+        x, mask = self._backbone_inputs(tokens)
+
         total_aux = torch.zeros((), device=tokens.device)
         skips: List[float] = []
         for layer in self.layers:
-            x, aux, sk = layer(x, mask, self.out_norm, self.emb.weight, targets=targets)
+            x, aux, sk = layer(x, mask, self.out_norm, self.emb.weight, targets=targets, valid_length=length)
             total_aux = total_aux + aux
             skips.append(sk)
 
         h_out = self.out_norm(x)
         logits = F.linear(h_out, self.emb.weight)
-        return logits, h_out, total_aux / float(len(self.layers)), skips
+        return logits[:, :length], h_out[:, :length], total_aux / float(len(self.layers)), skips
 
     @torch.inference_mode()
     def calibrate_gates(
@@ -160,16 +174,13 @@ class NexusExpanseByteCore(nn.Module):
                     continue
                 scores_list: List[torch.Tensor] = []
                 for xb, _ in train_batches[:max_batches]:
-                    b, t = xb.shape
-                    pos = torch.arange(t, device=xb.device).unsqueeze(0)
-                    mask = torch.triu(torch.ones((t, t), dtype=torch.bool, device=xb.device), diagonal=1)
-                    x = self.emb(xb) + self.pos_emb(pos)
-                    for prev_idx in range(layer_idx):
-                        x, _, _ = self.layers[prev_idx](x, mask, self.out_norm, self.emb.weight, None)
-                    h_attn = layer.attn_norm(x)
-                    attn_out, _ = layer.attn(h_attn, h_attn, h_attn, attn_mask=mask, need_weights=False)
-                    x_pre = x + attn_out
-                    scores_list.append(layer.ffn.gate_scores(layer.ffn_norm(x_pre)).reshape(-1))
+                    length = xb.shape[1]
+                    x, mask = self._backbone_inputs(xb)
+                    for previous in self.layers[:layer_idx]:
+                        x, _, _ = previous(x, mask, self.out_norm, self.emb.weight, valid_length=length)
+                    x_pre = layer.attention_residual(x, mask)
+                    scores = layer.ffn.gate_scores(layer.ffn_norm(x_pre))
+                    scores_list.append(scores[:, :length].reshape(-1))
                 all_s = torch.cat(scores_list, dim=0)
                 q = torch.quantile(all_s, layer.ffn.target_skip_rate)
                 layer.ffn.tau_eval.copy_(q)

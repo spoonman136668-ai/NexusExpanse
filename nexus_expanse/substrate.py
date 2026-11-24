@@ -83,16 +83,28 @@ class CausalGatedMonarchFFN(nn.Module):
     def gate_scores(self, h: torch.Tensor) -> torch.Tensor:
         return self.gate_proj(h.detach()).squeeze(-1)
 
-    def forward(self, h: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, h: torch.Tensor, valid_length: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         scores = self.gate_scores(h)
         if not self.enable_skip:
             deep = torch.ones_like(scores, dtype=torch.bool)
         else:
             deep = scores >= self.tau_eval
 
+        if valid_length is not None:
+            deep[:, valid_length:] = False
         out = torch.zeros_like(h)
         if bool(deep.any().item()):
-            out[deep] = self.fc2(F.silu(self.fc1(h[deep])))
+            selected = h[deep]
+            if self.enable_skip and not self.training:
+                # A compacted sparse batch also changes shape when the suffix changes.
+                # Use fixed-size kernels, padding only the final group of active rows.
+                deltas = []
+                for group in selected.split(32):
+                    block = F.pad(group, (0, 0, 0, 32 - len(group)))
+                    deltas.append(self.fc2(F.silu(self.fc1(block)))[:len(group)])
+                out[deep] = torch.cat(deltas)
+            else:
+                out[deep] = self.fc2(F.silu(self.fc1(selected)))
         return out, scores, deep
 
 

@@ -78,3 +78,27 @@ def test_development_full_factorial():
                 assert score['hebbian_updates'] == 0
         assert backbone['arms']['neural']['episodic_entries'] == backbone['arms']['static_episodic']['episodic_entries']
     assert r['backbones']['monarch_full']['ffn_bytes'] < r['backbones']['dense_full']['ffn_bytes']
+
+
+@pytest.mark.parametrize("seed", [3, 8, 90])
+def test_calibrated_monarch_gate_decisions_survive_suffix_changes(seed):
+    torch.manual_seed(seed)
+    model = NexusExpanseByteCore(**CONFIG).eval()
+    x = torch.tensor(list(TRAIN[:32]))[None]
+    model.calibrate_gates([(x[:, :-1], x[:, 1:])])
+    masks = []
+    hooks = [layer.ffn.register_forward_hook(
+        lambda module, args, output: masks.append(output[2][:, :13].clone())
+    ) for layer in model.layers]
+    try:
+        with torch.inference_mode():
+            reference = model.forward_neural(x[:, :13])[0]
+            expected = list(masks)
+            for suffix in (x[:, 13:], 255 - x[:, 13:]):
+                masks.clear()
+                logits = model.forward_neural(torch.cat((x[:, :13], suffix), 1))[0]
+                assert all(torch.equal(a, b) for a, b in zip(expected, masks, strict=True))
+                assert torch.allclose(reference, logits[:, :13], atol=1e-5)
+    finally:
+        for hook in hooks:
+            hook.remove()
