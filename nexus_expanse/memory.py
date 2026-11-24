@@ -11,7 +11,7 @@ import torch.nn as nn
 
 
 class EpisodicByteMemory:
-    """Zero-forgetting multi-scale non-parametric episodic memory for raw byte streams.
+    """Multi-scale non-parametric episodic memory for raw byte streams.
 
     Decouples factual/pattern memorization from neural weights:
       - Indexes variable-length byte context suffixes (orders 1..max_order) in O(1).
@@ -88,7 +88,7 @@ class EpisodicByteMemory:
 class HebbianFastWeightAdapter(nn.Module):
     """Surprise-gated local Hebbian fast-weight scratchpad (zero backprop at test time).
 
-    Maintains a compact low-rank fast weight state W_fast [dim, 256] that adapts
+    Maintains a dense fast weight state W_fast [dim, 256] that adapts
     online via local error-modulated Hebbian updates whenever prediction surprise
     exceeds a threshold, with exponential decay so stale transient styles fade.
     """

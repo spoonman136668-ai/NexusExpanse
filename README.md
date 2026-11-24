@@ -17,3 +17,7 @@ Python with PyTorch and pytest. Run `python -m pytest -q`. The new qualification
 ## Research status
 
 See `docs/RESEARCH.md`. No checkpoint, frozen source corpus, independently reproduced dense control or scientific first-use authorization is present. Keep original evidence immutable. No deployment, external runner, or scheduled execution authorized by this import.
+
+## Matched development ablation
+
+`python benchmarks/ablation_dev.py --output /path/to/new-evidence.json` runs a CPU-only, three-seed comparison on embedded, known synthetic fixtures. It trains dense and Monarch variants with and without gating, matches non-FFN initialization and optimizer steps, and clones trained state for six online/static ablations per variant plus memory-only controls. It requires a clean Git tree and exclusive output creation. The results are development diagnostics, not held-out evidence, equal-FLOP comparisons or a reproduction of Gate 1. Reported tensor bytes exclude episodic Python storage. The original default model and benchmark are preserved; callers may now explicitly select a dense FFN and use frozen fast weights without resetting them.

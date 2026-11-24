@@ -62,6 +62,7 @@ class CausalGatedMonarchFFN(nn.Module):
         n_blocks: int = 16,
         target_skip_rate: float = 0.50,
         enable_skip: bool = True,
+        ffn_kind: str = "monarch",
     ) -> None:
         super().__init__()
         self.dim = dim
@@ -70,8 +71,14 @@ class CausalGatedMonarchFFN(nn.Module):
 
         self.gate_proj = nn.Linear(dim, 1)
         self.register_buffer("tau_eval", torch.tensor(float("-inf"), dtype=torch.float32))
-        self.fc1 = DirectMonarchLinear(dim, hidden_dim, n_blocks=n_blocks)
-        self.fc2 = DirectMonarchLinear(hidden_dim, dim, n_blocks=n_blocks)
+        if ffn_kind == "monarch":
+            self.fc1 = DirectMonarchLinear(dim, hidden_dim, n_blocks=n_blocks)
+            self.fc2 = DirectMonarchLinear(hidden_dim, dim, n_blocks=n_blocks)
+        elif ffn_kind == "dense":
+            self.fc1 = nn.Linear(dim, hidden_dim)
+            self.fc2 = nn.Linear(hidden_dim, dim)
+        else:
+            raise ValueError(f"unknown FFN kind: {ffn_kind}")
 
     def gate_scores(self, h: torch.Tensor) -> torch.Tensor:
         return self.gate_proj(h.detach()).squeeze(-1)

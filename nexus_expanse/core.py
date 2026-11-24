@@ -27,6 +27,7 @@ class NexusLayer(nn.Module):
         target_skip_rate: float,
         enable_skip: bool,
         dropout: float,
+        ffn_kind: str = "monarch",
     ) -> None:
         super().__init__()
         self.attn_norm = nn.LayerNorm(dim)
@@ -40,6 +41,7 @@ class NexusLayer(nn.Module):
             n_blocks=n_blocks,
             target_skip_rate=target_skip_rate,
             enable_skip=enable_skip,
+            ffn_kind=ffn_kind,
         )
 
     def forward(
@@ -77,7 +79,7 @@ class NexusExpanseByteCore(nn.Module):
     Synergistic architecture:
       1. DirectMonarch sparse full-rank FFN backbone (~6.2x smaller than Dense at dim=128, 50x at dim=2048).
       2. Strictly causal pre-FFN uncertainty gating (~50%+ deep FFN skip).
-      3. Decoupled EpisodicByteMemory (O(1) non-parametric multi-scale recall, zero forgetting).
+      3. Decoupled EpisodicByteMemory (non-parametric multi-scale recall; interference possible).
       4. Surprise-gated HebbianFastWeightAdapter (zero-backprop test-time plasticity).
     """
 
@@ -93,6 +95,7 @@ class NexusExpanseByteCore(nn.Module):
         max_seq_len: int = 128,
         memory_max_order: int = 8,
         fast_lr: float = 0.08,
+        ffn_kind: str = "monarch",
     ) -> None:
         super().__init__()
         self.dim = dim
@@ -112,6 +115,7 @@ class NexusExpanseByteCore(nn.Module):
                     target_skip_rate=target_skip_rate,
                     enable_skip=enable_skip,
                     dropout=dropout,
+                    ffn_kind=ffn_kind,
                 )
                 for _ in range(n_layers)
             ]
@@ -189,6 +193,8 @@ class NexusExpanseByteCore(nn.Module):
         online_episodic_update: bool = False,
         online_hebbian_update: bool = False,
         mem_blend_cap: float = 0.72,
+        use_fast_weights: Optional[bool] = None,
+        reset_fast_state: bool = True,
     ) -> Dict[str, object]:
         """Strictly causal FP64 evaluation over EVERY transition in val_bytes (len-1 bytes).
 
@@ -196,9 +202,19 @@ class NexusExpanseByteCore(nn.Module):
         is ALWAYS predicted strictly BEFORE observing y_t, and only then written
         into episodic memory / Hebbian fast weights.
         """
+        if len(val_bytes) < 2 or not 1 <= seq_len <= self.max_seq_len:
+            raise ValueError("stream needs two bytes and valid sequence length")
+        if not 0 <= mem_blend_cap <= 1:
+            raise ValueError("invalid memory blend cap")
+        if online_episodic_update and not use_episodic:
+            raise ValueError("episodic update requires episodic prediction")
+        fast_enabled = online_hebbian_update if use_fast_weights is None else use_fast_weights
+        if online_hebbian_update and not fast_enabled:
+            raise ValueError("Hebbian update requires fast-weight prediction")
         was_training = self.training
         self.eval()
-        self.fast_weights.reset_fast_state()
+        if reset_fast_state:
+            self.fast_weights.reset_fast_state()
 
         val_tokens = torch.tensor(list(val_bytes), dtype=torch.long)
         n_total = len(val_tokens) - 1
@@ -227,7 +243,7 @@ class NexusExpanseByteCore(nn.Module):
 
                     # 1. Neural Monarch logits (+ optional test-time Hebbian fast-weight residual)
                     step_logits = logits[0, j].double()
-                    if online_hebbian_update:
+                    if fast_enabled:
                         step_logits = step_logits + self.fast_weights.forward_delta(h_out[0, j]).double()
                     p_neural = F.softmax(step_logits, dim=-1)
 
