@@ -12,6 +12,7 @@ import struct
 from pathlib import Path
 
 import torch
+from nexus_expanse.memory import HebbianFastWeightAdapter, ContextBankFastWeightAdapter
 
 _MAGIC = b'NEXUS-FAST-1\n'
 
@@ -49,8 +50,13 @@ def _config(model):
             a.dim != model.dim or not math.isfinite(a.lr) or a.lr <= 0 or
             not math.isfinite(a.decay) or not 0 <= a.decay <= 1):
         raise ValueError('unsupported fast-weight configuration (CPU float32 required)')
-    return {'dim': a.dim, 'vocab': a.vocab_size, 'lr': a.lr, 'decay': a.decay,
-            'backbone': backbone_identity(model)}
+    cfg = {'dim': a.dim, 'vocab': a.vocab_size, 'lr': a.lr, 'decay': a.decay,
+           'backbone': backbone_identity(model)}
+    if type(a) is ContextBankFastWeightAdapter:
+        cfg['routing'] = {'kind': 'blake2s-suffix-v1', 'banks': a.banks, 'order': a.context_order}
+    elif type(a) is not HebbianFastWeightAdapter:
+        raise ValueError('unsupported fast adapter')
+    return cfg
 
 
 def _budget(max_bytes):

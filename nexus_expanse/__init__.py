@@ -24,3 +24,6 @@ from nexus_expanse.fast_checkpoint import (backbone_identity, snapshot_fast_weig
 
 __all__ += ['backbone_identity', 'snapshot_fast_weights', 'restore_fast_weights',
             'save_fast_weights', 'load_fast_weights']
+
+from nexus_expanse.memory import ContextBankFastWeightAdapter
+__all__.append("ContextBankFastWeightAdapter")

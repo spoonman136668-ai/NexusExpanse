@@ -253,7 +253,8 @@ class NexusExpanseByteCore(nn.Module):
                     # 1. Neural Monarch logits (+ optional test-time Hebbian fast-weight residual)
                     step_logits = logits[0, j].double()
                     if fast_enabled:
-                        step_logits = step_logits + self.fast_weights.forward_delta(h_out[0, j]).double()
+                        fast_context = val_bytes[max(0, global_i + 1 - getattr(self.fast_weights, 'context_order', 0)):global_i + 1]
+                        step_logits = step_logits + self.fast_weights.forward_delta(h_out[0, j], context=fast_context).double()
                     p_neural = F.softmax(step_logits, dim=-1)
 
                     # 2. Confidence-weighted fusion with decoupled EpisodicByteMemory
@@ -281,7 +282,7 @@ class NexusExpanseByteCore(nn.Module):
                         self.episodic.observe_transition(val_bytes[ctx_start : global_i + 1], target_b)
                     if online_hebbian_update:
                         self.fast_weights.hebbian_update(
-                            h_out[0, j], p_neural, target_b, surprise_nll=nll, surprise_threshold=2.0
+                            h_out[0, j], p_neural, target_b, surprise_nll=nll, surprise_threshold=2.0, context=fast_context
                         )
         finally:
             self.train(was_training)

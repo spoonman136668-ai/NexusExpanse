@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import hashlib
 from collections import defaultdict
 from typing import Dict, Iterable, List, Optional, Tuple
 
@@ -106,7 +107,7 @@ class HebbianFastWeightAdapter(nn.Module):
         self.updates_applied = 0
 
     @torch.inference_mode()
-    def forward_delta(self, h: torch.Tensor) -> torch.Tensor:
+    def forward_delta(self, h: torch.Tensor, *, context: bytes = b"") -> torch.Tensor:
         """Compute fast-weight logit residual from hidden state h [..., dim]."""
         return h @ self.w_fast
 
@@ -118,6 +119,7 @@ class HebbianFastWeightAdapter(nn.Module):
         target_byte: int,
         surprise_nll: float,
         surprise_threshold: float = 1.5,
+        *, context: bytes = b"",
     ) -> bool:
         """Local delta-rule Hebbian update triggered ONLY on high-surprise events."""
         self.w_fast.mul_(self.decay)
@@ -133,5 +135,52 @@ class HebbianFastWeightAdapter(nn.Module):
         step = self.lr * min(2.0, surprise_nll / max(surprise_threshold, 1e-6))
         self.w_fast.add_(torch.outer(h_norm, err) * step)
         self.w_fast.clamp_(-2.0, 2.0)
+        self.updates_applied += 1
+        return True
+
+
+class ContextBankFastWeightAdapter(HebbianFastWeightAdapter):
+    """DEV-only fixed-budget banks, routed by observed byte suffix, not task labels.
+
+    Each bank uses a disjoint hidden feature slice. Inactive banks neither decay
+    nor receive updates. Hash collisions and loss of feature capacity are expected.
+    """
+
+    def __init__(self, dim: int, vocab_size: int = 256, lr: float = .05,
+                 decay: float = .995, banks: int = 2, context_order: int = 16):
+        if type(banks) is not int or banks < 2 or dim % banks:
+            raise ValueError('banks must divide hidden dimension')
+        if type(context_order) is not int or not 1 <= context_order <= 128:
+            raise ValueError('invalid context order')
+        super().__init__(dim, vocab_size, lr, decay)
+        self.banks = banks
+        self.context_order = context_order
+
+    def _slice(self, context: bytes):
+        key = hashlib.blake2s(context[-self.context_order:], digest_size=8).digest()
+        bank = int.from_bytes(key, 'little') % self.banks
+        width = self.dim // self.banks
+        return slice(bank * width, (bank + 1) * width)
+
+    @torch.inference_mode()
+    def forward_delta(self, h: torch.Tensor, *, context: bytes = b''):
+        sl = self._slice(context)
+        return h[..., sl] @ self.w_fast[sl]
+
+    @torch.inference_mode()
+    def hebbian_update(self, h, probs, target_byte, surprise_nll,
+                       surprise_threshold=1.5, *, context: bytes = b''):
+        sl = self._slice(context)
+        w = self.w_fast[sl]
+        w.mul_(self.decay)
+        if surprise_nll < surprise_threshold:
+            return False
+        h_vec = h.detach().reshape(-1).float()[sl]
+        h_norm = h_vec / (h_vec.norm() + 1e-6)
+        err = -probs.detach().reshape(-1).float()
+        err[target_byte] += 1.0
+        step = self.lr * min(2.0, surprise_nll / max(surprise_threshold, 1e-6))
+        w.add_(torch.outer(h_norm, err) * step)
+        w.clamp_(-2.0, 2.0)
         self.updates_applied += 1
         return True
