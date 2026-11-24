@@ -12,7 +12,7 @@ import struct
 from pathlib import Path
 
 import torch
-from nexus_expanse.memory import HebbianFastWeightAdapter, ContextBankFastWeightAdapter
+from nexus_expanse.memory import HebbianFastWeightAdapter, ContextBankFastWeightAdapter, ProjectedFastWeightAdapter
 
 _MAGIC = b'NEXUS-FAST-1\n'
 
@@ -54,6 +54,10 @@ def _config(model):
            'backbone': backbone_identity(model)}
     if type(a) is ContextBankFastWeightAdapter:
         cfg['routing'] = {'kind': 'blake2s-suffix-v1', 'banks': a.banks, 'order': a.context_order}
+    elif type(a) is ProjectedFastWeightAdapter:
+        if a.decay != 1. or a.basis.dtype != torch.float32 or tuple(a.basis.shape) != (a.rank, a.dim):
+            raise ValueError('invalid protection configuration')
+        cfg['protection'] = {'kind': 'causal-orthogonal-v1', 'rank': a.rank}
     elif type(a) is not HebbianFastWeightAdapter:
         raise ValueError('unsupported fast adapter')
     return cfg
@@ -62,6 +66,17 @@ def _config(model):
 def _budget(max_bytes):
     if type(max_bytes) is not int or max_bytes <= 0:
         raise ValueError('positive byte budget required')
+
+
+def _validate_basis(b):
+    if not bool(torch.isfinite(b).all()):
+        raise ValueError('nonfinite protection basis')
+    active = b.square().sum(dim=1) != 0
+    if bool((active[1:] & ~active[:-1]).any()):
+        raise ValueError('noncanonical protection basis')
+    q = b[active]
+    if not torch.allclose(q @ q.T, torch.eye(len(q), dtype=b.dtype), atol=1e-5, rtol=0):
+        raise ValueError('nonorthonormal protection basis')
 
 
 def snapshot_fast_weights(model, *, max_bytes: int) -> bytes:
@@ -74,6 +89,9 @@ def snapshot_fast_weights(model, *, max_bytes: int) -> bytes:
         raise ValueError('invalid fast-weight values')
     header = _canonical({'config': cfg, 'updates': a.updates_applied})
     raw = a.w_fast.detach().numpy().astype('<f4', copy=False).tobytes()
+    if type(a) is ProjectedFastWeightAdapter:
+        _validate_basis(a.basis)
+        raw += a.basis.detach().numpy().astype('<f4', copy=False).tobytes()
     body = _MAGIC + struct.pack('<I', len(header)) + header + raw
     if len(body) + 32 > max_bytes:
         raise ValueError('fast-weight checkpoint exceeds byte budget')
@@ -106,12 +124,18 @@ def restore_fast_weights(model, payload: bytes, *, max_bytes: int):
         raise ValueError('invalid update count')
     raw = body[offset+n:]
     a = model.fast_weights
-    if len(raw) != a.w_fast.numel() * 4:
+    wbytes = a.w_fast.numel() * 4
+    bbytes = a.basis.numel() * 4 if type(a) is ProjectedFastWeightAdapter else 0
+    if len(raw) != wbytes + bbytes:
         raise ValueError('invalid tensor length')
     import numpy as np
-    t = torch.from_numpy(np.frombuffer(raw, dtype='<f4').astype('float32', copy=True)).reshape_as(a.w_fast)
+    t = torch.from_numpy(np.frombuffer(raw[:wbytes], dtype='<f4').astype('float32', copy=True)).reshape_as(a.w_fast)
     if not bool(torch.isfinite(t).all()) or bool((t.abs() > 2).any()):
         raise ValueError('invalid tensor values')
+    if bbytes:
+        b = torch.from_numpy(np.frombuffer(raw[wbytes:], dtype='<f4').astype('float32', copy=True)).reshape_as(a.basis)
+        _validate_basis(b)
+        a.basis.copy_(b)
     a.w_fast.copy_(t)
     a.updates_applied = updates
 

@@ -27,3 +27,6 @@ __all__ += ['backbone_identity', 'snapshot_fast_weights', 'restore_fast_weights'
 
 from nexus_expanse.memory import ContextBankFastWeightAdapter
 __all__.append("ContextBankFastWeightAdapter")
+
+from nexus_expanse.memory import ProjectedFastWeightAdapter
+__all__.append("ProjectedFastWeightAdapter")

@@ -5,7 +5,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from benchmarks.longitudinal_dev import (SEEDS, REGIMES, ORDER, LIMIT, MIN_GAIN, CONTEXT_CAP,
     BUDGET, EPOCHS, TRAIN, CONFIG, ROOT, torch, F, fixture, cache, train, evaluate)
-from nexus_expanse import backbone_identity, snapshot_fast_weights, restore_fast_weights
+from nexus_expanse import backbone_identity, snapshot_fast_weights, restore_fast_weights, ProjectedFastWeightAdapter
 from nexus_expanse.persistent_memory import BoundedEpisodicByteMemory
 from nexus_expanse.consolidation import ConsolidatingMemory
 ARMS=('frozen','shared_no_decay','memory32','lru','support','sparse_support')
@@ -25,16 +25,17 @@ class FrozenView:
         if context not in self.cache: self.cache[context]=self.mem.predict_probs(context)
         return self.cache[context]
 
-def run(seed, memory_reference=None):
+def run(seed, memory_reference=None, arms_to_run=ARMS):
     base=train(seed); results={}
     for cued in (True,False):
         data=[fixture(i,cued) for i in range(REGIMES)]; features=[cache(base,d) for d,_ in data]; arms={}
-        for arm in ARMS:
-            if memory_reference is not None and arm not in ('frozen','shared_no_decay'):
+        for arm in arms_to_run:
+            if memory_reference is not None and arm in ('memory32', *ConsolidatingMemory.POLICIES):
                 arms[arm]=dict(memory_reference['conditions']['cued' if cued else 'ambiguous'][arm],deterministic_reuse_from_seed=memory_reference['seed'])
                 continue
             m=copy.deepcopy(base); mem=None
             if arm=='shared_no_decay': m.fast_weights.decay=1.
+            elif arm.startswith('project'): m.fast_weights=ProjectedFastWeightAdapter(m.dim, lr=m.fast_weights.lr, rank=int(arm[7:]))
             elif arm=='memory32': mem=BoundedEpisodicByteMemory(CONTEXT_CAP,32)
             elif arm in ConsolidatingMemory.POLICIES: mem=ConsolidatingMemory(BUDGET,arm,32)
             if mem is not None: mem.ingest_stream(TRAIN)
@@ -53,12 +54,12 @@ def run(seed, memory_reference=None):
                 else:
                     payload=mem.snapshot(max_bytes=BUDGET); contexts=mem.memory_entry_count()
                 history.append(dict(step=step,regime=i,before=before,online=online,after=after,probes=probes,
-                    first_target_probes={str(j):first(j) for j in sorted(acquired)},bytes=len(payload),contexts=contexts))
+                    first_target_probes={str(j):first(j) for j in sorted(acquired)},bytes=len(payload),contexts=contexts,protected_rank=int((m.fast_weights.basis.square().sum(dim=1)>0).sum()) if arm.startswith('project') else None, updates=m.fast_weights.updates_applied if mem is None else mem.num_observations))
             final=history[-1]['probes']; metric='target_bpb'
             gains=[initial[i][metric]-acquired[i][metric] for i in range(REGIMES)]
             worst=max(p[metric]-acquired[int(j)][metric] for row in history for j,p in row['probes'].items())
             if mem is None:
-                restored=copy.deepcopy(base); restored.fast_weights.decay=m.fast_weights.decay
+                restored=copy.deepcopy(m); restored.fast_weights.reset_fast_state()
                 restore_fast_weights(restored,payload,max_bytes=BUDGET)
                 equal=all(evaluate(restored,None,*data[i],features[i])==final[str(i)] for i in range(REGIMES))
             else:
@@ -73,16 +74,16 @@ def run(seed, memory_reference=None):
         results['cued' if cued else 'ambiguous']=arms
     return dict(seed=seed,backbone_sha256=backbone_identity(base),conditions=results)
 
-def main():
+def main(arms=ARMS, schema="nexus-consolidation-dev-v1"):
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);args=p.parse_args()
     if args.output.exists(): raise FileExistsError(args.output)
     def git(*a): return subprocess.check_output(['git',*a],cwd=ROOT,text=True).strip()
     if git('status','--porcelain'): raise RuntimeError('clean tree required')
     torch.set_num_threads(1);torch.use_deterministic_algorithms(True);start=time.perf_counter()
-    first=run(SEEDS[0]); runs=[first]+[run(s,first) for s in SEEDS[1:]]
-    out=dict(schema='nexus-consolidation-dev-v1',qualification='DEVELOPMENT_ONLY',scientific_trial_executed=False,
+    first=run(SEEDS[0],arms_to_run=arms); runs=[first]+[run(s,first,arms) for s in SEEDS[1:]]
+    out=dict(schema=schema,qualification='DEVELOPMENT_ONLY',scientific_trial_executed=False,
         source_sha=git('rev-parse','HEAD'),source_tree=git('rev-parse','HEAD^{tree}'),python=platform.python_version(),torch=str(torch.__version__),platform=platform.platform(),
-        config=CONFIG,epochs=EPOCHS,order=ORDER,budget=BUDGET,retention_limit=LIMIT,min_gain=MIN_GAIN,arms=ARMS,
+        config=CONFIG,epochs=EPOCHS,order=ORDER,budget=BUDGET,retention_limit=LIMIT,min_gain=MIN_GAIN,arms=arms,
         fixtures={f'{c}:{i}':hashlib.sha256(fixture(i,c)[0]).hexdigest() for c in (True,False) for i in range(REGIMES)},train_sha256=hashlib.sha256(TRAIN).hexdigest(),runs=runs, memory_only_seed_independent=True)
     out['seconds']=time.perf_counter()-start
     with args.output.open('x') as f: json.dump(out,f,indent=2,sort_keys=True,allow_nan=False);f.write('\n')

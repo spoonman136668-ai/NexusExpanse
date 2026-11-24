@@ -184,3 +184,50 @@ class ContextBankFastWeightAdapter(HebbianFastWeightAdapter):
         w.clamp_(-2.0, 2.0)
         self.updates_applied += 1
         return True
+
+
+class ProjectedFastWeightAdapter(HebbianFastWeightAdapter):
+    """Opt-in no-decay plasticity with a bounded causal orthonormal protection basis.
+
+    Admit directions after observed confident correct predictions; project new
+    updates into the orthogonal complement. No task labels or stored answers.
+    A full basis is never silently evicted; acquisition can consequently stall.
+    """
+    def __init__(self, dim, vocab_size=256, lr=.05, rank=8):
+        if type(rank) is not int or not 1 <= rank < dim:
+            raise ValueError('invalid protection rank')
+        super().__init__(dim, vocab_size, lr, decay=1.)
+        self.rank = rank
+        self.register_buffer('basis', torch.zeros(rank, dim, dtype=torch.float32))
+
+    def reset_fast_state(self):
+        super().reset_fast_state()
+        self.basis.zero_()
+
+    @torch.inference_mode()
+    def hebbian_update(self, h, probs, target_byte, surprise_nll,
+                       surprise_threshold=1.5, *, context=b''):
+        v = h.detach().reshape(-1).float()
+        v = v / (v.norm() + 1e-6)
+        q = self.basis
+        # Reorthogonalize to limit floating point drift.
+        u = v - q.T @ (q @ v)
+        u = u - q.T @ (q @ u)
+        if float(probs[target_byte]) >= .5 and self.updates_applied:
+            slots = (q.square().sum(dim=1) == 0).nonzero().flatten()
+            if slots.numel() and float(u.norm()) >= .1:
+                q[slots[0]].copy_(u / u.norm())
+            return False
+        if surprise_nll < surprise_threshold or float(u.norm()) < 1e-6:
+            return False
+        err = -probs.detach().reshape(-1).float()
+        err[target_byte] += 1.
+        delta = torch.outer(u, err) * (self.lr * min(2., surprise_nll / max(surprise_threshold, 1e-6)))
+        # A scalar line search preserves the projected direction, unlike clipping each weight.
+        bound = torch.where(delta > 0, (2. - self.w_fast) / delta,
+                            torch.where(delta < 0, (-2. - self.w_fast) / delta, torch.inf))
+        scale = min(1., max(0., float(bound.min()) * (1. - 1e-6)))
+        if scale == 0.: return False
+        self.w_fast.add_(delta * scale)
+        self.updates_applied += 1
+        return True
