@@ -1,0 +1,7 @@
+# Gate 5A frozen paired DEV protocol
+
+Replay exactly the Gate 4A generator, corrupted exposure order, split, neural training, clean probes, 16-exposure drift checkpoints and separate-process replay for seeds 42–44. Compare v2, freshly executed v1, sparse memory, raw lookup, frozen neural, Gate 3 soft chain and privileged symbolic chain. Assert each paired backbone identity and fixture digest. No protected data. No byte offsets or grammar labels in either candidate.
+
+Position-independent codes bijectively name frozen raw byte embeddings using first-coordinate rank, with stable tie-breaking. Use the identical map for inputs and observed targets and its inverse for readout. This is an identity-preserving feature control; it learns no synonym equivalences. Existing outgoing edges take precedence over the unchanged online frequency-based admission filter. Keep the inherited winner-path Dirichlet readout (0.1 prior mass at each edge), strict prediction-before-write, 40,000-byte limit and full vector equality after restoring a fresh process.
+
+Per-seed PASS requires first-target unseen accuracy >=90%, unseen BPB at least 0.05 better than each of sparse memory and symbolic chaining, and maximum per-association drift <=0.02 BPB. MIXED requires the accuracy and sparse-memory thresholds while missing at least one other threshold. Otherwise FAIL. Aggregate PASS only for three PASS seeds, FAIL for three FAIL seeds, otherwise MIXED. Budget or replay violations are engineering failures. No tuning after execution.

@@ -56,19 +56,19 @@ def digest(probs):
     return h.hexdigest()
 
 
-def cold(directory):
+def cold(directory, candidate_cls=LatentAssociation):
     model = NexusExpanseByteCore(**CONFIG).eval()
     model.load_state_dict(torch.load(directory/'model', weights_only=True))
-    arm = LatentAssociation(model)
+    arm = candidate_cls(model)
     arm.restore((directory/'state').read_bytes())
     queries = json.loads((directory/'queries').read_text())
     print(digest(arm.predict(*arm.encode(bytes.fromhex(p))) for p in queries))
 
 
-def run(seed):
+def run(seed, candidate_cls=LatentAssociation, cold_script=__file__):
     singles, seen, novel, shifted, phases = fixture(seed)
     model = train(seed)
-    candidate = LatentAssociation(model)
+    candidate = candidate_cls(model)
     rows = singles + seen + novel + shifted
     features = {p:candidate.encode(p) for p,_,_ in rows}
     arms = {}
@@ -128,7 +128,7 @@ def run(seed):
         (path/'state').write_bytes(candidate.snapshot())
         (path/'queries').write_text(json.dumps([p.hex() for p,_,_ in rows]))
         expected=digest(candidate.predict(*features[p]) for p,_,_ in rows)
-        actual=subprocess.check_output([sys.executable,__file__,'--cold',tmp],text=True).strip()
+        actual=subprocess.check_output([sys.executable,cold_script,'--cold',tmp],text=True).strip()
         assert actual==expected
     result=arms['latent_wta']
     margin=min(arms[k]['scores']['unseen']['bpb'] for k in ARMS)-result['scores']['unseen']['bpb']

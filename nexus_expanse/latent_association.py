@@ -24,6 +24,9 @@ class LatentAssociation:
         codes = (F.normalize(h[0], dim=1) @ self.prototypes.T).argmax(1)
         return tuple(codes.tolist()), logits[0, -1].double().softmax(0)
 
+    def ignore_cue(self, anchor, code):
+        return self.frequency[code] > .45 * max(1, self.records)
+
     def route(self, codes):
         anchor = None
         steps = []
@@ -33,7 +36,7 @@ class LatentAssociation:
                     anchor = code
                 continue
             # Frequent framing features provide little evidence of a relation.
-            if self.frequency[code] > .45 * max(1, self.records):
+            if self.ignore_cue(anchor, code):
                 continue
             steps.append((anchor, code))
             counts = self.edges.get(steps[-1])
@@ -58,8 +61,11 @@ class LatentAssociation:
         scale = mass / (counts.total() + .1)
         probs = prior * (1 - scale * counts.total())
         for y, count in counts.items():
-            probs[y] += scale * count
+            probs[self.output_byte(y)] += scale * count
         return probs
+
+    def output_byte(self, code):
+        return code
 
     def observe(self, codes, target):
         path = self.route(codes)
@@ -86,3 +92,44 @@ class LatentAssociation:
         self.outcomes = set(outcomes)
         self.frequency = Counter(dict(freq))
         self.edges = {(x, r): Counter(dict(pairs)) for x, r, pairs in rows}
+
+class AlignedLatentAssociation(LatentAssociation):
+    """Frozen byte-embedding identities for routing; contextual logits for the prior."""
+
+    def __init__(self, model):
+        self.model = model
+        # Canonical names for the 256 frozen byte embeddings. Stable tie-break by
+        # byte index makes this a bijection even for coincident coordinates.
+        self.bytes_by_code = model.emb.weight.detach()[:, 0].argsort(stable=True).tolist()
+        self.codes_by_byte = [0] * 256
+        for code, byte in enumerate(self.bytes_by_code):
+            self.codes_by_byte[byte] = code
+        self.frequency = Counter()
+        self.outcomes = set()
+        self.edges = {}
+        self.records = 0
+
+    @torch.inference_mode()
+    def encode(self, prefix):
+        logits = self.model.forward_neural(torch.tensor(list(prefix))[None])[0]
+        return tuple(self.codes_by_byte[b] for b in prefix), logits[0,-1].double().softmax(0)
+
+    def output_byte(self, code):
+        return self.bytes_by_code[code]
+
+    def observe(self, codes, target):
+        super().observe(codes, self.codes_by_byte[target])
+
+    def ignore_cue(self, anchor, code):
+        return (anchor, code) not in self.edges and super().ignore_cue(anchor, code)
+
+    def snapshot(self):
+        payload = b'A2' + super().snapshot()
+        if len(payload) > 40000:
+            raise ValueError('adaptive state exceeds 40000 bytes')
+        return payload
+
+    def restore(self, payload):
+        if len(payload) > 40000 or not payload.startswith(b'A2'):
+            raise ValueError('invalid aligned state')
+        super().restore(payload[2:])
