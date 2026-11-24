@@ -24,7 +24,7 @@ from benchmarks.gate4b_dev import MANIFEST, read_split
 from nexus_expanse.arbitration import ReliabilityArbitrator
 from nexus_expanse.consolidation import ConsolidatingMemory
 from nexus_expanse.kuramoto import KuramotoMonarchByteCore
-from nexus_expanse.patching import CompactBigramPredictor
+from nexus_expanse.patching import CompactBigram
 
 
 def verify_kuramoto_exactness(seeds: int = 20) -> Dict[str, object]:
@@ -83,11 +83,12 @@ def eval_kuramoto_policy(
         for i in range(1, len(span)):
             mem.observe_transition(span[max(0, i - 32) : i], span[i])
 
-    bigram_counts = np.zeros((256, 256), dtype=np.int64)
+    bigram_counts = np.zeros((256, 256), dtype="<u4")
     for span in train_spans:
         for i in range(len(span) - 1):
             bigram_counts[span[i], span[i + 1]] += 1
-    compact = CompactBigramPredictor.from_counts(bigram_counts)
+    compact = CompactBigram.from_dense(bigram_counts)
+    totals = compact.sum(axis=1).astype(np.float64) + 256.0
     min_prob = 2.0 ** -4.0
 
     arb = ReliabilityArbitrator()
@@ -109,13 +110,13 @@ def eval_kuramoto_policy(
                     deep_calls += 1
                 else:
                     # kuramoto_patch: wake Kuramoto only on high-surprise bytes
-                    wake = prev_byte is None or (compact.probability(prev_byte, obs) < min_prob)
+                    wake = prev_byte is None or ((float(compact[prev_byte, obs]) + 1.0) / totals[prev_byte] < min_prob)
                     prev_byte = obs
                     if wake:
                         p_neural, states = model.step_streaming(obs, states)
                         deep_calls += 1
                     else:
-                        p_neural = torch.from_numpy(compact.forecast(obs))
+                        p_neural = torch.from_numpy((compact[obs].astype(np.float64) + 1.0) / totals[obs])
 
                 ctx = span[max(0, i + 1 - 32) : i + 1]
                 p_mem, _ = mem.predict_probs(ctx)
