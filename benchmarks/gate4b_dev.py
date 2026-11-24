@@ -51,9 +51,12 @@ def prepare(directory, train, compact=False):
     return dict(compact_bytes=len(encoded),identical_wake_decisions=65536,identical_local_rows=256)
 
 
-def train_one(directory, seed, kind, train, config=CONFIG, epochs=2, full_spans=False):
-    ref=shared_init(seed,'monarch',False,None,config)
-    model=shared_init(seed,kind,True,ref,config)
+def train_one(directory, seed, kind, train, config=CONFIG, epochs=2, full_spans=False, model_factory=None):
+    if model_factory is None:
+        ref=shared_init(seed,'monarch',False,None,config)
+        model=shared_init(seed,kind,True,ref,config)
+    else:
+        model=model_factory(seed,kind,config)
     opt=torch.optim.AdamW(model.parameters(),lr=.003,weight_decay=.01)
     bs=[batch for block in train for batch in batches(block)]
     if full_spans:
@@ -70,11 +73,11 @@ def train_one(directory, seed, kind, train, config=CONFIG, epochs=2, full_spans=
         model.calibrate_gates(bs)
     torch.save(model.state_dict(),directory/'model')
     return dict(seed=seed,kind=kind,steps=epochs*len(bs),seconds=time.perf_counter()-start,
-                state_hash=state_hash(model))
+                state_hash=state_hash(model),trainable_parameters=sum(p.numel() for p in model.parameters() if p.requires_grad))
 
 
 @torch.inference_mode()
-def measure(directory,kind,policy,online,config=CONFIG,cached=False):
+def measure(directory,kind,policy,online,config=CONFIG,cached=False,model_factory=None,phase=False):
     start=time.perf_counter()
     dev=read_split()['dev']
     mem=ConsolidatingMemory.restore((directory/'memory').read_bytes(),max_bytes=BUDGET)
@@ -82,13 +85,18 @@ def measure(directory,kind,policy,online,config=CONFIG,cached=False):
     tensors=checkpoint=local_bytes=derived_buffer=0
     trained_hash=None
     if kind!='memory':
-        model=NexusExpanseByteCore(**config,ffn_kind=kind,enable_skip=cached or policy=='skip').eval()
+        if model_factory is None:
+            model=NexusExpanseByteCore(**config,ffn_kind=kind,enable_skip=cached or policy=='skip').eval()
+        else:
+            model=model_factory(kind,config).eval()
         model.load_state_dict(torch.load(directory/'model',weights_only=True))
         trained_hash=state_hash(model)
         tensors=sum(v.numel()*v.element_size() for v in list(model.parameters())+list(model.buffers()))
         checkpoint=(directory/'model').stat().st_size
         mixer=ReliabilityArbitrator()
-        if cached:
+        if phase:
+            cache=model.new_stream()
+        elif cached:
             if policy != 'skip':
                 for layer in model.layers:
                     layer.ffn.tau_eval.fill_(-float('inf'))
@@ -96,7 +104,7 @@ def measure(directory,kind,policy,online,config=CONFIG,cached=False):
         if policy=='patch':
             source=directory/('counts.bin' if cached else 'counts.npy')
             predictor=CompactBigram.restore(source.read_bytes()) if cached else np.load(source)
-            patch=BytePatchReader(model,predictor,kv_cache=cache)
+            patch=BytePatchReader(model,predictor,kv_cache=cache,retain_events=not phase)
             local_bytes=source.stat().st_size
             derived_buffer=patch.totals.nbytes
             if cached:
@@ -150,9 +158,12 @@ def measure(directory,kind,policy,online,config=CONFIG,cached=False):
                                -1 if patch.pending is None else patch.pending)+cursor) if patch else 0
     memory_bytes=len(mem.snapshot(max_bytes=BUDGET))
     raw_history_bytes=min(len(dev[-1])-1,32 if model and not patch else 8)
-    if cached and model and not patch:
+    if phase:
+        raw_history_bytes=min(len(dev[-1])-1,8)
+    elif cached and model and not patch:
         raw_history_bytes=len(cache.history)
-    return dict(kv_tensor_bytes=cache.tensor_bytes if cache else 0,kind=kind,policy=policy,mode='prequential' if online else 'frozen',transitions=total,
+    phase_bytes=cache.tensor_bytes if phase else 0
+    return dict(phase_bytes=phase_bytes,kv_tensor_bytes=cache.tensor_bytes if cache and not phase else 0,kind=kind,policy=policy,mode='prequential' if online else 'frozen',transitions=total,
                 bpb=loss/total,block_bpb=per_block,seconds=elapsed,ms_per_byte=1000*elapsed/total,
                 load_seconds=loaded-start,peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024/1e6,
                 deep_calls=patch.deep_calls if patch else calls,trained_hash=trained_hash,
@@ -160,7 +171,7 @@ def measure(directory,kind,policy,online,config=CONFIG,cached=False):
                 max_memory_bytes=peak_memory,patch_predictor_serialized_bytes=local_bytes,
                 patch_derived_buffer_bytes=derived_buffer,arbitrator_bytes=arbitration_bytes,
                 patch_cursor_bytes=cursor_bytes,raw_history_bytes=raw_history_bytes,
-                serialized_total_bytes=checkpoint+memory_bytes+local_bytes+arbitration_bytes+cursor_bytes+raw_history_bytes)
+                serialized_total_bytes=checkpoint+memory_bytes+local_bytes+arbitration_bytes+cursor_bytes+raw_history_bytes+phase_bytes)
 
 
 def worker(path,kind,policy,mode,script=__file__):

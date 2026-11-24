@@ -5,13 +5,15 @@ import torch
 
 
 class BytePatchReader:
-    def __init__(self, model, counts, threshold_bits=4.0, kv_cache=None):
+    def __init__(self, model, counts, threshold_bits=4.0, kv_cache=None, retain_events=True):
         self.model = model
         self.cache = kv_cache
         self.counts = counts
         self.totals = counts.sum(axis=1) + 256.
         self.minimum_probability = 2. ** -threshold_bits
-        self.events = deque(maxlen=model.max_seq_len)
+        if not retain_events and kv_cache is None:
+            raise ValueError("dropping event history requires a stateful reader")
+        self.events = deque(maxlen=model.max_seq_len if retain_events else 0)
         self.previous = None
         self.pending = None
         self.deep_calls = 0
