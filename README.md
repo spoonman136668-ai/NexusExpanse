@@ -53,3 +53,5 @@ Optional `ContextBankFastWeightAdapter` uses disjoint hidden-feature slices and 
 ### v0.9 — projected neural plasticity (development only)
 
 Optional `ProjectedFastWeightAdapter(dim, lr=..., rank=8)` can replace `model.fast_weights`. It freezes confident observed directions and projects later no-decay Hebbian updates orthogonally, with bounded scalar updates. Checkpoint stores basis and weights; prior source-bound checkpoints are not migrated. `python benchmarks/plasticity_dev.py --output /path/to/new-output.json` reuses the common comparison harness. Both ranks fail acquisition/retention and predict worse than decay-free shared weights; no default changes. See `evidence/plasticity-dev-001.json` and `docs/RESEARCH.md`.
+
+**Engineering acceptance blocked:** existing gated prefix invariant failed final regression; deterministic 100-seed diagnostic reproduces 16 identical failures on v0.8 and v0.9. Run `python benchmarks/prefix_causality_dev.py` (expected nonzero until repair). No scientific or deployment acceptance. See `evidence/prefix-causality-dev-001.json`.
