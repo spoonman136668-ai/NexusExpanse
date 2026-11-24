@@ -45,3 +45,7 @@ Optional `ContextBankFastWeightAdapter` uses disjoint hidden-feature slices and 
 ### v0.7 longitudinal development diagnostic
 
 `python benchmarks/longitudinal_dev.py --output results/longitudinal-new.json` (create `results/` first; use a clean tree and new output path). Eight regimes, two acquisition passes, three seeds, two cue conditions and four controls. Target-byte retention gate **FAIL** for all arms; no-decay improves average target prediction but does not prevent forgetting. No observed clamping does not establish absence of long-term saturation. See `docs/RESEARCH.md` and `evidence/longitudinal-dev-001.json` for exact provenance, limitations and full trajectories. No change to model defaults.
+
+### v0.8 — selective consolidation (development only)
+
+`nexus_expanse.consolidation.ConsolidatingMemory` is an opt-in episodic-memory policy with exact serialized byte accounting, full-context LRU/support eviction, and sparse suffix support. It is not wired into default model behavior. Run `python benchmarks/consolidation_dev.py --output /path/to/new-output.json` from a clean source checkout (exclusive new output). See `docs/RESEARCH.md` and `evidence/consolidation-dev-002.json` for source-pinned results. Sparse support improves final synthetic target-byte accuracy substantially against full-budget LRU, but all arms fail the predeclared worst-case retention limit. No scientific qualification or deployment.
