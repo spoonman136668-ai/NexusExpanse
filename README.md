@@ -49,3 +49,7 @@ Optional `ContextBankFastWeightAdapter` uses disjoint hidden-feature slices and 
 ### v0.8 — selective consolidation (development only)
 
 `nexus_expanse.consolidation.ConsolidatingMemory` is an opt-in episodic-memory policy with exact serialized byte accounting, full-context LRU/support eviction, and sparse suffix support. It is not wired into default model behavior. Run `python benchmarks/consolidation_dev.py --output /path/to/new-output.json` from a clean source checkout (exclusive new output). See `docs/RESEARCH.md` and `evidence/consolidation-dev-002.json` for source-pinned results. Sparse support improves final synthetic target-byte accuracy substantially against full-budget LRU, but all arms fail the predeclared worst-case retention limit. No scientific qualification or deployment.
+
+### v0.9 — projected neural plasticity (development only)
+
+Optional `ProjectedFastWeightAdapter(dim, lr=..., rank=8)` can replace `model.fast_weights`. It freezes confident observed directions and projects later no-decay Hebbian updates orthogonally, with bounded scalar updates. Checkpoint stores basis and weights; prior source-bound checkpoints are not migrated. `python benchmarks/plasticity_dev.py --output /path/to/new-output.json` reuses the common comparison harness. Both ranks fail acquisition/retention and predict worse than decay-free shared weights; no default changes. See `evidence/plasticity-dev-001.json` and `docs/RESEARCH.md`.

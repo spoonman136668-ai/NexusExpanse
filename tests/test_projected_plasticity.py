@@ -52,3 +52,20 @@ def test_frozen_core_no_writes_and_invalid_basis_rejected():
 @pytest.mark.parametrize('rank',[0,4,True])
 def test_invalid_rank(rank):
     with pytest.raises(ValueError): ProjectedFastWeightAdapter(4,rank=rank)
+
+
+def test_protection_cold_process(tmp_path):
+    import subprocess, sys, json, hashlib
+    m=model(); a=m.fast_weights; h=torch.eye(16)[0]; p=torch.full((256,),1/256)
+    a.hebbian_update(h,p,1,6.); confident=p.clone(); confident[1]=.9; a.hebbian_update(h,confident,1,.1)
+    payload=snapshot_fast_weights(m,max_bytes=40000)
+    path=tmp_path/'protected.bin'; path.write_bytes(payload)
+    script='''import sys, torch, json, hashlib
+from nexus_expanse import NexusExpanseByteCore, ProjectedFastWeightAdapter, restore_fast_weights, snapshot_fast_weights
+torch.set_num_threads(1); torch.manual_seed(42)
+m=NexusExpanseByteCore(n_layers=1,dim=16,n_heads=2,dropout=0.,max_seq_len=16)
+m.fast_weights=ProjectedFastWeightAdapter(16,rank=2)
+restore_fast_weights(m,open(sys.argv[1],'rb').read(),max_bytes=40000)
+print(json.dumps([hashlib.sha256(snapshot_fast_weights(m,max_bytes=40000)).hexdigest(),m.fast_weights.forward_delta(torch.ones(16)).tolist()]))
+'''
+    assert json.loads(subprocess.check_output([sys.executable,'-c',script,str(path)],text=True))==[hashlib.sha256(payload).hexdigest(),a.forward_delta(torch.ones(16)).tolist()]
