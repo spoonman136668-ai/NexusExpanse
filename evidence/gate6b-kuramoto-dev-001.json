@@ -1,0 +1,184 @@
+{
+  "schema": "nexus-gate6b-kuramoto-dev-v1",
+  "qualification": "REUSED_MANIFEST_DEV",
+  "source_sha": "d2451f63da48accbc4370f5eb0234e1994d22149",
+  "torch": "2.15.0+cpu",
+  "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+  "parity": {
+    "seeds": 20,
+    "max_prefix_diff": 0.0,
+    "max_stream_vs_batch_diff": 0.0
+  },
+  "gate5b_ref_direct_monarch_cached": {
+    "static_bpb": 4.9391,
+    "online_bpb": 4.4062,
+    "online_ms_per_byte": 3.821
+  },
+  "summary": {
+    "kuramoto_stream_static": {
+      "mean_bpb": 4.6975,
+      "mean_ms_per_byte": 0.5815,
+      "mean_deep_fraction": 1.0,
+      "max_rss_mb": 418.47
+    },
+    "kuramoto_stream_online": {
+      "mean_bpb": 4.4128,
+      "mean_ms_per_byte": 0.853,
+      "mean_deep_fraction": 1.0,
+      "max_rss_mb": 418.47
+    },
+    "kuramoto_patch_static": {
+      "mean_bpb": 4.7894,
+      "mean_ms_per_byte": 0.5038,
+      "mean_deep_fraction": 0.7539,
+      "max_rss_mb": 418.47
+    },
+    "kuramoto_patch_online": {
+      "mean_bpb": 4.4185,
+      "mean_ms_per_byte": 0.7742,
+      "mean_deep_fraction": 0.7539,
+      "max_rss_mb": 418.47
+    }
+  },
+  "status": "PASS",
+  "runs": [
+    {
+      "seed": 42,
+      "param_bytes": 194064,
+      "arms": [
+        {
+          "policy": "kuramoto_stream",
+          "mode": "static",
+          "bpb": 4.6594,
+          "bytes": 2040,
+          "ms_per_byte": 0.5816,
+          "deep_calls": 2040,
+          "deep_fraction": 1.0,
+          "peak_rss_mb": 418.47
+        },
+        {
+          "policy": "kuramoto_stream",
+          "mode": "online",
+          "bpb": 4.4112,
+          "bytes": 2040,
+          "ms_per_byte": 0.8632,
+          "deep_calls": 2040,
+          "deep_fraction": 1.0,
+          "peak_rss_mb": 418.47
+        },
+        {
+          "policy": "kuramoto_patch",
+          "mode": "static",
+          "bpb": 4.7721,
+          "bytes": 2040,
+          "ms_per_byte": 0.5168,
+          "deep_calls": 1538,
+          "deep_fraction": 0.7539,
+          "peak_rss_mb": 418.47
+        },
+        {
+          "policy": "kuramoto_patch",
+          "mode": "online",
+          "bpb": 4.423,
+          "bytes": 2040,
+          "ms_per_byte": 0.777,
+          "deep_calls": 1538,
+          "deep_fraction": 0.7539,
+          "peak_rss_mb": 418.47
+        }
+      ]
+    },
+    {
+      "seed": 43,
+      "param_bytes": 194064,
+      "arms": [
+        {
+          "policy": "kuramoto_stream",
+          "mode": "static",
+          "bpb": 4.6962,
+          "bytes": 2040,
+          "ms_per_byte": 0.5743,
+          "deep_calls": 2040,
+          "deep_fraction": 1.0,
+          "peak_rss_mb": 418.47
+        },
+        {
+          "policy": "kuramoto_stream",
+          "mode": "online",
+          "bpb": 4.4119,
+          "bytes": 2040,
+          "ms_per_byte": 0.8465,
+          "deep_calls": 2040,
+          "deep_fraction": 1.0,
+          "peak_rss_mb": 418.47
+        },
+        {
+          "policy": "kuramoto_patch",
+          "mode": "static",
+          "bpb": 4.7706,
+          "bytes": 2040,
+          "ms_per_byte": 0.5046,
+          "deep_calls": 1538,
+          "deep_fraction": 0.7539,
+          "peak_rss_mb": 418.47
+        },
+        {
+          "policy": "kuramoto_patch",
+          "mode": "online",
+          "bpb": 4.4135,
+          "bytes": 2040,
+          "ms_per_byte": 0.7802,
+          "deep_calls": 1538,
+          "deep_fraction": 0.7539,
+          "peak_rss_mb": 418.47
+        }
+      ]
+    },
+    {
+      "seed": 44,
+      "param_bytes": 194064,
+      "arms": [
+        {
+          "policy": "kuramoto_stream",
+          "mode": "static",
+          "bpb": 4.737,
+          "bytes": 2040,
+          "ms_per_byte": 0.5887,
+          "deep_calls": 2040,
+          "deep_fraction": 1.0,
+          "peak_rss_mb": 418.47
+        },
+        {
+          "policy": "kuramoto_stream",
+          "mode": "online",
+          "bpb": 4.4153,
+          "bytes": 2040,
+          "ms_per_byte": 0.8494,
+          "deep_calls": 2040,
+          "deep_fraction": 1.0,
+          "peak_rss_mb": 418.47
+        },
+        {
+          "policy": "kuramoto_patch",
+          "mode": "static",
+          "bpb": 4.8256,
+          "bytes": 2040,
+          "ms_per_byte": 0.4899,
+          "deep_calls": 1538,
+          "deep_fraction": 0.7539,
+          "peak_rss_mb": 418.47
+        },
+        {
+          "policy": "kuramoto_patch",
+          "mode": "online",
+          "bpb": 4.4189,
+          "bytes": 2040,
+          "ms_per_byte": 0.7653,
+          "deep_calls": 1538,
+          "deep_fraction": 0.7539,
+          "peak_rss_mb": 418.47
+        }
+      ]
+    }
+  ]
+}
