@@ -1,0 +1,370 @@
+{
+  "base": "52db0107dfb3ea98c581509af3422594148864b9",
+  "files": [
+    {
+      "path": "nexus_expanse/__init__.py",
+      "split": "train",
+      "file_bytes": 1128,
+      "sha256": "c352427bad68817c9f79283a5a8e3ccd226985ec1d2cb9b4cba8dcfd51143107",
+      "spans": [
+        {
+          "start": 0,
+          "bytes": 256,
+          "sha256": "f86493e83c93122a9290e1f4cf0635388d6e75a6bcd4c77d6b99b3046241c2f1"
+        },
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "23e913e061a1067443452e3120292d927b3e8e11c392138660e1bf71e2082942"
+        },
+        {
+          "start": 512,
+          "bytes": 256,
+          "sha256": "1ed174ff97974804b589bdffe510fc23cd606009194f59de03472a107d211bd3"
+        }
+      ]
+    },
+    {
+      "path": "nexus_expanse/arbitration.py",
+      "split": "train",
+      "file_bytes": 1961,
+      "sha256": "607b6499ca86e3a73bfad27bd4815771a63f80d4d432a7a669a5683869867e17",
+      "spans": [
+        {
+          "start": 0,
+          "bytes": 256,
+          "sha256": "a519859343870174c5d0eccf1c5712950bb72e85acbde250c2dadf1d340ea5bb"
+        },
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "92245903d49178a01501f116c0ace16c1f4c753629bdff0f7822ae4de7315428"
+        },
+        {
+          "start": 512,
+          "bytes": 256,
+          "sha256": "aec76cf34cfe5afb1c361981b0b245892a35aa7f07a07e9987e78bad03d26746"
+        },
+        {
+          "start": 768,
+          "bytes": 256,
+          "sha256": "106a15eb43df7f4e3899036a79648a2df3f8106cedbc63ed0ee523ab1805dc43"
+        }
+      ]
+    },
+    {
+      "path": "nexus_expanse/consolidation.py",
+      "split": "train",
+      "file_bytes": 5460,
+      "sha256": "76ebec45d30032cded94ad884e69c9471d7c8c047a977c9fba230260e5bb1044",
+      "spans": [
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "b67dfbb893a51838bd380ccf2fbe3776b7a5657b04344988fd77e5e23e0c99c2"
+        },
+        {
+          "start": 512,
+          "bytes": 256,
+          "sha256": "3fe670ead2e38754b088a710310be0c5edd566a200d6bc9e3364bf4d03469a8d"
+        },
+        {
+          "start": 768,
+          "bytes": 256,
+          "sha256": "5dc2003d666cd969c87717b92e05049111164f4df054457897058fe83e31cbc0"
+        },
+        {
+          "start": 1024,
+          "bytes": 256,
+          "sha256": "a268ab64aa8136c322c07333cda8f02fc68e17571f8f44a710024b63a1e9efbc"
+        }
+      ]
+    },
+    {
+      "path": "nexus_expanse/core.py",
+      "split": "train",
+      "file_bytes": 13359,
+      "sha256": "7b7060d1d1dd2c934ffd828460789ac4cb29510551809b6aca488f1afda1d655",
+      "spans": [
+        {
+          "start": 512,
+          "bytes": 256,
+          "sha256": "ddac15ca5e7b3bacaedc4a0b8390aad7e9412690917ed73e2fac7240f5d7cfa6"
+        },
+        {
+          "start": 768,
+          "bytes": 256,
+          "sha256": "a860deba6efbaf79ff049371656d12f400adfbf01ca1768e89fba24ed934215f"
+        },
+        {
+          "start": 1280,
+          "bytes": 256,
+          "sha256": "2e9636224c0e717543838ab651eddadc9a757ff4605716f0c365bbfac0105c17"
+        },
+        {
+          "start": 1536,
+          "bytes": 256,
+          "sha256": "c7d82db21a80e0e86586d383a9150abbdf5f2557339fa6dd62df053ba3a22bdf"
+        }
+      ]
+    },
+    {
+      "path": "nexus_expanse/fast_checkpoint.py",
+      "split": "train",
+      "file_bytes": 6968,
+      "sha256": "a3dcd6d66eaeccc57e31dd3ee0ed9b57e6fb7e58c67f5ec57fa8dc969fda7fff",
+      "spans": [
+        {
+          "start": 0,
+          "bytes": 256,
+          "sha256": "30b17f31c1f95e504b535c2d82c9ded25be37399b0f6439853d76bbca60b9a4b"
+        },
+        {
+          "start": 768,
+          "bytes": 256,
+          "sha256": "1a87975a9275550f333c75514eef8c1b88efbb9c61d0ec5627523dd833d7659c"
+        },
+        {
+          "start": 1024,
+          "bytes": 256,
+          "sha256": "a5073a7a6e8e77c0513f18ed96fae8cce37227de794a962cd1535cca45f7f212"
+        },
+        {
+          "start": 1280,
+          "bytes": 256,
+          "sha256": "d3b8ec214d7796c7d72a24fed76b257993cf34db1fc89d6164747b081c1fe008"
+        }
+      ]
+    },
+    {
+      "path": "nexus_expanse/memory.py",
+      "split": "train",
+      "file_bytes": 10085,
+      "sha256": "c35d029790ffbf8669eda332d51444ac5e02a4c50a3bddbd685beb8d6e73c91f",
+      "spans": [
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "c12ebdc91cbe3a458ba96c792bf9ac07d15a4352ee582e7adcfec79694c7c191"
+        },
+        {
+          "start": 512,
+          "bytes": 256,
+          "sha256": "c13c869139672634349cc5117eb00b2694e2cc16e50117ce8b563504b93ffeb4"
+        },
+        {
+          "start": 1024,
+          "bytes": 256,
+          "sha256": "79c61e183054438709653297eab8e3628772a82cf512670017bfdceb1fda84d5"
+        },
+        {
+          "start": 1280,
+          "bytes": 256,
+          "sha256": "3a4c297629a8ba2f68775f6d720f43809cb3ef806b964e76e9714f4f481b4fcc"
+        }
+      ]
+    },
+    {
+      "path": "nexus_expanse/persistent_memory.py",
+      "split": "train",
+      "file_bytes": 6876,
+      "sha256": "1dcb25e55d64479cb4b03988c3191addeecc8d4b8f27e3457250d7d457b20af7",
+      "spans": [
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "afb63208f2ad36fa599ca53bcb1b24f78a7fcbcfcddeb879339773f7d851d6dd"
+        },
+        {
+          "start": 512,
+          "bytes": 256,
+          "sha256": "87035e5c2cb642f14677b6a55019272beef0308ed64e2f3bcca45018ec094a70"
+        },
+        {
+          "start": 1792,
+          "bytes": 256,
+          "sha256": "3fbd45a46f20fbd87273981a317f1d27297df7aa62a8684f38046977d2a05cd1"
+        },
+        {
+          "start": 2304,
+          "bytes": 256,
+          "sha256": "8f93fd581958674edf1d15a82b73a9f6b1efa7744e9bf626c38fe3467ccaf609"
+        }
+      ]
+    },
+    {
+      "path": "nexus_expanse/substrate.py",
+      "split": "train",
+      "file_bytes": 4685,
+      "sha256": "2b0380864b22f4b148bc0308ebaba39f5499df36997eb2fdb2f85ef888deb12a",
+      "spans": [
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "7b1bdaaebcd6f5d1a6dfc4e729a0b066a64ea3299e7bf4caefd938438d97b856"
+        },
+        {
+          "start": 512,
+          "bytes": 256,
+          "sha256": "0ed2cea966170bf2be5b4064d2e00a1e29c6f3c7ff25f1729f21d11ada867453"
+        },
+        {
+          "start": 1280,
+          "bytes": 256,
+          "sha256": "5415549ab505a437a99b16164c08a9765d373a82506526eff89fde6ee4e12a2b"
+        },
+        {
+          "start": 1536,
+          "bytes": 256,
+          "sha256": "7b9a39c64c6eb6ebc6890ddfea024e8dbdbc2f4940461b9461c099ca5a50f277"
+        }
+      ]
+    },
+    {
+      "path": "README.md",
+      "split": "dev",
+      "file_bytes": 8521,
+      "sha256": "b1164b195784da278cacc718aef9c046c74f0e021c30719310ee647cd2e81cc7",
+      "spans": [
+        {
+          "start": 0,
+          "bytes": 256,
+          "sha256": "bc761367867a46fc69b6ade77beaf35e6421213a1ff1cff40a60d132b47fc1a3"
+        },
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "71d6322eb1bb99f131cebcc73e3b6651dc64d1f890794521e5da289596e1ba8e"
+        }
+      ]
+    },
+    {
+      "path": "docs/RELATIONAL_DEV_PREREG.md",
+      "split": "dev",
+      "file_bytes": 2810,
+      "sha256": "7bd98cab7dfa80415f805a1d732334e5202faaed25648b4c3047e0b276098b15",
+      "spans": [
+        {
+          "start": 0,
+          "bytes": 256,
+          "sha256": "635a082cfc32a77c509139a3a64a1ecb9d034567b3c052d86f8ff06df9bc3d3b"
+        },
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "92c2c1a394326ee7b54b6f96b97ffb7add3a2e457a1a414e624f8c59662f5b93"
+        }
+      ]
+    },
+    {
+      "path": "docs/RESEARCH.md",
+      "split": "dev",
+      "file_bytes": 25736,
+      "sha256": "13e27bfdd889a2caca97bc16c97a5d1a4a6aaeb863ad4cda0fd3b79b8fb49105",
+      "spans": [
+        {
+          "start": 0,
+          "bytes": 256,
+          "sha256": "ccf1b6c13eecee7a691e8cffeffe39ef879c997081bfcd1b0eb06d60035f1972"
+        },
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "f215cb6fa24bd6bd2bf5e02b11b73c53d828473d7f9a59c39fe399e6d63004df"
+        }
+      ]
+    },
+    {
+      "path": "evidence/ablation-dev-001-notes.md",
+      "split": "dev",
+      "file_bytes": 1635,
+      "sha256": "0fdce50b74d133923e8e84f0942717972ae401cf6684733c7fab0b31e5a0ee6a",
+      "spans": [
+        {
+          "start": 0,
+          "bytes": 256,
+          "sha256": "21939b1c71748a9d5883859e1b82898eca64b8627d964cd928fb0a7cdd0ff023"
+        },
+        {
+          "start": 256,
+          "bytes": 256,
+          "sha256": "cc65e98ec2313d735cf1e48652d71c7bd97b9f4f1865b473e26c54ccb6062248"
+        }
+      ]
+    }
+  ],
+  "rejected_spans": [
+    [
+      "nexus_expanse/__init__.py",
+      768
+    ],
+    [
+      "nexus_expanse/consolidation.py",
+      0
+    ],
+    [
+      "nexus_expanse/core.py",
+      0
+    ],
+    [
+      "nexus_expanse/core.py",
+      256
+    ],
+    [
+      "nexus_expanse/core.py",
+      1024
+    ],
+    [
+      "nexus_expanse/fast_checkpoint.py",
+      256
+    ],
+    [
+      "nexus_expanse/fast_checkpoint.py",
+      512
+    ],
+    [
+      "nexus_expanse/memory.py",
+      0
+    ],
+    [
+      "nexus_expanse/memory.py",
+      768
+    ],
+    [
+      "nexus_expanse/persistent_memory.py",
+      0
+    ],
+    [
+      "nexus_expanse/persistent_memory.py",
+      768
+    ],
+    [
+      "nexus_expanse/persistent_memory.py",
+      1024
+    ],
+    [
+      "nexus_expanse/persistent_memory.py",
+      1280
+    ],
+    [
+      "nexus_expanse/persistent_memory.py",
+      1536
+    ],
+    [
+      "nexus_expanse/persistent_memory.py",
+      2048
+    ],
+    [
+      "nexus_expanse/substrate.py",
+      0
+    ],
+    [
+      "nexus_expanse/substrate.py",
+      768
+    ],
+    [
+      "nexus_expanse/substrate.py",
+      1024
+    ]
+  ]
+}
