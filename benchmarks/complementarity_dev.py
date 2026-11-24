@@ -17,7 +17,7 @@ from benchmarks.ablation_dev import (ROOT, TRAIN, DEV, CONFIG, batches, shared_i
 from nexus_expanse import ReliabilityArbitrator
 
 
-EPOCHS = 40
+EPOCHS = 12
 
 
 def complementary_fixture():
