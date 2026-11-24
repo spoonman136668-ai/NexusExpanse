@@ -33,3 +33,13 @@ def test_support_protects_repeated_context_under_pressure():
     for _ in range(30): m.observe_transition(b'protected-context',7)
     for i in range(256): m.observe_transition(bytes([i])*16,8)
     assert m._table[b'rotected-context'][7]==30
+
+
+def test_frozen_cache_parity():
+    from benchmarks.consolidation_dev import FrozenView
+    m=ConsolidatingMemory(4096,'support'); m.ingest_stream(b'abcabcabc')
+    v=FrozenView(m); before=m.snapshot(max_bytes=4096)
+    for ctx in (b'a',b'abc',b'a',b'unknown'):
+        p,c=m.predict_probs(ctx); q,d=v.predict_probs(ctx)
+        assert torch.equal(p,q) and c==d
+    assert m.snapshot(max_bytes=4096)==before

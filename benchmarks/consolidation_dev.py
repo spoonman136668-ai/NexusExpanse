@@ -17,21 +17,35 @@ def first_target(model,mem,data,targets,features):
     else: p=F.softmax(logits+model.fast_weights.forward_delta(h).double(),dim=-1)
     return -math.log2(max(float(p[data[i+1]]),1e-12))
 
-def run(seed):
+class FrozenView:
+    """Ephemeral cache scoped to one immutable memory state."""
+    def __init__(self, mem):
+        self.mem=mem; self.max_order=mem.max_order; self.cache={}
+    def predict_probs(self, context):
+        if context not in self.cache: self.cache[context]=self.mem.predict_probs(context)
+        return self.cache[context]
+
+def run(seed, memory_reference=None):
     base=train(seed); results={}
     for cued in (True,False):
         data=[fixture(i,cued) for i in range(REGIMES)]; features=[cache(base,d) for d,_ in data]; arms={}
         for arm in ARMS:
+            if memory_reference is not None and arm not in ('frozen','shared_no_decay'):
+                arms[arm]=dict(memory_reference['conditions']['cued' if cued else 'ambiguous'][arm],deterministic_reuse_from_seed=memory_reference['seed'])
+                continue
             m=copy.deepcopy(base); mem=None
             if arm=='shared_no_decay': m.fast_weights.decay=1.
             elif arm=='memory32': mem=BoundedEpisodicByteMemory(CONTEXT_CAP,32)
             elif arm in ConsolidatingMemory.POLICIES: mem=ConsolidatingMemory(BUDGET,arm,32)
             if mem is not None: mem.ingest_stream(TRAIN)
-            def score(i,learn=False): return evaluate(m,mem,*data[i],features[i],learn)
-            def first(i): return first_target(m,mem,*data[i],features[i])
+            view=FrozenView(mem) if mem is not None else None
+            def score(i,learn=False): return evaluate(m,mem if learn else view,*data[i],features[i],learn)
+            def first(i): return first_target(m,view,*data[i],features[i])
             initial=[score(i) for i in range(REGIMES)]; acquired={}; history=[]
             for step,i in enumerate(ORDER):
-                before=score(i); online=score(i,learn=arm!='frozen'); after=score(i)
+                before=score(i); online=score(i,learn=arm!='frozen')
+                if view is not None: view.cache.clear()
+                after=score(i)
                 if i not in acquired: acquired[i]=after
                 probes={str(j):score(j) for j in sorted(acquired)}
                 if mem is None:
@@ -65,10 +79,11 @@ def main():
     def git(*a): return subprocess.check_output(['git',*a],cwd=ROOT,text=True).strip()
     if git('status','--porcelain'): raise RuntimeError('clean tree required')
     torch.set_num_threads(1);torch.use_deterministic_algorithms(True);start=time.perf_counter()
+    first=run(SEEDS[0]); runs=[first]+[run(s,first) for s in SEEDS[1:]]
     out=dict(schema='nexus-consolidation-dev-v1',qualification='DEVELOPMENT_ONLY',scientific_trial_executed=False,
         source_sha=git('rev-parse','HEAD'),source_tree=git('rev-parse','HEAD^{tree}'),python=platform.python_version(),torch=str(torch.__version__),platform=platform.platform(),
         config=CONFIG,epochs=EPOCHS,order=ORDER,budget=BUDGET,retention_limit=LIMIT,min_gain=MIN_GAIN,arms=ARMS,
-        fixtures={f'{c}:{i}':hashlib.sha256(fixture(i,c)[0]).hexdigest() for c in (True,False) for i in range(REGIMES)},train_sha256=hashlib.sha256(TRAIN).hexdigest(),runs=[run(s) for s in SEEDS])
+        fixtures={f'{c}:{i}':hashlib.sha256(fixture(i,c)[0]).hexdigest() for c in (True,False) for i in range(REGIMES)},train_sha256=hashlib.sha256(TRAIN).hexdigest(),runs=runs, memory_only_seed_independent=True)
     out['seconds']=time.perf_counter()-start
     with args.output.open('x') as f: json.dump(out,f,indent=2,sort_keys=True,allow_nan=False);f.write('\n')
 if __name__=='__main__': main()
