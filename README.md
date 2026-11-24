@@ -29,3 +29,7 @@ See `docs/RESEARCH.md`. No checkpoint, frozen source corpus, independently repro
 ## Opt-in adaptive arbitration
 
 Pass a fresh `ReliabilityArbitrator(bins=1)` as `arbitrator` to `evaluate_streaming`, with `online_arbitration_update=True` to adapt after each scored byte. The optional four-bin version separates reliability by memory confidence. Both start at equal odds and use a fixed 1% share to permit recovery from a shift. A caller may keep the instance or freeze updates; arbitration state is not part of the model checkpoint. The original fixed blend remains the default; `mem_blend_cap` applies only to that rule. Run `python benchmarks/arbitration_dev.py --output NEW.json` on the known synthetic development fixture. No held-out data, Hebbian adaptation, or scientific first-use is included in this comparison.
+
+## Stronger training development diagnostic
+
+`python benchmarks/complementarity_dev.py --output NEW.json` runs a bounded 12-epoch, three-seed comparison of dense/Monarch with/without gating, on the prior synthetic fixture and a constructed complementary fixture. Adaptive fusion beats the standalone controls on the latter, but dense full leads and the original gated Monarch still does not beat memory alone in mean BPB. The 40-epoch attempt timed out without complete evidence. This diagnostic deliberately favors different experts in different regions; it is not a held-out trial or a context-matched strongest-control comparison. See `docs/RESEARCH.md` and `evidence/complementarity-dev-001.json`.

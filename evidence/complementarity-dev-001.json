@@ -1,0 +1,1595 @@
+{
+  "bins": [
+    1,
+    4
+  ],
+  "config": {
+    "dim": 32,
+    "dropout": 0.0,
+    "fast_lr": 0.08,
+    "ffn_mult": 2,
+    "max_seq_len": 32,
+    "memory_max_order": 8,
+    "n_heads": 4,
+    "n_layers": 2
+  },
+  "device": "cpu",
+  "epochs": 12,
+  "fixtures": {
+    "complementary": {
+      "dev_bytes": 1024,
+      "dev_sha256": "832b1cbd4cd01e197ba0828d09a047858fc28dd15973bf665aea9504d722b00e",
+      "runs": [
+        {
+          "backbones": {
+            "dense_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4279659856638804,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11092524399964532,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5297324025452387,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.066307915202371,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.1031429660001777,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4191574731834902,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.10934479600018676,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5286108762387223,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 11.467865430964391,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.025736831999893184,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "9b5ce35a5e3cfc7565f3841178a0dcc94a4ba8d89ac7deb9c62322e6d7e4f182"
+            },
+            "dense_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4632682190253843,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.1076978380001492,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5320914832244774,
+                  "mean_skip": 0.5762463337136386,
+                  "per_layer_skip": [
+                    0.691104593514697,
+                    0.46138807391258047
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.105429700300779,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.10555271700013691,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.5762463337136386,
+                  "per_layer_skip": [
+                    0.691104593514697,
+                    0.46138807391258047
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.454186597206073,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.10878014399986569,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5291569988991345,
+                  "mean_skip": 0.5762463337136386,
+                  "per_layer_skip": [
+                    0.691104593514697,
+                    0.46138807391258047
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 11.47817379941818,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.024524400999780482,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.5762463337136386,
+                  "per_layer_skip": [
+                    0.691104593514697,
+                    0.46138807391258047
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "4784cd13771111eb06c97249f69b8bdf24bcbc9c4ec2a6da81278d6bf5b2aee6"
+            },
+            "monarch_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4836945791756384,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.13136886700021932,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.566984437472391,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.077166989823594,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.13250672699996358,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4751448440021548,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.13029297100001713,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5425549540158751,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 11.078816412289788,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.030555848999938462,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "06d1c64960b6a74dc958df9384ea4e4faf202feb544e069868032cec4f599261"
+            },
+            "monarch_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.5350510453418384,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.12494542600006753,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6000882940747087,
+                  "mean_skip": 0.6212121214451795,
+                  "per_layer_skip": [
+                    0.7165200391589488,
+                    0.5259042037314101
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.100490243782205,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.10942660000000615,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.6212121214451795,
+                  "per_layer_skip": [
+                    0.7165200391589488,
+                    0.5259042037314101
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.5280215130550987,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11972649000017554,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.550603378316053,
+                  "mean_skip": 0.6212121214451795,
+                  "per_layer_skip": [
+                    0.7165200391589488,
+                    0.5259042037314101
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 11.006325059137506,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.03141087600033643,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.6212121214451795,
+                  "per_layer_skip": [
+                    0.7165200391589488,
+                    0.5259042037314101
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "46f9ffd31287945f936a812356e61211154930e3d7f05a050d9f582ade139838"
+            }
+          },
+          "memory_only": {
+            "bpb": 1.8048303832647237,
+            "bytes": 1023,
+            "episodic_entries": 6223
+          },
+          "seed": 42
+        },
+        {
+          "backbones": {
+            "dense_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.376599827124024,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.1023223870001857,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5236859923792727,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.072635880041499,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.09927071599986448,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.3678465595095872,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.10437733199978538,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5224545398858048,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 11.881703757319226,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.02514745199960089,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "7c06f5c6f9a2087d2ffeb404d57ec6abdcf22964a7350de374a181f82fc7720b"
+            },
+            "dense_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4469852015313522,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.10310858499997266,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5294652869306451,
+                  "mean_skip": 0.6950146624070109,
+                  "per_layer_skip": [
+                    0.733137829038055,
+                    0.6568914957759667
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.0927759276925255,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.1015062129999933,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.6950146624070109,
+                  "per_layer_skip": [
+                    0.733137829038055,
+                    0.6568914957759667
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4378655065504973,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.10493698700020104,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5282751535834355,
+                  "mean_skip": 0.6950146624070109,
+                  "per_layer_skip": [
+                    0.733137829038055,
+                    0.6568914957759667
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 11.459441194762775,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.02846542599991153,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.6950146624070109,
+                  "per_layer_skip": [
+                    0.733137829038055,
+                    0.6568914957759667
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "a8c56e56547a4e59afb1da9ae35a3a35a9ff3fa9278e6133e2aeee36a40a36d7"
+            },
+            "monarch_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4534800852724885,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11240248600006453,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5404381557603751,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.085779283066906,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11062844500020219,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4445917157615875,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11145501399960267,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5280314817759383,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 11.244242021653024,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.03404130900025848,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "893461e1e1035ae9c5caee7983a12918472218e5ff1e8d9dbdbcc906dc1a4eae"
+            },
+            "monarch_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4734701518198274,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.12787949799985654,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.543692404908581,
+                  "mean_skip": 0.6896383178840052,
+                  "per_layer_skip": [
+                    0.7047898330063881,
+                    0.6744868027616223
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.081031751744829,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11965410099992368,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.6896383178840052,
+                  "per_layer_skip": [
+                    0.7047898330063881,
+                    0.6744868027616223
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.464719663440681,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.1313026089997038,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5299160407006556,
+                  "mean_skip": 0.6896383178840052,
+                  "per_layer_skip": [
+                    0.7047898330063881,
+                    0.6744868027616223
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 11.103757409945,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.036056092999842804,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.6896383178840052,
+                  "per_layer_skip": [
+                    0.7047898330063881,
+                    0.6744868027616223
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "3bb83adfd7bc425ee6ec306b694227b533b3325892030e3c8a70062b24ea9dbc"
+            }
+          },
+          "memory_only": {
+            "bpb": 1.8048303832647237,
+            "bytes": 1023,
+            "episodic_entries": 6223
+          },
+          "seed": 43
+        },
+        {
+          "backbones": {
+            "dense_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4925364150346143,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11230969199959873,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5375487097852185,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 1.9873372139684087,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.10780651699997179,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.4837524726158282,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11222968199990646,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5366490865410097,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 9.753522639552834,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.027021002000310546,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "4941f78654113faf721eaa12eeab211f8f572e347503dba39f48e6e5f7a14d50"
+            },
+            "dense_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.5388676039743892,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11536588199987818,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5675667632118061,
+                  "mean_skip": 0.6818181819347109,
+                  "per_layer_skip": [
+                    0.7360703812316716,
+                    0.6275659826377503
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.120744234197864,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11903396300021996,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.6818181819347109,
+                  "per_layer_skip": [
+                    0.7360703812316716,
+                    0.6275659826377503
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.5314437344993461,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.12166560800005755,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5692572950462063,
+                  "mean_skip": 0.6818181819347109,
+                  "per_layer_skip": [
+                    0.7360703812316716,
+                    0.6275659826377503
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 11.536842179276164,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.029643934999967314,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.6818181819347109,
+                  "per_layer_skip": [
+                    0.7360703812316716,
+                    0.6275659826377503
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "c3435d0c63a593020282528062385850d3601859a6ea4bd91888ea3ff0f3c2eb"
+            },
+            "monarch_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.5677333550406982,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.1171115209999698,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5984713214765447,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 1.9811870771740836,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11983374300007199,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.5615512301417531,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.12241607400028442,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6038177920132695,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 9.277293015518948,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.03635485500035429,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "c377d157297a222859b7a60eb3e06b723545f27a2bb712a612d373602b59d095"
+            },
+            "monarch_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.6359976108840781,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11692827299975761,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6267092169827018,
+                  "mean_skip": 0.660312805182773,
+                  "per_layer_skip": [
+                    0.7380254154447703,
+                    0.5826001949207757
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 2.0272281727747803,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.11385672200003683,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.5637579751826123,
+                  "mean_skip": 0.660312805182773,
+                  "per_layer_skip": [
+                    0.7380254154447703,
+                    0.5826001949207757
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 1023,
+                  "bpb": 1.6284901313332059,
+                  "bytes": 1023,
+                  "episodic_entries": 6223,
+                  "eval_seconds": 0.13123286399968492,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6297531434774888,
+                  "mean_skip": 0.660312805182773,
+                  "per_layer_skip": [
+                    0.7380254154447703,
+                    0.5826001949207757
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 9.337707683896312,
+                  "bytes": 1023,
+                  "episodic_entries": 4113,
+                  "eval_seconds": 0.029332866000004287,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.660312805182773,
+                  "per_layer_skip": [
+                    0.7380254154447703,
+                    0.5826001949207757
+                  ]
+                }
+              },
+              "optimizer_steps": 60,
+              "trained_state_sha256": "4aa3ef0b382f37e8c86daf8a82a9c5d79f55eaed4ff7aa28d872a3a0c8906cc5"
+            }
+          },
+          "memory_only": {
+            "bpb": 1.8048303832647237,
+            "bytes": 1023,
+            "episodic_entries": 6223
+          },
+          "seed": 44
+        }
+      ],
+      "train_bytes": 1024,
+      "train_sha256": "d6c9771c924dfc5b301de4b709da189a9bdb41d5577a8cd24faf321104e48d57"
+    },
+    "original": {
+      "dev_bytes": 248,
+      "dev_sha256": "b7181cf71c36c465342b6277c4e0b2bbcfd3a02198d69739be33b250fc2e0c46",
+      "runs": [
+        {
+          "backbones": {
+            "dense_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.46668273505899116,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.025544426000124076,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9139995857227321,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.7418748683458716,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.023151521000272623,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.4616121311543416,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.02658359599990945,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9070361289238039,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 3.2119875550616332,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.006913365999935195,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "197169e60b7d12d0168efd1ba864d472d0e0b97ebc2f9be88783deb86a624b3b"
+            },
+            "dense_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.551968110486605,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.02528496400009317,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.944542245895848,
+                  "mean_skip": 0.5728744919966107,
+                  "per_layer_skip": [
+                    0.5829959490038605,
+                    0.5627530349893608
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.9326447707907841,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.023844567999731225,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.5728744919966107,
+                  "per_layer_skip": [
+                    0.5829959490038605,
+                    0.5627530349893608
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5618817192017674,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.02436932099999467,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9482411820023158,
+                  "mean_skip": 0.5728744919966107,
+                  "per_layer_skip": [
+                    0.5829959490038605,
+                    0.5627530349893608
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 4.789456489149387,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.007432710000102816,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.5728744919966107,
+                  "per_layer_skip": [
+                    0.5829959490038605,
+                    0.5627530349893608
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "21d51ba1de3043163e71cd11056bb867bf208501723bd774bd8903882a441e39"
+            },
+            "monarch_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5485713015696309,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.027351436000117246,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9370130513056305,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.939855809732841,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.024569002000134788,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5594965419778051,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.025786030999825016,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9357185475498957,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 4.585154425912431,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.010061601999950653,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "73058ea06250c83d7ddeb2c78e149d00b44eb5e7eae83942295b872dba470f4b"
+            },
+            "monarch_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5787560157893308,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.028727235000133078,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9536746081387396,
+                  "mean_skip": 0.5384615380392384,
+                  "per_layer_skip": [
+                    0.5384615389441672,
+                    0.5384615371343096
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.9949814378880164,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.0255400500000178,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.5384615380392384,
+                  "per_layer_skip": [
+                    0.5384615389441672,
+                    0.5384615371343096
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5784023433888383,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.028814086000238603,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9618242654457039,
+                  "mean_skip": 0.5384615380392384,
+                  "per_layer_skip": [
+                    0.5384615389441672,
+                    0.5384615371343096
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 5.202099935316794,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.007792083000367711,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.5384615380392384,
+                  "per_layer_skip": [
+                    0.5384615389441672,
+                    0.5384615371343096
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "4906ce3a89c65c9945278cd19bdd49f26569abd0e2649427178afb516c7d706f"
+            }
+          },
+          "memory_only": {
+            "bpb": 0.5645616258145453,
+            "bytes": 247,
+            "episodic_entries": 375
+          },
+          "seed": 42
+        },
+        {
+          "backbones": {
+            "dense_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5099756647969497,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.03029302100003406,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9195422080929155,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.7736228296694889,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.026375592000022152,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5123451477464521,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.026424084999689512,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9129021944151504,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 3.5674085547559296,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.007128620999992563,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "bd24375767e6d64cc164796f82f0e80bc3771ef172588bbf4467cc6dc351cbe6"
+            },
+            "dense_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.572878043223826,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.02720653799997308,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9579722087770038,
+                  "mean_skip": 0.5222672068397043,
+                  "per_layer_skip": [
+                    0.5384615379789097,
+                    0.5060728757004989
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.967597239699893,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.023921923999751016,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.5222672068397043,
+                  "per_layer_skip": [
+                    0.5384615379789097,
+                    0.5060728757004989
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5627245295868826,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.024274271999729535,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9541302358395916,
+                  "mean_skip": 0.5222672068397043,
+                  "per_layer_skip": [
+                    0.5384615379789097,
+                    0.5060728757004989
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 5.068271452395569,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.007013256999925943,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.5222672068397043,
+                  "per_layer_skip": [
+                    0.5384615379789097,
+                    0.5060728757004989
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "19528424dde6bd902de71c81d6227877869e9e89ff1a1a209d1eeb4d49ff0a8e"
+            },
+            "monarch_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.4993721852738634,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.0316490000000158,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9270220047693016,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.8690610989717514,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.03116310599989447,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5246795893317882,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.03160221000007368,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9365578287813865,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 4.364895881589723,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.010144587000013416,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "0116748d1123e1d34811d7028659d3d78eea6cf98baa0c52323058474c76582d"
+            },
+            "monarch_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5428502571770578,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.030143666000185476,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9444262152697149,
+                  "mean_skip": 0.48380566843849443,
+                  "per_layer_skip": [
+                    0.47368421016434425,
+                    0.4939271267126446
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.9311153538621607,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.02702399100007824,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.48380566843849443,
+                  "per_layer_skip": [
+                    0.47368421016434425,
+                    0.4939271267126446
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5381095407382352,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.028779864000171074,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9531385413718428,
+                  "mean_skip": 0.48380566843849443,
+                  "per_layer_skip": [
+                    0.47368421016434425,
+                    0.4939271267126446
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 5.091796596073388,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.008519513000010193,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.48380566843849443,
+                  "per_layer_skip": [
+                    0.47368421016434425,
+                    0.4939271267126446
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "894902fe70ae2b84dbf6bc2bde6ea30b317be317f1f81350c74c613790de97d6"
+            }
+          },
+          "memory_only": {
+            "bpb": 0.5645616258145453,
+            "bytes": 247,
+            "episodic_entries": 375
+          },
+          "seed": 43
+        },
+        {
+          "backbones": {
+            "dense_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.4886552678116429,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.023413605999849096,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.8994794970521798,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.7251929774425893,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.026796767999712756,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.49301601242501353,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.024973854000108986,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9045576976924569,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 3.130778009446012,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.0072451870000804774,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "b44d5fcd4b729c8a03ed0c48c7fbd86e21539e089ab973ec788ac95a6f01b0c2"
+            },
+            "dense_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5722551013486545,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.02447169600009147,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9492094131214547,
+                  "mean_skip": 0.5587044524760382,
+                  "per_layer_skip": [
+                    0.574898783977215,
+                    0.5425101209748612
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.9298659441683808,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.022233484000025783,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.5587044524760382,
+                  "per_layer_skip": [
+                    0.574898783977215,
+                    0.5425101209748612
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5652791736864504,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.02290146299992557,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9472096917052955,
+                  "mean_skip": 0.5587044524760382,
+                  "per_layer_skip": [
+                    0.574898783977215,
+                    0.5425101209748612
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 4.7717862448865,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.006248711999887746,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.5587044524760382,
+                  "per_layer_skip": [
+                    0.574898783977215,
+                    0.5425101209748612
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "5e516d3dc0291210c3feaae35fddb86b04e1bc43709af2c62e01b3429003ea9e"
+            },
+            "monarch_full": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5759473603036194,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.03918940199991994,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9419665807749124,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.896108866019117,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.03259683199985375,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5713003003736862,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.03869659900010447,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9438180765369583,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 4.259032373901576,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.010606806999930996,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.0,
+                  "per_layer_skip": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "9697694850dfa7728f91299fca87301d88752c4e7bdc3f519ca29ae27fe8f0b3"
+            },
+            "monarch_skip": {
+              "arms": {
+                "confidence": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5845451135111227,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.03206124300004376,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9482914689051963,
+                  "mean_skip": 0.5465587039708126,
+                  "per_layer_skip": [
+                    0.5506072879320214,
+                    0.5425101200096037
+                  ]
+                },
+                "fixed": {
+                  "arbitration_updates": 0,
+                  "bpb": 0.9736122536363583,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.03039187000013044,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.6205441690831281,
+                  "mean_skip": 0.5465587039708126,
+                  "per_layer_skip": [
+                    0.5506072879320214,
+                    0.5425101200096037
+                  ]
+                },
+                "global": {
+                  "arbitration_updates": 247,
+                  "bpb": 0.5784003056967957,
+                  "bytes": 247,
+                  "episodic_entries": 375,
+                  "eval_seconds": 0.02731022399984795,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.9509998952463069,
+                  "mean_skip": 0.5465587039708126,
+                  "per_layer_skip": [
+                    0.5506072879320214,
+                    0.5425101200096037
+                  ]
+                },
+                "neural": {
+                  "arbitration_updates": 0,
+                  "bpb": 4.981175215925246,
+                  "bytes": 247,
+                  "episodic_entries": 249,
+                  "eval_seconds": 0.009654778000367514,
+                  "hebbian_updates": 0,
+                  "mean_memory_weight": 0.0,
+                  "mean_skip": 0.5465587039708126,
+                  "per_layer_skip": [
+                    0.5506072879320214,
+                    0.5425101200096037
+                  ]
+                }
+              },
+              "optimizer_steps": 48,
+              "trained_state_sha256": "e94a2fe8591a129d546ef52a40a29f01ab9f594b2fbb4d2f47e52a6640e6a083"
+            }
+          },
+          "memory_only": {
+            "bpb": 0.5645616258145453,
+            "bytes": 247,
+            "episodic_entries": 375
+          },
+          "seed": 44
+        }
+      ],
+      "train_bytes": 600,
+      "train_sha256": "c9b37cab9a1889b4032d0914bbca71d4a5f504257487b5b23169494d3cd893a7"
+    }
+  },
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "qualification": "DEVELOPMENT_ONLY",
+  "schema": "nexus-complementarity-dev-v1",
+  "scientific_trial_executed": false,
+  "seconds": 14.35771587399995,
+  "share": 0.01,
+  "source_sha": "081f5578b82cc9e5e2abe55f81221871fd24cc3f",
+  "source_tree": "ccf38897a8276fc6e3cd7487305c85640e0d241e",
+  "threads": 1,
+  "torch": "2.10.0+cpu"
+}
