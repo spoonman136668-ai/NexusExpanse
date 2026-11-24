@@ -36,8 +36,10 @@ jobs:
           git add "evidence/$dest"
           git commit -m "Record measured $dest"
           if [[ "$dest" == gate5b* ]]; then
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
             python -m pytest -q | tee results/tests.txt
             python benchmarks/prefix_causality_dev.py | tee results/prefix.txt
+            python -c "import json; p=json.load(open('evidence/gate5b-kv-patching-dev-001.json'))['kv_parity']; print({k:v for k,v in p.items() if k!='fails'}, 'failed cases',len(p['fails'])); assert not p['fails']"
             git fsck --full --strict
             git diff --check cb8ff42..HEAD
             git diff --check

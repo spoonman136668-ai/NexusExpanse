@@ -130,6 +130,11 @@ class NexusExpanseByteCore(nn.Module):
         self.episodic = EpisodicByteMemory(max_order=memory_max_order)
         self.fast_weights = HebbianFastWeightAdapter(dim=dim, vocab_size=256, lr=fast_lr)
 
+    def new_kv_cache(self):
+        """Create an opt-in independent CPU inference stream for frozen weights."""
+        from nexus_expanse.kv_cache import CausalKVCache
+        return CausalKVCache(self)
+
     def _backbone_inputs(self, tokens):
         # Fixed eval geometry prevents a length-dependent kernel choice at a hard gate.
         if not self.training and any(layer.ffn.enable_skip for layer in self.layers):

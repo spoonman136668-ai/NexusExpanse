@@ -57,9 +57,9 @@ def state_hash(model):
     return h.hexdigest()
 
 
-def shared_init(seed, kind, skip, reference):
+def shared_init(seed, kind, skip, reference, config=None):
     torch.manual_seed(seed)
-    model = NexusExpanseByteCore(**CONFIG, ffn_kind=kind, enable_skip=skip)
+    model = NexusExpanseByteCore(**(CONFIG if config is None else config), ffn_kind=kind, enable_skip=skip)
     if reference is not None:
         state = model.state_dict()
         for name, value in reference.state_dict().items():

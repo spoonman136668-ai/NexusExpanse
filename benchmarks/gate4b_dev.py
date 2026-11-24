@@ -20,12 +20,12 @@ from benchmarks.ablation_dev import CONFIG, batches, shared_init, state_hash
 from benchmarks.gate4_corpus import MANIFEST, read_split
 from nexus_expanse import NexusExpanseByteCore, ReliabilityArbitrator
 from nexus_expanse.consolidation import ConsolidatingMemory
-from nexus_expanse.patching import BytePatchReader
+from nexus_expanse.patching import BytePatchReader, CompactBigram
 
 BUDGET=40000
 
 
-def prepare(directory, train):
+def prepare(directory, train, compact=False):
     memory=ConsolidatingMemory(BUDGET,'sparse_support',8)
     counts=np.zeros((256,256), dtype='<u4')
     for block in train:
@@ -33,16 +33,33 @@ def prepare(directory, train):
             memory.observe_transition(block[max(0,i-8):i],y)
             counts[block[i-1],y]+=1
     (directory/'memory').write_bytes(memory.snapshot(max_bytes=BUDGET))
-    np.save(directory/'counts.npy',counts)
+    if not compact:
+        np.save(directory/'counts.npy',counts)
+        return None
+    encoded=CompactBigram.from_dense(counts).snapshot()
+    sparse=CompactBigram.restore(encoded)
+    assert len(encoded)<25000
+    (directory/'counts.bin').write_bytes(encoded)
+    dense_totals=counts.sum(axis=1)+256.
+    sparse_totals=sparse.sum(axis=1)+256.
+    for previous in range(256):
+        old=(counts[previous].astype(np.float64)+1.)/dense_totals[previous]
+        new=(sparse[previous].astype(np.float64)+1.)/sparse_totals[previous]
+        assert np.array_equal(old,new)
+        for b in range(256):
+            assert ((sparse[previous,b]+1.)/sparse_totals[previous]<1/16) == (old[b]<1/16)
+    return dict(compact_bytes=len(encoded),identical_wake_decisions=65536,identical_local_rows=256)
 
 
-def train_one(directory, seed, kind, train):
-    ref=shared_init(seed,'monarch',False,None)
-    model=shared_init(seed,kind,True,ref)
+def train_one(directory, seed, kind, train, config=CONFIG, epochs=2, full_spans=False):
+    ref=shared_init(seed,'monarch',False,None,config)
+    model=shared_init(seed,kind,True,ref,config)
     opt=torch.optim.AdamW(model.parameters(),lr=.003,weight_decay=.01)
     bs=[batch for block in train for batch in batches(block)]
+    if full_spans:
+        bs=[(torch.tensor(list(b[:-1]))[None],torch.tensor(list(b[1:]))[None]) for b in train]
     start=time.perf_counter()
-    for _ in range(2):
+    for _ in range(epochs):
         model.train()
         for x,y in bs:
             opt.zero_grad(set_to_none=True)
@@ -52,29 +69,38 @@ def train_one(directory, seed, kind, train):
             opt.step()
         model.calibrate_gates(bs)
     torch.save(model.state_dict(),directory/'model')
-    return dict(seed=seed,kind=kind,steps=2*len(bs),seconds=time.perf_counter()-start,
+    return dict(seed=seed,kind=kind,steps=epochs*len(bs),seconds=time.perf_counter()-start,
                 state_hash=state_hash(model))
 
 
 @torch.inference_mode()
-def measure(directory,kind,policy,online):
+def measure(directory,kind,policy,online,config=CONFIG,cached=False):
     start=time.perf_counter()
     dev=read_split()['dev']
     mem=ConsolidatingMemory.restore((directory/'memory').read_bytes(),max_bytes=BUDGET)
-    model=patch=mixer=None
+    model=patch=mixer=cache=None
     tensors=checkpoint=local_bytes=derived_buffer=0
     trained_hash=None
     if kind!='memory':
-        model=NexusExpanseByteCore(**CONFIG,ffn_kind=kind,enable_skip=policy=='skip').eval()
+        model=NexusExpanseByteCore(**config,ffn_kind=kind,enable_skip=cached or policy=='skip').eval()
         model.load_state_dict(torch.load(directory/'model',weights_only=True))
         trained_hash=state_hash(model)
         tensors=sum(v.numel()*v.element_size() for v in list(model.parameters())+list(model.buffers()))
         checkpoint=(directory/'model').stat().st_size
         mixer=ReliabilityArbitrator()
+        if cached:
+            if policy != 'skip':
+                for layer in model.layers:
+                    layer.ffn.tau_eval.fill_(-float('inf'))
+            cache=model.new_kv_cache()
         if policy=='patch':
-            patch=BytePatchReader(model,np.load(directory/'counts.npy'))
-            local_bytes=(directory/'counts.npy').stat().st_size
+            source=directory/('counts.bin' if cached else 'counts.npy')
+            predictor=CompactBigram.restore(source.read_bytes()) if cached else np.load(source)
+            patch=BytePatchReader(model,predictor,kv_cache=cache)
+            local_bytes=source.stat().st_size
             derived_buffer=patch.totals.nbytes
+            if cached:
+                derived_buffer+=predictor.offsets.nbytes+predictor.row_sums.nbytes
     loaded=time.perf_counter()
     total=0
     loss=0.
@@ -84,6 +110,8 @@ def measure(directory,kind,policy,online):
     for block in dev:
         if patch:
             patch.reset_context()
+        elif cache:
+            cache.reset()
         block_loss=0.
         for i,y in enumerate(block[1:],1):
             ctx=block[max(0,i-8):i]
@@ -95,8 +123,11 @@ def measure(directory,kind,policy,online):
                 if patch:
                     neural=patch.forecast(ctx[-1])
                 else:
-                    raw=torch.tensor(list(block[max(0,i-32):i]))[None]
-                    neural=model.forward_neural(raw)[0][0,-1].double().softmax(0)
+                    if cache:
+                        neural=cache.append(ctx[-1]).double().softmax(0)
+                    else:
+                        raw=torch.tensor(list(block[max(0,i-32):i]))[None]
+                        neural=model.forward_neural(raw)[0][0,-1].double().softmax(0)
                     calls+=1
                 np_y=float(neural[y])
                 w=mixer.weight(confidence)
@@ -119,7 +150,9 @@ def measure(directory,kind,policy,online):
                                -1 if patch.pending is None else patch.pending)+cursor) if patch else 0
     memory_bytes=len(mem.snapshot(max_bytes=BUDGET))
     raw_history_bytes=min(len(dev[-1])-1,32 if model and not patch else 8)
-    return dict(kind=kind,policy=policy,mode='prequential' if online else 'frozen',transitions=total,
+    if cached and model and not patch:
+        raw_history_bytes=len(cache.history)
+    return dict(kv_tensor_bytes=cache.tensor_bytes if cache else 0,kind=kind,policy=policy,mode='prequential' if online else 'frozen',transitions=total,
                 bpb=loss/total,block_bpb=per_block,seconds=elapsed,ms_per_byte=1000*elapsed/total,
                 load_seconds=loaded-start,peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024/1e6,
                 deep_calls=patch.deep_calls if patch else calls,trained_hash=trained_hash,
@@ -130,9 +163,9 @@ def measure(directory,kind,policy,online):
                 serialized_total_bytes=checkpoint+memory_bytes+local_bytes+arbitration_bytes+cursor_bytes+raw_history_bytes)
 
 
-def worker(path,kind,policy,mode):
+def worker(path,kind,policy,mode,script=__file__):
     start=time.perf_counter()
-    output=subprocess.check_output([sys.executable,__file__,'--arm',str(path),kind,policy,mode],text=True)
+    output=subprocess.check_output([sys.executable,script,'--arm',str(path),kind,policy,mode],text=True)
     result=json.loads(output)
     result["process_ms_per_byte"]=(time.perf_counter()-start)*1000/result["transitions"]
     return result
