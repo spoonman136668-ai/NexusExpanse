@@ -14,3 +14,7 @@ __all__ = [
 from nexus_expanse.persistent_memory import BoundedEpisodicByteMemory
 
 __all__.append("BoundedEpisodicByteMemory")
+
+from nexus_expanse.arbitration import ReliabilityArbitrator
+
+__all__.append("ReliabilityArbitrator")
