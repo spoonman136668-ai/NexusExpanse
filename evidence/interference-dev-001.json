@@ -1,0 +1,286 @@
+{
+  "banks": 2,
+  "budget": 40000,
+  "config": {
+    "dim": 32,
+    "dropout": 0.0,
+    "fast_lr": 0.08,
+    "ffn_mult": 2,
+    "max_seq_len": 32,
+    "memory_max_order": 8,
+    "n_heads": 4,
+    "n_layers": 2
+  },
+  "context_order": 16,
+  "epochs": 12,
+  "fixtures": {
+    "a": {
+      "bytes": 208,
+      "sha256": "6c326efee8dd63e664da8373cc91173e574b194a8d0440c2f0c6724358a394b4"
+    },
+    "b": {
+      "bytes": 208,
+      "sha256": "4edfa2a1aafad89191b94973d77fd82b9829dc220b19a6dadc1f5e0c98e27258"
+    },
+    "train": {
+      "bytes": 600,
+      "sha256": "c9b37cab9a1889b4032d0914bbca71d4a5f504257487b5b23169494d3cd893a7"
+    }
+  },
+  "min_b_gain": 0.05,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "qualification": "DEVELOPMENT_ONLY",
+  "retention_limit": 0.02,
+  "runs": [
+    {
+      "arms": {
+        "bank": {
+          "a_after_a": 5.038633909810803,
+          "a_after_b": 5.882941598397727,
+          "a_before": 7.163617762605669,
+          "a_drift": 0.8443076885869241,
+          "b_after": 3.4085778677751315,
+          "b_before": 5.008913738431746,
+          "b_gain": 1.6003358706566142,
+          "checkpoint_bytes": 33026,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": false,
+          "tensor_bytes": 32768,
+          "updates": 284
+        },
+        "bank_no_decay": {
+          "a_after_a": 4.659152868607591,
+          "a_after_b": 5.097646835433453,
+          "a_before": 7.163617762605669,
+          "a_drift": 0.4384939668258623,
+          "b_after": 3.142035105576922,
+          "b_before": 4.997602259231817,
+          "b_gain": 1.8555671536548952,
+          "checkpoint_bytes": 33024,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": false,
+          "tensor_bytes": 32768,
+          "updates": 269
+        },
+        "shared": {
+          "a_after_a": 5.179885984104581,
+          "a_after_b": 5.762841921793308,
+          "a_before": 7.163617762605669,
+          "a_drift": 0.5829559376887277,
+          "b_after": 3.6266980255471557,
+          "b_before": 4.374200425125493,
+          "b_gain": 0.7475023995783374,
+          "checkpoint_bytes": 32966,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": false,
+          "tensor_bytes": 32768,
+          "updates": 316
+        },
+        "shared_decay_only_after_a": {
+          "a_after_a": 5.179885984104581,
+          "a_after_b": 6.31671808772213,
+          "a_drift": 1.1368321036175493,
+          "b_after": 4.914996241586902,
+          "b_before": 4.374200425125493,
+          "b_gain": -0.5407958164614088,
+          "retention_and_learning_pass": false
+        },
+        "shared_no_decay": {
+          "a_after_a": 4.496569853860268,
+          "a_after_b": 4.459923267114224,
+          "a_before": 7.163617762605669,
+          "a_drift": -0.03664658674604393,
+          "b_after": 3.3223036096471845,
+          "b_before": 4.221448380814616,
+          "b_gain": 0.8991447711674314,
+          "checkpoint_bytes": 32964,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": true,
+          "tensor_bytes": 32768,
+          "updates": 305
+        },
+        "shared_no_decay_after_a": {
+          "a_after_a": 5.179885984104581,
+          "a_after_b": 5.036394370105563,
+          "a_drift": -0.1434916139990179,
+          "b_after": 3.367147997755578,
+          "b_before": 4.374200425125493,
+          "b_gain": 1.0070524273699153,
+          "retention_and_learning_pass": true
+        }
+      },
+      "backbone_sha256": "ad7990622057f89e000dfd2ea2dce0c06d6dcde8e2ea3eb6d3e463180519d6f1",
+      "optimizer_steps": 48,
+      "seed": 42
+    },
+    {
+      "arms": {
+        "bank": {
+          "a_after_a": 3.6534979102755365,
+          "a_after_b": 4.3741127283459145,
+          "a_before": 5.873398380113538,
+          "a_drift": 0.720614818070378,
+          "b_after": 3.687828293140529,
+          "b_before": 5.695881695460255,
+          "b_gain": 2.008053402319726,
+          "checkpoint_bytes": 33026,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": false,
+          "tensor_bytes": 32768,
+          "updates": 289
+        },
+        "bank_no_decay": {
+          "a_after_a": 3.4496892008710596,
+          "a_after_b": 3.720102153736299,
+          "a_before": 5.873398380113538,
+          "a_drift": 0.2704129528652395,
+          "b_after": 3.415133403117225,
+          "b_before": 5.671076635016442,
+          "b_gain": 2.2559432318992174,
+          "checkpoint_bytes": 33024,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": false,
+          "tensor_bytes": 32768,
+          "updates": 285
+        },
+        "shared": {
+          "a_after_a": 3.824354633476587,
+          "a_after_b": 4.095537445354625,
+          "a_before": 5.873398380113538,
+          "a_drift": 0.27118281187803817,
+          "b_after": 3.715017349578187,
+          "b_before": 4.460617836365726,
+          "b_gain": 0.7456004867875392,
+          "checkpoint_bytes": 32966,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": false,
+          "tensor_bytes": 32768,
+          "updates": 309
+        },
+        "shared_decay_only_after_a": {
+          "a_after_a": 3.824354633476587,
+          "a_after_b": 4.971816919967408,
+          "a_drift": 1.1474622864908204,
+          "b_after": 5.295876029458309,
+          "b_before": 4.460617836365726,
+          "b_gain": -0.8352581930925833,
+          "retention_and_learning_pass": false
+        },
+        "shared_no_decay": {
+          "a_after_a": 3.521774449031404,
+          "a_after_b": 3.4690215145048424,
+          "a_before": 5.873398380113538,
+          "a_drift": -0.05275293452656138,
+          "b_after": 3.2410822925550042,
+          "b_before": 4.27791675621812,
+          "b_gain": 1.0368344636631162,
+          "checkpoint_bytes": 32964,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": true,
+          "tensor_bytes": 32768,
+          "updates": 299
+        },
+        "shared_no_decay_after_a": {
+          "a_after_a": 3.824354633476587,
+          "a_after_b": 3.6043084757289496,
+          "a_drift": -0.22004615774763758,
+          "b_after": 3.322567002749214,
+          "b_before": 4.460617836365726,
+          "b_gain": 1.138050833616512,
+          "retention_and_learning_pass": true
+        }
+      },
+      "backbone_sha256": "9263acf94a2479c200f59e5df92bbd2f36f7daf05528d9ed2d1090e25d2062b2",
+      "optimizer_steps": 48,
+      "seed": 43
+    },
+    {
+      "arms": {
+        "bank": {
+          "a_after_a": 4.258825318818409,
+          "a_after_b": 5.162996191997638,
+          "a_before": 6.262226491353949,
+          "a_drift": 0.9041708731792291,
+          "b_after": 2.89233202947175,
+          "b_before": 4.482924715326496,
+          "b_gain": 1.5905926858547463,
+          "checkpoint_bytes": 33026,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": false,
+          "tensor_bytes": 32768,
+          "updates": 221
+        },
+        "bank_no_decay": {
+          "a_after_a": 3.826568082450428,
+          "a_after_b": 4.121507486004548,
+          "a_before": 6.262226491353949,
+          "a_drift": 0.2949394035541202,
+          "b_after": 2.7225917377662783,
+          "b_before": 4.488119176345805,
+          "b_gain": 1.7655274385795265,
+          "checkpoint_bytes": 33024,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": false,
+          "tensor_bytes": 32768,
+          "updates": 209
+        },
+        "shared": {
+          "a_after_a": 4.065431402102012,
+          "a_after_b": 4.613989616542028,
+          "a_before": 6.262226491353949,
+          "a_drift": 0.5485582144400158,
+          "b_after": 3.1138127844119605,
+          "b_before": 3.3902600384279715,
+          "b_gain": 0.276447254016011,
+          "checkpoint_bytes": 32966,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": false,
+          "tensor_bytes": 32768,
+          "updates": 243
+        },
+        "shared_decay_only_after_a": {
+          "a_after_a": 4.065431402102012,
+          "a_after_b": 5.409248851473072,
+          "a_drift": 1.34381744937106,
+          "b_after": 4.1395494786897515,
+          "b_before": 3.3902600384279715,
+          "b_gain": -0.74928944026178,
+          "retention_and_learning_pass": false
+        },
+        "shared_no_decay": {
+          "a_after_a": 3.4799133714274086,
+          "a_after_b": 3.378342264028661,
+          "a_before": 6.262226491353949,
+          "a_drift": -0.10157110739874753,
+          "b_after": 2.7477927410640417,
+          "b_before": 3.1701700580392096,
+          "b_gain": 0.4223773169751679,
+          "checkpoint_bytes": 32964,
+          "cold_restore_equal": true,
+          "retention_and_learning_pass": true,
+          "tensor_bytes": 32768,
+          "updates": 228
+        },
+        "shared_no_decay_after_a": {
+          "a_after_a": 4.065431402102012,
+          "a_after_b": 3.758787690867439,
+          "a_drift": -0.30664371123457324,
+          "b_after": 2.7831558471525346,
+          "b_before": 3.3902600384279715,
+          "b_gain": 0.6071041912754369,
+          "retention_and_learning_pass": true
+        }
+      },
+      "backbone_sha256": "deb74008111959cb60b833e133bfd61b44e6f4855f1262ba7ecb341165d9fb9e",
+      "optimizer_steps": 48,
+      "seed": 44
+    }
+  ],
+  "schema": "nexus-interference-dev-v1",
+  "scientific_trial_executed": false,
+  "seconds": 2.726277193999522,
+  "source_sha": "7fc9a1b65c0e1e26b50c3a1b22a6860c2107f118",
+  "source_tree": "e6711db2010c7103864ac5219bed616c57180e07",
+  "torch": "2.10.0+cpu"
+}

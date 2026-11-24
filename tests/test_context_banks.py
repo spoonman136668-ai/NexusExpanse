@@ -46,3 +46,21 @@ def test_causal_route_same_prefix_different_targets():
     a.evaluate_streaming(b'abcdefX',**kw)
     assert seen==[b'abcdef'[:i] for i in range(1,7)]
     assert a.fast_weights._slice(b'abcdef')==b.fast_weights._slice(b'abcdef')
+
+
+def test_bank_cold_process(tmp_path):
+    import subprocess, sys, json, hashlib
+    m=model(); data=b'abcabcabcabc'
+    kw=dict(seq_len=8,use_episodic=False,use_fast_weights=True,reset_fast_state=False)
+    m.evaluate_streaming(data,online_hebbian_update=True,**kw)
+    payload=snapshot_fast_weights(m,max_bytes=20000)
+    path=tmp_path/'bank.bin'; path.write_bytes(payload)
+    script='''import sys, torch, json, hashlib
+from nexus_expanse import NexusExpanseByteCore, ContextBankFastWeightAdapter, restore_fast_weights, snapshot_fast_weights
+torch.set_num_threads(1); torch.manual_seed(42)
+m=NexusExpanseByteCore(n_layers=1,dim=16,n_heads=2,dropout=0.,max_seq_len=16)
+m.fast_weights=ContextBankFastWeightAdapter(16)
+restore_fast_weights(m,open(sys.argv[1],'rb').read(),max_bytes=20000)
+print(json.dumps([hashlib.sha256(snapshot_fast_weights(m,max_bytes=20000)).hexdigest(),m.evaluate_streaming(b'abcabcabcabc',seq_len=8,use_episodic=False,use_fast_weights=True,reset_fast_state=False)]))
+'''
+    assert json.loads(subprocess.check_output([sys.executable,'-c',script,str(path)],text=True))==[hashlib.sha256(payload).hexdigest(),m.evaluate_streaming(data,**kw)]

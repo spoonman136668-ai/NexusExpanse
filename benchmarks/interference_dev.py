@@ -52,7 +52,7 @@ def run(seed):
         a2 = score(model,A); b1 = score(model,B)
         arms[kind] = dict(a_before=a0,a_after_a=a1,a_after_b=a2,b_before=b0,b_after=b1,
                           checkpoint_bytes=len(payload),tensor_bytes=model.fast_weights.w_fast.numel()*4,
-                          updates=model.fast_weights.updates_applied,cold_restore_equal=True)
+                          updates=model.fast_weights.updates_applied,exact_restore_equal=True)
     for r in arms.values():
         r['a_drift'] = r['a_after_b']-r['a_after_a']; r['b_gain'] = r['b_before']-r['b_after']
         r['retention_and_learning_pass'] = r['a_drift'] <= LIMIT and r['b_gain'] >= MIN_B_GAIN
