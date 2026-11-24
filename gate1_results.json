@@ -1,0 +1,51 @@
+{
+  "project": "Nexus Expanse v0.1",
+  "gate": "Gate 1 \u2014 Tokenless Real Byte-Stream Falsification",
+  "neural_ffn_bytes": 340000,
+  "neural_ffn_reduction_vs_dense_x": 6.2,
+  "train_elapsed_sec": 111.71,
+  "dense_4l_reference_bpb": 3.3311,
+  "arms": {
+    "nexus_neural_only": {
+      "bpb": 3.7671483219662436,
+      "bytes": 19567,
+      "mean_skip": 0.5530101701890636,
+      "per_layer_skip": [
+        0.5424439106567785,
+        0.5566515050881384,
+        0.5557315889149089,
+        0.5572136760964284
+      ],
+      "episodic_entries": 150681,
+      "hebbian_updates": 0
+    },
+    "nexus_static_episodic": {
+      "bpb": 2.3075416680348546,
+      "bytes": 19567,
+      "mean_skip": 0.5530101701890636,
+      "per_layer_skip": [
+        0.5424439106567785,
+        0.5566515050881384,
+        0.5557315889149089,
+        0.5572136760964284
+      ],
+      "episodic_entries": 150681,
+      "hebbian_updates": 0
+    },
+    "nexus_online_episodic_plus_hebbian": {
+      "bpb": 1.7327168102476935,
+      "bytes": 19567,
+      "mean_skip": 0.5530101701890636,
+      "per_layer_skip": [
+        0.5424439106567785,
+        0.5566515050881384,
+        0.5557315889149089,
+        0.5572136760964284
+      ],
+      "episodic_entries": 176582,
+      "hebbian_updates": 3885
+    }
+  },
+  "verdict_static": "PASS",
+  "verdict_online": "PASS"
+}
