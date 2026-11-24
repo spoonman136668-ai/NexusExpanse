@@ -1,0 +1,48 @@
+{
+  "schema": "nexus-prefix-causality-dev-v2",
+  "qualification": "DEVELOPMENT_ONLY",
+  "baseline": {
+    "sweep": {
+      "source_sha": "bb21fbe53c0299d432e866eb4d016c25b81ee6eb",
+      "torch": "2.10.0+cpu",
+      "seeds": 100,
+      "fails": [
+        {
+          "seed": 3,
+          "max_diff": 7.943127155303955
+        },
+        {
+          "seed": 17,
+          "max_diff": 7.790892601013184
+        },
+        {
+          "seed": 59,
+          "max_diff": 2.684234142303467
+        }
+      ]
+    },
+    "seconds": [
+      1.8245338709999999,
+      1.579612542999996,
+      1.561204035000003
+    ],
+    "median_seconds": 1.579612542999996
+  },
+  "repaired": {
+    "sweep": {
+      "source_sha": "63477a9d6fa6c5c57390047d633e4512477dd7f0",
+      "torch": "2.10.0+cpu",
+      "seeds": 100,
+      "fails": []
+    },
+    "seconds": [
+      1.6482608620000008,
+      1.645138600999985,
+      1.6870257680000122
+    ],
+    "median_seconds": 1.6482608620000008
+  },
+  "platform": "Linux-7.0.0-1020-azure-x86_64-with-glibc2.43",
+  "protocol": "Original 100-seed CPU sweep, 3 fresh processes per revision, wall time includes startup.",
+  "passed": true
+}
