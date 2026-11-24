@@ -152,7 +152,7 @@ def main() -> None:
 
     data = read_split()
     train_spans = data["train"]
-    eval_spans = data["eval"]
+    eval_spans = data["dev"]
 
     runs = []
     for seed in (42, 43, 44):
