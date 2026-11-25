@@ -2,6 +2,12 @@ name: Checkpoint transfer screen and confirmation
 on:
   push:
     branches: [dev/checkpoint-transfer-fidelity]
+    paths:
+      - nexus_expanse/checkpoint_transport.py
+      - benchmarks/checkpoint_transfer_study.py
+      - benchmarks/checkpoint_transfer_report.py
+      - docs/CHECKPOINT_TRANSFER_PROTOCOL.md
+      - tests/test_checkpoint_transport.py
   workflow_dispatch:
 permissions:
   contents: write
