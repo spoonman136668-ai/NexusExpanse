@@ -100,9 +100,11 @@ class NexusExpanseByteCore(nn.Module):
         memory_max_order: int = 8,
         fast_lr: float = 0.08,
         ffn_kind: str = "monarch",
+        fixed_eval_geometry: bool = False,
     ) -> None:
         super().__init__()
         self.dim = dim
+        self.fixed_eval_geometry = fixed_eval_geometry
         self.max_seq_len = max_seq_len
         self.n_blocks = rank_safe_blocks(dim, dim * ffn_mult)
 
@@ -137,7 +139,7 @@ class NexusExpanseByteCore(nn.Module):
 
     def _backbone_inputs(self, tokens):
         # Fixed eval geometry prevents a length-dependent kernel choice at a hard gate.
-        if not self.training and any(layer.ffn.enable_skip for layer in self.layers):
+        if not self.training and (self.fixed_eval_geometry or any(layer.ffn.enable_skip for layer in self.layers)):
             if tokens.shape[1] > self.max_seq_len:
                 raise ValueError("input exceeds position embedding length")
             tokens = F.pad(tokens, (0, self.max_seq_len - tokens.shape[1]))
@@ -158,7 +160,11 @@ class NexusExpanseByteCore(nn.Module):
         total_aux = torch.zeros((), device=tokens.device)
         skips: List[float] = []
         for layer in self.layers:
-            x, aux, sk = layer(x, mask, self.out_norm, self.emb.weight, targets=targets, valid_length=length)
+            valid_length = length
+            if self.fixed_eval_geometry and not self.training and not layer.ffn.enable_skip:
+                # Always-on FFNs also keep the same matrix shapes for a short prefix.
+                valid_length = x.shape[1]
+            x, aux, sk = layer(x, mask, self.out_norm, self.emb.weight, targets=targets, valid_length=valid_length)
             total_aux = total_aux + aux
             skips.append(sk)
 
