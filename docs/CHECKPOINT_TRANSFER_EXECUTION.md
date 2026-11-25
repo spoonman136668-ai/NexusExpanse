@@ -1,0 +1,3 @@
+# Execution notes
+
+The initial screen ran from c50443e and was published in e83060b. Confirmation attempt 45607736136 stopped on the first fresh-process old-route digest, before publishing a confirmation seed. The reference tensor used by the successful in-process retention check was calculated in inference mode. The saved digest was redundantly recomputed outside that context, allowing PyTorch to select a different attention kernel. Save the already checked inference-mode reference tensor directly. Keep the consumer cold-process assertion, all fixtures, frozen selection, thresholds and timed code unchanged. Rerun confirmation from the screen receipt. The aborted attempt contributes no outcome.

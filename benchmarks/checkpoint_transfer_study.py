@@ -300,15 +300,15 @@ def trial(path,seed,domain,label,method,arm,splits,ref,prod,screen):
     bank=SkillBank(copy.deepcopy(old),skill.eval()).eval()
     with torch.inference_mode():
         probes=splits['retention'][0]
-        if not torch.equal(bank(probes),old.forward_neural(probes)[0]):
+        old_logits=old.forward_neural(probes)[0]
+        if not torch.equal(bank(probes),old_logits):
             raise RuntimeError('old-mode forecast changed')
         if not torch.equal(task_logits(bank(test[0],use_skill=True),test[1]),logits):
             raise RuntimeError('installed skill disagrees with evaluated skill')
     if not screen:
         torch.save(dict(state=bank.state_dict(),method='monarch' if arm=='scratch' else method,
                         label=label,test_sha=digest(logits.numpy().tobytes()),
-                        old_sha=digest(
-                            old.forward_neural(probes)[0].detach().numpy().tobytes())),
+                        old_sha=digest(old_logits.numpy().tobytes())),
                    path/f'{label}-{arm}-{method}.restore')
     return dict(method=method,arm=arm,zero=zero,selected=selected,steps=steps,trace=trace,
                 preparation_seconds=prep,total_receiver_seconds=timed,matched_target=matched,
