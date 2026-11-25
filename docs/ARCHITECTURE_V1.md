@@ -31,3 +31,34 @@
 | 21 | Verifier synthesis solved 96/96 cold compositions. The ungated control matched all Phase 2 solve rates. MIXED. [Evidence](../evidence/gate21-verifier-synthesis-dev-001.json) |
 | 22 | Quine Sleep kept all 65 witnesses and beat random prune and Gate 20 sleep. It missed the byte-matched no-sleep margin. MIXED. [Evidence](../evidence/gate22-quine-sleep-dev-001.json) |
 | 23 | Bounded AST synthesis solved every scored problem on the first call in both persistent arms. Neither encountered an eligible failed trace. MIXED. [Evidence](../evidence/gate23-real-verifier-dev-001.json) |
+
+## Phase 3 multi-skill routing and corpus preparation
+
+MultiSkillBank freezes the base and imported checkpoint receivers. The two dense Bayes routers compare the likelihood of earlier bytes, then mix probabilities or select one skill. The sparse router evaluates its active skill between surprise-triggered and periodic probes. The bank consumes raw values 0–255 and forecasts before observing the target byte. Its tensor-only snapshot preserves ordered skill weights and routing parameters.
+
+**Scientific verdict is MIXED.** Both dense routes beat uniform mixture and base-only on single-domain rule accuracy and overall BPB in 5/5 seeds. Both routed at 76.12–89.90% after warmup and met the eight-byte switch recovery target in 0/5 seeds. Sparse routing met the 40% skill-call reduction target in both suites in 5/5 seeds and beat both prediction controls in 4/5 seeds. The trade-off and misses are preserved in the raw evidence.
+
+Linux CPU coverage includes **250 pytest cases** and the separate 100-seed legacy prefix check. The Phase 3A checks verify exact prefixes across 50 seeds and zero donor forwards. The five-seed experiment checks exact fresh-process restore. [Raw per-arm evidence](../evidence/phase3-multi-skill-routing-dev-001.json)
+
+Build a bank from compatible static donor packs in the same process that will save it. The CLI can then cold-load that bank and forecast after each supplied chunk.
+
+~~~python
+from nexus_expanse.checkpoint_transport import load_skill
+from nexus_expanse.multi_skill_router import MultiSkillBank, save_bank
+
+base = load_skill("base_python.pt", method="residual8")
+skills = {
+    name: load_skill(name + ".pt", method="residual8")
+    for name in ("rule_A", "rule_B", "markdown_prose")
+}
+save_bank(MultiSkillBank(base, skills), "bank.pt")
+~~~
+
+~~~powershell
+$py = ".\.venv\Scripts\python.exe"
+& $py -m nexus_expanse.cli route-stream --bank .\bank.pt --router bayes_bma --input-hex 64656620 --input-hex 6628293a
+~~~
+
+The command reports the active skill, the named routing weights and one next-byte forecast per chunk in a JSON object. All chunks share one causal history, with a total input limit of 4,096 bytes. It verifies exact prefix causality before emitting results.
+
+The offline corpus builder produces six Gate 17 raw files, verifies train/eval 32-byte disjointness, and records size and SHA-256 in the manifest. The default pack contains 4 MB. Windows CUDA qualification requires a separate owner run. [Corpus build and Windows PowerShell sequence](PR_V1_MAIN_REVIEW.md#prepare-a-corpus-and-launch-on-windows-cuda)

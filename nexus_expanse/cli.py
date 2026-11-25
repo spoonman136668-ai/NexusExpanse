@@ -24,6 +24,7 @@ from nexus_expanse.unified import NexusExpanseUnified
 from nexus_expanse.verifier_agent import VerifierGatedNexusAgent
 from nexus_expanse.checkpoint_transport import CONFIG as SKILL_CONFIG, CorrectedLinear, ImportedSkill, METHODS as SKILL_METHODS, load_skill
 from nexus_expanse.donor_assimilation import forbid_donor_forward
+from nexus_expanse.multi_skill_router import load_bank
 
 VERSION = "1.0-rc1"
 TRAIN_OPTIONS = ("device", "dtype", "epoch_limit", "seed", "dim", "context",
@@ -285,6 +286,67 @@ def import_skill_command(args):
     return 0
 
 
+def route_prefix_check(route, raw, original):
+    cut = raw.size(1) // 2
+    alternate = raw.clone()
+    alternate[:, cut:] = (alternate[:, cut:] + 17) % 256
+    perturbed = route(alternate, include_next=True)
+    shortened = route(raw[:, :cut], include_next=True)
+    logp, routing = original[:2]
+    size = cut + 1
+    difference = max(
+        (logp[:, :size] - perturbed[0][:, :size]).abs().max().item(),
+        (logp[:, :size] - shortened[0]).abs().max().item(),
+    )
+    if (difference != 0.0 or not torch.equal(routing[:, :size], perturbed[1][:, :size])
+            or not torch.equal(routing[:, :size], shortened[1])):
+        raise ValueError(f"route-stream exact prefix check failed: {difference}")
+    return difference
+
+
+def route_stream_command(args):
+    data = bytearray()
+    offsets = []
+    for chunk in raw_chunks(args):
+        data.extend(chunk)
+        if len(data) > MAX_STREAM_CHUNK:
+            raise ValueError(f"route-stream allows up to {MAX_STREAM_CHUNK} bytes per stream")
+        offsets.append(len(data))
+    if not data:
+        raise ValueError("provide at least one observed hex byte")
+
+    with forbid_donor_forward() as guard:
+        bank = load_bank(args.bank)
+        route = getattr(bank, f"forward_{args.router}")
+        raw = torch.tensor(list(data), dtype=torch.long).unsqueeze(0)
+        result = route(raw, include_next=True)
+        if len(data) == 1:
+            probe = torch.arange(24, dtype=torch.long).unsqueeze(0)
+            difference = route_prefix_check(route, probe, route(probe, include_next=True))
+        else:
+            difference = route_prefix_check(route, raw, result)
+        logp, routing, *measured = result
+        names = bank.skill_names
+        if args.router == "bayes_bma":
+            weights = routing[0]
+            active = weights.argmax(-1)
+        else:
+            active = routing[0]
+            weights = torch.nn.functional.one_hot(active, len(names)).float()
+        calls = measured[0] if measured else len(names) * len(data) / (len(data) + 1)
+        report = dict(
+            command="route-stream", router=args.router, prefix_max_abs_diff=difference,
+            avg_active_skills_per_byte=calls, donor_forward_calls=guard.donor_forward_calls,
+            chunks=[
+                dict(end_offset=offset, active_skill=names[int(active[offset])],
+                     routing_weights=dict(zip(names, weights[offset].tolist(), strict=True)),
+                     next_byte=int(logp[0, offset].argmax()))
+                for offset in offsets
+            ],
+        )
+    emit(report)
+
+
 def parser():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--version", action="version", version=f"Nexus Expanse {VERSION}")
@@ -330,6 +392,12 @@ def parser():
     imp.add_argument("--width-factor", type=int, choices=(1, 2), default=1)
     imp.add_argument("--out", type=Path, required=True)
     imp.set_defaults(handler=import_skill_command)
+
+    route = sub.add_parser("route-stream", help="forecast raw bytes with a saved multi-skill bank")
+    route.add_argument("--bank", type=Path, required=True)
+    route.add_argument("--router", choices=("bayes_bma", "bayes_argmax", "surprise_sparse"), required=True)
+    route.add_argument("--input-hex", action="append", help="repeat for chunks, or send hex lines on stdin")
+    route.set_defaults(handler=route_stream_command)
     return p
 
 

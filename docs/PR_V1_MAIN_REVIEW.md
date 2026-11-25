@@ -33,3 +33,24 @@ Everything below is DEV-verified on Linux CPU (`PyTorch 2.10/2.15+cpu`). Protect
 - **CLI `import-skill`**: Added `python -m nexus_expanse.cli import-skill --donor <donor.pt> --method residual8 --width-factor <1|2> --out <skill.pt>` with mechanical `donor_forward_calls == 0`, `0.0` prefix causality, and `0.0` cold-restore round-trip verification (`tests/test_cli_import_skill.py`).
 - **768-Window Disjoint-Corpus Offline Byte-KL (`93dc0fc`)**: Cleared `< 0.85` bits mean KL on both `scaled_pure_kl_32` (`0.8384` bits) and `scaled_mixed_kl_32` (`0.8393` bits, `35.32%` mean agreement, `4.6705` BPB), beating `position_lift_32` (`1.3003` bits) and `shuffled_scaled_kl_32` (`1.0890` bits) in `5/5` seeds (`1401–1405`).
 - **Updated Regression Count**: **191 passed**, `0` failed, `0` skipped; `0/100` prefix causality failures.
+
+## Phase 3A/3B DEV review
+
+The preregistered CPU experiment is recorded in [Phase 3A evidence](../evidence/phase3-multi-skill-routing-dev-001.json). It compares six arms on file-disjoint Python and Markdown, two incompatible byte rules, and unlabeled 32-byte regime switches. Each of the five seeds uses four separately fitted donors and zero donor forwards in the receiver. The bank's frozen base state, saved weights, router settings, and forecasts were exact after fresh-process restore.
+
+**Scientific verdict is MIXED.** Both dense routes beat uniform mixture and base-only on single-domain rule accuracy and overall BPB in 5/5 seeds. Both routed at 76.12–89.90% after warmup and met the eight-byte switch recovery target in 0/5 seeds. Sparse routing met the 40% skill-call reduction target in both suites in 5/5 seeds and beat both prediction controls in 4/5 seeds. The trade-off and misses are preserved in the raw evidence.
+
+The integrated Linux CPU regression has **250 tests**, comprising 191 Phase 2D tests, 54 Phase 3A tests, and five Phase 3B tests. It also uses the separate 100-seed legacy prefix check. The Phase 3A exact prefix test covers 50 seeds across all three routers.
+
+### Prepare a corpus and launch on Windows CUDA
+
+Run these commands from the repository root on a Windows owner machine with a CUDA-capable PyTorch environment.
+
+~~~powershell
+$py = ".\.venv\Scripts\python.exe"
+& $py .\scripts\prepare_gpu_corpus.py --out-dir .\data --size-mb 4.0 --seed 42
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& $py -m nexus_expanse.cli train --device cuda --dtype bf16 --corpus-dir .\data --directory ..\nexus-gpu-run --dim 64 --context 256 --batch-per-domain 4 --steps-per-epoch 64 --epochs 64 --epoch-limit 1 --until-complete --save-snapshot ..\nexus-gpu-run\unified.pt
+~~~
+
+The generated workload is 4,000,000 raw bytes across math, code and prose train/eval files. The manifest carries exact file sizes and SHA-256 digests. The builder verifies zero exact 32-byte overlaps between train and eval before publication. Existing corpus files are preserved. The Windows CUDA launch awaits owner execution and a GPU receipt.
