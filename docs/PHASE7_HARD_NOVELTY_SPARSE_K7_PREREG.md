@@ -1,0 +1,31 @@
+# Phase 7 sparse K=7 and same-alphabet novelty preregistration
+
+Run once on Linux CPU from the clean implementation and preregistration commit directly above Phase 6 tip `916b10151e761dad738a7c2df834bd267e6f1cb6`. Use the workspace environment, PyTorch 2.15.0+cpu, deterministic FP32 and one Torch thread. Use seeds 2001–2005. Reuse the four Phase 6 static donors per seed, their producer, byte-to-row conversion and frozen original text source `105e6e754abe940de5c66ca41a75c3bf825aa1cb`. Producer forwards stay in their own process. Receiver import, adaptation, evaluation and fresh-process restore are donor-guarded. Use local fixture bytes only.
+
+## Suite A — Sparse compute at K=7
+
+Reuse Phase 6's sequential C → D → E births, mutually disjoint novel byte alphabets, disjoint encounter and CHECK windows, and frozen 32-step episodic consolidation. Each encounter first checks novelty at byte 256, then every 64 bytes through 512 using the 8 BPB mean detector. Compare sparse and dense hierarchical routing on the exact same cold-restored expanded bank. The fixed K=4 control retains the original bank and uses the standard dense HMM. Replay no CHECK data into any learned state.
+
+Both hierarchical arms use switch probability 0.05, born prior mass 0.02 and resident-to-born switch share 0.10. The sparse arm forecasts with the top skill. Schedule an all-skill probe at the next forecast when the last observed byte's active surprise exceeds 3.5 bits or the forecast position is divisible by 24. On a probe, causal prefix evaluations provide the per-skill likelihoods to refilter up to the last two observed bytes from the saved prior. Between probes apply the transition without cross-skill emissions. Replay affects subsequent forecasts, and emitted forecasts stay fixed.
+
+Count actual expert-stream calls over all forecast bytes across the resident and novel evaluation suites, including the zero-call first forecast. Report savings against the nominal dense K=7 budget and the measured dense call rate. Freeze the compute gate at at most 2.8 calls/byte, equivalent to at least 60% savings against seven. Report mean and minimum C/D/E answer and routing percentages, original-domain pooled BPB and maximum per-domain BPB drift versus fixed K=4. Score the original 128-byte ID negative probes at K=4 and after cold restore.
+
+## Suite B — Novel cue binding on the same ASCII alphabet
+
+The repository Rule A/B fixture answers are bytes 145–152. For this suite, swap those bytes with ASCII 97–104 in A/B FIT and CHECK, and apply the same bijection to the two static donors' byte-to-row maps before import. This preserves their learned bindings, weights and four-byte grammar in ASCII. Python and Markdown stay in their original representation. Suite A retains the Phase 6 byte assignment.
+
+A, B and the novel rule share exactly the same 21-byte alphabet. Their template is first cue byte 40–47, second cue byte 80–83, delimiter 125, then answer 97–104. Generate an independent secret permutation per group of eight keys for the novel rule, rejecting permutations that agree with either resident rule at any key. Use fresh encounter and CHECK windows. Reject exact 32-byte overlap across FIT, VAL, CHECK and the joined encounter boundaries. Shared cue triplets can recur within otherwise fresh windows.
+
+Use 48 distinct 64-byte validation windows for each original domain, paired into 24 128-byte validation streams. Python validation uses cli.py and donor_assimilation.py, and Markdown uses the Gate 19, 20 and 21 preregistration documents. Rule A/B validation comes from independent draws of their existing ASCII mappings. Select VAL without CHECK or novel data, then verify split disjointness. For each original skill, compute the nearest-rank 90th percentile of its per-byte surprise over the last 64 observed bytes of each of its own validation streams. Freeze that skill's maximum validation-tail score plus 0.5 bits as its trigger limit. The tail detector fires only if the same causal statistic exceeds every skill's own limit. No CHECK or novel observations participate in calibration. Test both detectors on all four ID CHECK domains in paired 128-byte windows.
+
+Present the novel encounter in 64-byte increments, screening after 256 observed bytes and stopping at the first birth or byte 512. Compare the validation-calibrated tail detector with the original 8 BPB mean detector. Both use 32-step episodic birth and hierarchical BMA after cold restore. The fixed K=4 control keeps the original four skills. The continual control adapts its own Python receiver in place for 32 steps on the exact prefix consumed by the tail arm, using the full exposure if tail detection never triggers.
+
+Record birth and false-birth counts, answer accuracy at the answer positions, routing to the new slot, per-domain BPB and max original-domain drift, including both resident rule domains. Preserve null births and compare every arm with the same CHECK data. Record resident state, exact fresh-process digests, time, and exposures across both suites.
+
+## Frozen verdicts
+
+- **ENGINEERING PASS** requires at least 479 bare pytest tests with zero failures, skips or warnings, 0/100 legacy prefix failures, exact 0.0 sparse K=7 prefix differences across 50 seeds, zero false births, zero receiver donor calls, and 5/5 exact warm-to-cold checks in each suite.
+- **Suite A PASS** requires at most 2.8 calls/byte, at least 85% answer accuracy in each novel domain, and at most 0.015 BPB max original-domain drift in all five seeds. **MIXED** requires at least four seeds to meet two of these three criteria together with a PASS requirement unmet. **FAIL** applies otherwise.
+- **Suite B PASS** requires tail-triggered birth, at least 80% novel answer accuracy strictly above fixed K=4, and at most 0.02 BPB max original-domain drift in all five seeds, with zero false births. **MIXED** requires zero tail false births and at least four seeds with both a birth and the answer-accuracy comparison, with a PASS requirement unmet. **FAIL** applies otherwise.
+
+Record the suites independently in `evidence/phase7-hard-novelty-sparse-k7-dev-001.json`. Preserve failures and nulls. Reject source or fixture drift and qualify the final evidence-and-documentation tip separately.

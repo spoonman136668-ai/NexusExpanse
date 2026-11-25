@@ -252,32 +252,38 @@ class MultiSkillBank(nn.Module):
         self, raw, switch_prob=0.05, born_prior_mass=0.02, born_switch_share=0.10, *, include_next=False,
     ):
         """Give the born group a fixed initial and resident-switch mass."""
-        names = self.skill_names
-        residents = len(self.resident_names)
-        born = len(names) - residents
-        if born == 0:
+        if len(self.resident_names) == len(self.skills):
             return self.forward_hmm_bma(raw, switch_prob, include_next=include_next)
+        components = self.component_log_probs(raw, include_next=include_next)
+        prior, transition = self._hierarchical_prior(components, switch_prob, born_prior_mass, born_switch_share)
+        return self._mix_hmm(raw, components, prior, transition)
 
+    def _hierarchical_prior(self, reference, switch_prob, born_prior_mass, born_switch_share):
+        names = self.skill_names
+        k = len(names)
+        residents = len(self.resident_names)
+        born = k - residents
+        batch = reference.size(0)
+        if born == 0:
+            return reference.new_full((batch, k), -math.log(k)), _sticky_transition(reference, k, switch_prob)
         _validate_probability(switch_prob, "switch_prob")
         _validate_probability(born_prior_mass, "born_prior_mass")
         _validate_probability(born_switch_share, "born_switch_share")
-        components = self.component_log_probs(raw, include_next=include_next)
-        batch, _, k, _ = components.shape
-        is_resident = torch.tensor([name in self.resident_names for name in names], device=components.device)
+        is_resident = torch.tensor([name in self.resident_names for name in names], device=reference.device)
 
-        prior_probs = components.new_full((k,), born_prior_mass / born)
+        prior_probs = reference.new_full((k,), born_prior_mass / born)
         prior_probs[is_resident] = (1 - born_prior_mass) / residents
         prior = prior_probs.log().expand(batch, k)
 
         # A lone resident has no peer to receive its resident-switch share.
         share = born_switch_share if residents > 1 else 1.0
-        rates = components.new_full((k,), switch_prob * share / born)
+        rates = reference.new_full((k,), switch_prob * share / born)
         if residents > 1:
             rates[is_resident] = switch_prob * (1 - share) / (residents - 1)
-        transition = components.new_full((k, k), switch_prob / (k - 1))
+        transition = reference.new_full((k, k), switch_prob / (k - 1))
         transition[is_resident] = rates
         transition.fill_diagonal_(1 - switch_prob).log_()
-        return self._mix_hmm(raw, components, prior, transition)
+        return prior, transition
 
     @staticmethod
     def _mix_hmm(raw, components, prior, transition):
@@ -304,13 +310,33 @@ class MultiSkillBank(nn.Module):
         """
         threshold, interval = self._probe_options(surprise_threshold_bits, probe_interval)
         raw, steps = self._prepare(raw, include_next)
+        first = self._prior(raw)
+        k = len(self.skills)
+        prior = first.new_full((raw.size(0), k), -math.log(k))
+        transition = _sticky_transition(prior, k, switch_prob)
+        return self._sparse_hmm(raw, steps, first, prior, transition, threshold, interval, 4)
+
+    @torch.inference_mode()
+    def forward_hmm_sparse_hierarchical(
+        self, raw, switch_prob=0.05, born_prior_mass=0.02, born_switch_share=0.10,
+        surprise_threshold_bits=3.5, probe_interval=24, replay_window=2, *, include_next=False,
+    ):
+        """Use one expert between causal probes and count actual expert evaluations."""
+        threshold, interval = self._probe_options(surprise_threshold_bits, probe_interval)
+        if type(replay_window) is not int or replay_window < 1:
+            raise ValueError("replay_window must be a positive integer")
+        raw, steps = self._prepare(raw, include_next)
+        first = self._prior(raw)
+        prior, transition = self._hierarchical_prior(first, switch_prob, born_prior_mass, born_switch_share)
+        # Store a separately writable prior for each stream during replay.
+        return self._sparse_hmm(raw, steps, first, prior.clone(), transition, threshold, interval, replay_window)
+
+    def _sparse_hmm(self, raw, steps, first, prior, transition, threshold, interval, replay_window):
         batch = raw.size(0)
         experts = tuple(self.skills.values())
         k = len(experts)
-        forecasts = [self._prior(raw)]
-        prior = forecasts[0].new_full((batch, k), -math.log(k))
-        transition = _sticky_transition(prior, k, switch_prob)
-        priors = deque([prior], maxlen=min(4, self.context - 1))
+        forecasts = [first]
+        priors = deque([prior], maxlen=min(replay_window, self.context - 1))
         weights = [prior.exp()]
         rows_all = torch.arange(batch, device=raw.device)
         calls = 0
