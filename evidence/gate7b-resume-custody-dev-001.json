@@ -1,0 +1,654 @@
+{
+  "schema": "nexus-gate7b-resume-custody-dev-v1",
+  "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+  "training_budget_epochs": 12,
+  "verified_checkpoint_receipts": 36,
+  "seeds": [
+    {
+      "seed": 42,
+      "epoch_seconds": [
+        35.272,
+        36.877,
+        35.586,
+        34.215,
+        35.329,
+        34.945,
+        34.89,
+        34.546,
+        36.291,
+        35.655,
+        35.879,
+        34.456
+      ],
+      "total_epoch_seconds": 423.94100000000003,
+      "receipts": [
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 1,
+          "sha256": "1b302340bb5a16953360d101c2510a4bf53e6d0fa8d3df9dd4f52566108ac7e2",
+          "parent": null
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 2,
+          "sha256": "476c7014862f206cf07e4848f64d51502f918b9729e178f953632d1366c38616",
+          "parent": "1b302340bb5a16953360d101c2510a4bf53e6d0fa8d3df9dd4f52566108ac7e2"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 3,
+          "sha256": "ab1867616e3ab0ae289272ad0b3c1f7875dbcc25f2ded71ddb76e00336ae2d98",
+          "parent": "476c7014862f206cf07e4848f64d51502f918b9729e178f953632d1366c38616"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 4,
+          "sha256": "4cac8a96c2373f5363b2d52350574ee5fb4bf5f992d687a6f695d1c65100dfec",
+          "parent": "ab1867616e3ab0ae289272ad0b3c1f7875dbcc25f2ded71ddb76e00336ae2d98"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 5,
+          "sha256": "0fa7dca1c7418dc09e264466f5ea0beeb2f2724c8d1737880fc95c3769589035",
+          "parent": "4cac8a96c2373f5363b2d52350574ee5fb4bf5f992d687a6f695d1c65100dfec"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 6,
+          "sha256": "0bd66fa9844ffce8f1af79952167ab5e50ac8b5767098bed99f52b4083719c3a",
+          "parent": "0fa7dca1c7418dc09e264466f5ea0beeb2f2724c8d1737880fc95c3769589035"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 7,
+          "sha256": "507787cab07e9b8acba4e0d9f3bb79b08c1d3ddf5ae760cfa2c8472ceb99da32",
+          "parent": "0bd66fa9844ffce8f1af79952167ab5e50ac8b5767098bed99f52b4083719c3a"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 8,
+          "sha256": "5cd313992d5f66f39633e82c7fb69d96a1836b7232cb72d40dd4f4ce8199827b",
+          "parent": "507787cab07e9b8acba4e0d9f3bb79b08c1d3ddf5ae760cfa2c8472ceb99da32"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 9,
+          "sha256": "4e9e394ee997f208392f0112ac8cdaf36c555afab8c74fc5ea8ec60a85503751",
+          "parent": "5cd313992d5f66f39633e82c7fb69d96a1836b7232cb72d40dd4f4ce8199827b"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 10,
+          "sha256": "5be2397fc9e90e2761effe5c582870a13c3bd9c30269343e8e90e9c0f931a273",
+          "parent": "4e9e394ee997f208392f0112ac8cdaf36c555afab8c74fc5ea8ec60a85503751"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 11,
+          "sha256": "c49b4519f54d950719223a95aa7988da49c13d8df96899794378334fd04c4a05",
+          "parent": "5be2397fc9e90e2761effe5c582870a13c3bd9c30269343e8e90e9c0f931a273"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 42,
+          "epoch": 12,
+          "sha256": "4d76ab4e6f988ef5ed4c70bebd4cb91d0d8076d40ae4315dbc4e8901051c67d8",
+          "parent": "c49b4519f54d950719223a95aa7988da49c13d8df96899794378334fd04c4a05"
+        }
+      ],
+      "trained_state_sha256": "4dcd1c6176c18fb92a6e99c6e82b3ab36037452d1cfc983e4b71c67228e93123",
+      "evaluated_arms": 8,
+      "transitions": 16320
+    },
+    {
+      "seed": 43,
+      "epoch_seconds": [
+        35.619,
+        36.046,
+        35.495,
+        34.291,
+        34.988,
+        34.534,
+        34.239,
+        34.351,
+        35.542,
+        35.77,
+        35.67,
+        34.828
+      ],
+      "total_epoch_seconds": 421.373,
+      "receipts": [
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 1,
+          "sha256": "e22bd0688997465ca748aa74d5773b6fe76bdcbb6fd044542afb434d27ba984d",
+          "parent": null
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 2,
+          "sha256": "857033a9a3dd3d6d7a24e2699b035d1143958791e94fec9a35454b741c058b0c",
+          "parent": "e22bd0688997465ca748aa74d5773b6fe76bdcbb6fd044542afb434d27ba984d"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 3,
+          "sha256": "df19f33d81f81737772d2cc56a0ec8a67d2d1b6b8bf7b020fb1fa56b057700d6",
+          "parent": "857033a9a3dd3d6d7a24e2699b035d1143958791e94fec9a35454b741c058b0c"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 4,
+          "sha256": "cc19bef9f094a4ea95a9f9e2b806787af8d8e393f0ee3081555ea56db8ed55d8",
+          "parent": "df19f33d81f81737772d2cc56a0ec8a67d2d1b6b8bf7b020fb1fa56b057700d6"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 5,
+          "sha256": "f061619ae531f26ee01c5db8df381324f941a92f6e72d05ae032480e5f7b290f",
+          "parent": "cc19bef9f094a4ea95a9f9e2b806787af8d8e393f0ee3081555ea56db8ed55d8"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 6,
+          "sha256": "1155ac5c0e86da76a0e5b20856fa18bc2dac1f9760376d6716238f5feaed21c9",
+          "parent": "f061619ae531f26ee01c5db8df381324f941a92f6e72d05ae032480e5f7b290f"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 7,
+          "sha256": "2c347703d6f570f8ba9ee8d0ecbf4a31dd14c0e5d01dda0cc9be8299bcf78d83",
+          "parent": "1155ac5c0e86da76a0e5b20856fa18bc2dac1f9760376d6716238f5feaed21c9"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 8,
+          "sha256": "a6989e1ad6707702dac50df1f7f487c5391a04d7f6236b68df6500f8b217a3d1",
+          "parent": "2c347703d6f570f8ba9ee8d0ecbf4a31dd14c0e5d01dda0cc9be8299bcf78d83"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 9,
+          "sha256": "372efe09659e4c34749e46990c493183dc406d10c430f675a506d9d9de102c3d",
+          "parent": "a6989e1ad6707702dac50df1f7f487c5391a04d7f6236b68df6500f8b217a3d1"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 10,
+          "sha256": "8d7891ec2abcf51950e2261cd0fc980e84884f4382f9f75c47d924c941648798",
+          "parent": "372efe09659e4c34749e46990c493183dc406d10c430f675a506d9d9de102c3d"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 11,
+          "sha256": "2c4fbddc4f8c089a9852194ba8a94dadf2ec6fbbdac16ce014cafccc6123de02",
+          "parent": "8d7891ec2abcf51950e2261cd0fc980e84884f4382f9f75c47d924c941648798"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 43,
+          "epoch": 12,
+          "sha256": "939fae08b6fe4489f938e94cd3503605208b06029dbe035cc9662d882db10a35",
+          "parent": "2c4fbddc4f8c089a9852194ba8a94dadf2ec6fbbdac16ce014cafccc6123de02"
+        }
+      ],
+      "trained_state_sha256": "c9dd878de1ed66029344efecffe174a64bd9188d84a376e42c19c78bbe6fb16b",
+      "evaluated_arms": 8,
+      "transitions": 16320
+    },
+    {
+      "seed": 44,
+      "epoch_seconds": [
+        35.17,
+        36.039,
+        35.406,
+        34.025,
+        35.009,
+        35.004,
+        34.379,
+        34.568,
+        35.162,
+        35.866,
+        36.227,
+        33.519
+      ],
+      "total_epoch_seconds": 420.37399999999997,
+      "receipts": [
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 1,
+          "sha256": "e7d780838a45fb763f7fec3db3d453fa0d8430f35358dc050b6b9588281a938b",
+          "parent": null
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 2,
+          "sha256": "420427c799fadd7a1a16d7b44b4a56964e4eabf27ffd21c7e03824feb60e063c",
+          "parent": "e7d780838a45fb763f7fec3db3d453fa0d8430f35358dc050b6b9588281a938b"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 3,
+          "sha256": "4734c632cce6f9b327a04c44544ef4c7a24b92c702d93968701a3c30cb1f8651",
+          "parent": "420427c799fadd7a1a16d7b44b4a56964e4eabf27ffd21c7e03824feb60e063c"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 4,
+          "sha256": "b0963c063c1492d4887b36f8b14d299cf20989a484b3f0870bc979dbbf04e68a",
+          "parent": "4734c632cce6f9b327a04c44544ef4c7a24b92c702d93968701a3c30cb1f8651"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 5,
+          "sha256": "3494988cfcd20ec5c5e949c79c6dfd5c73962f0a76cf7c9dbd5132683cfc4784",
+          "parent": "b0963c063c1492d4887b36f8b14d299cf20989a484b3f0870bc979dbbf04e68a"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 6,
+          "sha256": "9e5b9d4d60c3de260ca505f743bb4d513d43588f3fa7c0767fdfb38591bbd585",
+          "parent": "3494988cfcd20ec5c5e949c79c6dfd5c73962f0a76cf7c9dbd5132683cfc4784"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 7,
+          "sha256": "1930ae38978968b9323e035f447372d19de32815cd8aaebae701f96b83ba0707",
+          "parent": "9e5b9d4d60c3de260ca505f743bb4d513d43588f3fa7c0767fdfb38591bbd585"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 8,
+          "sha256": "c8fe17ba2cccde5e03584bf12b442bce1359c4a37c1fb024e2b833d8b87c860e",
+          "parent": "1930ae38978968b9323e035f447372d19de32815cd8aaebae701f96b83ba0707"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 9,
+          "sha256": "dabaae0e7c52408580d7ffb0b131baba8d6fb1991f76e2575caacd0bd3f39f8f",
+          "parent": "c8fe17ba2cccde5e03584bf12b442bce1359c4a37c1fb024e2b833d8b87c860e"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 10,
+          "sha256": "ecc2c707d10ae63b010b9e8680e79c1cb27be53ad1b55f8ccf79c2fe00308b1a",
+          "parent": "dabaae0e7c52408580d7ffb0b131baba8d6fb1991f76e2575caacd0bd3f39f8f"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 11,
+          "sha256": "4acb058f9dcadcbd27f026075419bccffb9b897146b1fb166e2396879742012b",
+          "parent": "ecc2c707d10ae63b010b9e8680e79c1cb27be53ad1b55f8ccf79c2fe00308b1a"
+        },
+        {
+          "identity": {
+            "source_sha": "0dab7fa6e4f08309a03edf2a7cdfacea384e66c1",
+            "tree": "fb00cbbc996652a78dfa13745b69fd9c732c8390",
+            "protocol_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+            "manifest_sha256": "f5d449a93e1e006e5bda5ca6b6e8b16b50fd6a6098c40f34eff0a82224a3f87d",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "cpu": "",
+            "threads": 1
+          },
+          "seed": 44,
+          "epoch": 12,
+          "sha256": "4125152894762291f8f3f67b9df5ba5ac6588bd871ee44fa14b4e537d0712577",
+          "parent": "4acb058f9dcadcbd27f026075419bccffb9b897146b1fb166e2396879742012b"
+        }
+      ],
+      "trained_state_sha256": "2f7a377496367d96bbcb789384272a0afa307e2505d2df62c64917909ad57307",
+      "evaluated_arms": 8,
+      "transitions": 16320
+    }
+  ],
+  "notes": "Train shards ran concurrently, so epoch durations are not isolated speed measurements. Evaluation arms ran serially. No checkpoint was replayed during the resumed session."
+}

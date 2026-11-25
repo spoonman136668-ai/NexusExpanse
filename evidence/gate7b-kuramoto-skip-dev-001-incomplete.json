@@ -1,0 +1,122 @@
+{
+  "schema": "nexus-gate7b-dev-v1",
+  "qualification": "REUSED_MANIFEST_DEV",
+  "source_sha": "b7cfd5aa19ceea4203aaeeaedc5cc495ed1fa8e2",
+  "torch": "2.10.0+cpu",
+  "status": "INCOMPLETE",
+  "main_run": {
+    "exit_code": 143,
+    "elapsed_seconds_at_stop": 604,
+    "reason": "operator-side bounded execution stop; no result JSON emitted",
+    "scientific_outcome": "UNVERIFIED",
+    "seeds_completed": "UNKNOWN",
+    "checkpoint_available": false,
+    "do_not_replay_as_completed": true
+  },
+  "parity": {
+    "seeds": 50,
+    "policies": 3,
+    "stream_comparisons": 5100,
+    "max_prefix_diff": 0.0,
+    "max_stream_vs_batch_diff": 0.0,
+    "qualification": "independent engineering parity check"
+  },
+  "runs": [],
+  "checks": [],
+  "scaling_qualification": "UNTRAINED_CPU_SCALING_ONLY_PARTIAL",
+  "scaling": [
+    {
+      "kind": "kuramoto",
+      "dim": 128,
+      "length": 128,
+      "ms_per_byte": 0.5979810234375549,
+      "repeats": [
+        0.6018448906246476,
+        0.5828833749994544,
+        0.5979810234375549
+      ],
+      "peak_rss_bytes": 327081984,
+      "window": 128
+    },
+    {
+      "kind": "kv",
+      "dim": 128,
+      "length": 128,
+      "ms_per_byte": 1.7022003593751833,
+      "repeats": [
+        1.7055051796877052,
+        1.7022003593751833,
+        1.6804262578133944
+      ],
+      "peak_rss_bytes": 328536064,
+      "window": 128
+    },
+    {
+      "kind": "kuramoto",
+      "dim": 128,
+      "length": 512,
+      "ms_per_byte": 0.6608860078127776,
+      "repeats": [
+        0.6156860722654756,
+        0.6608860078127776,
+        0.6662074160157516
+      ],
+      "peak_rss_bytes": 327221248,
+      "window": 128
+    },
+    {
+      "kind": "kuramoto",
+      "dim": 256,
+      "length": 128,
+      "ms_per_byte": 0.7805181953131068,
+      "repeats": [
+        0.7805181953131068,
+        0.7747085937488407,
+        0.8276412109360365
+      ],
+      "peak_rss_bytes": 327716864,
+      "window": 128
+    },
+    {
+      "kind": "kv",
+      "dim": 256,
+      "length": 128,
+      "ms_per_byte": 3.2072382812504685,
+      "repeats": [
+        3.2405552187508846,
+        3.2072382812504685,
+        3.1797228828125412
+      ],
+      "peak_rss_bytes": 331706368,
+      "window": 128
+    },
+    {
+      "kind": "kuramoto",
+      "dim": 256,
+      "length": 512,
+      "ms_per_byte": 0.8737640664060464,
+      "repeats": [
+        0.8737640664060464,
+        0.8815231855470174,
+        0.8658868027340283
+      ],
+      "peak_rss_bytes": 327610368,
+      "window": 128
+    }
+  ],
+  "missing_scaling": [
+    {
+      "kind": "kv",
+      "dim": 128,
+      "length": 512,
+      "status": "TERMINATED",
+      "elapsed_cpu_seconds_at_last_observation": 182
+    },
+    {
+      "kind": "kv",
+      "dim": 256,
+      "length": 512,
+      "status": "NOT_STARTED"
+    }
+  ]
+}
