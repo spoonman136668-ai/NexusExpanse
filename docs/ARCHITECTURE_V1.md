@@ -70,3 +70,13 @@ The phase adds `hmm_bma` and `hmm_sparse` to `route-stream` with the existing te
 **DEV science MIXED.** On fresh seeds 1601–1605, HMM BMA lowered post-switch BPB in 5/5 seeds and also improved routing in 4/5 versus discounted BMA. It reached the eight-byte recovery bar on all three transitions in 0/5 seeds. HMM sparse used 2.401 to 2.555 skill calls per byte (36.13–39.98% below the four-skill reference, short of the 40% target) and improved post-switch routing over surprise sparse in 3/5 seeds and uniform mixture in 5/5. Dense HMM recovered Python to Markdown sooner in all five seeds. Rule A to Rule B missed the eight-byte bar in all five seeds for both HMM arms. Post-warmup single-domain routing ranged from 76.28% to 86.61% for HMM BMA and 73.44% to 86.22% for HMM sparse. The 90% bar was reached in 0/5 and 0/5 seeds, respectively. The Linux CPU experiment recorded 0 forbidden donor calls and 5/5 exact cold restores.
 
 [Preregistration](PHASE3C_STICKY_HMM_ROUTER_PREREG.md) · [Raw five-seed evidence](../evidence/phase3c-sticky-hmm-routing-dev-001.json)
+
+## Phase 4 online skill birth
+
+OpenWorldSkillBank checks the last 64 observed bytes and triggers only when every resident exceeds eight bits per byte. The new slot is cloned from Python, gradient-adapted on observed raw bytes, and frozen before registration. Its snapshot is readable by the existing bank loader and HMM route-stream command. All four resident hashes are checked before registration.
+
+**DEV science PASS.** Birth triggered in 5/5 seeds after 256 observed bytes. The open-world arm beat fixed K=4 on Rule C BPB and rule accuracy in 5/5 seeds. It beat continual base fine-tuning on pooled original-domain BPB and stayed within the per-domain drift limit in 5/5. The largest original-domain BPB increase was +0.01903. Cold Rule C routing was 96.88% in all five seeds, above the 80% bar. Rule C answer accuracy ranged from 10.16% to 14.06%, near the 12.5% uniform reference across its eight answer bytes. The experiment provides limited evidence of learning the cue-to-answer mapping.
+
+The scored Linux CPU run recorded 0/80 false births, 0 receiver donor calls, 5/5 exact resident weight and forecast comparisons, and 5/5 exact cold restores. The combined suite contains 364 tests and runs from the repository root with bare pytest. Pytest loads the local imports through the project configuration and disables the unused AnyIO plugin that emitted the prior warning.
+
+[Preregistration](PHASE4_SKILL_BIRTH_PREREG.md) · [Raw evidence](../evidence/phase4-skill-birth-dev-001.json)

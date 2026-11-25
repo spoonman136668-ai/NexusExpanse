@@ -64,3 +64,13 @@ Post-warmup single-domain routing ranged from 76.28% to 86.61% for HMM BMA and 7
 Focused tests cover 50 exact prefix checks on both routers, cold compatibility with the existing snapshot format, CLI smoke, and a controlled abrupt switch. The combined regression contains 307 cases. Scientific qualification and Windows CUDA deployment remain separate owner decisions.
 
 [Preregistration](PHASE3C_STICKY_HMM_ROUTER_PREREG.md) · [Raw five-seed evidence](../evidence/phase3c-sticky-hmm-routing-dev-001.json)
+
+## Phase 4 DEV review and CLI smoke
+
+**DEV science PASS.** Birth triggered in 5/5 seeds after 256 observed bytes. The open-world arm beat fixed K=4 on Rule C BPB and rule accuracy in 5/5 seeds. It beat continual base fine-tuning on pooled original-domain BPB and stayed within the per-domain drift limit in 5/5. The largest original-domain BPB increase was +0.01903. Cold Rule C routing was 96.88% in all five seeds, above the 80% bar. Rule C answer accuracy ranged from 10.16% to 14.06%, near the 12.5% uniform reference across its eight answer bytes. The experiment provides limited evidence of learning the cue-to-answer mapping.
+
+The scored Linux CPU run recorded 0/80 false births, 0 receiver donor calls, 5/5 exact resident weight and forecast comparisons, and 5/5 exact cold restores. The combined suite contains 364 tests and runs from the repository root with bare pytest. Pytest loads the local imports through the project configuration and disables the unused AnyIO plugin that emitted the prior warning.
+
+The CPU smoke runs corpus preparation, train, verify, import-skill, HMM route-stream and solve in separate processes. It verifies the training corpus and snapshot digests, loads the actual imported skill into the routed bank, and checks the exact solve residual. The import command consumes a static donor pack, while verify consumes the unified training snapshot. Windows CUDA qualification remains an owner run.
+
+[Preregistration](PHASE4_SKILL_BIRTH_PREREG.md) · [Raw evidence](../evidence/phase4-skill-birth-dev-001.json)

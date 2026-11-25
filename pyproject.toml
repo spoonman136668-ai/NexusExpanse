@@ -1,0 +1,4 @@
+[tool.pytest.ini_options]
+pythonpath = ["."]
+# This test suite uses no AnyIO fixtures. Its auto-loaded plugin uses a deprecated pytest API.
+addopts = ["-p", "no:anyio"]
