@@ -51,8 +51,9 @@ class VerifierGatedNexusAgent:
     EPISODIC_BUDGET = 18_000
     HEADER = struct.Struct("<4sBH")
 
-    def __init__(self, *, gated=True):
+    def __init__(self, *, gated=True, structured=False):
         self.gated = gated
+        self._orders = [bytearray(256) for _ in range(3)] if structured else None
         self.episodic = ConsolidatingMemory(self.EPISODIC_BUDGET, "sparse_support", 5)
         self.relations = _SynthesisVSA(None)
 
@@ -71,6 +72,10 @@ class VerifierGatedNexusAgent:
             for result, count in episode.items():
                 distribution[result] += count / total
         return int(np.argmax(distribution))
+
+    @staticmethod
+    def _order(row, order):
+        return row[::-1] if order == 1 else row[1:] + row[:1] if order == 2 else row
 
     def propose(self, source, target, programs, tried):
         """Rank bounded pipelines by agreement with the raw goal."""
@@ -91,7 +96,15 @@ class VerifierGatedNexusAgent:
             return symbol
 
         def score(program):
-            values = [predict(symbol, program) for symbol in source]
+            if self._orders is None:
+                values = [predict(symbol, program) for symbol in source]
+            else:
+                values = list(source)
+                for op in program:
+                    order = max(range(3), key=lambda i: self._orders[i][op])
+                    values = self._order(values, order)
+                    values = [predict(symbol, bytes((op,))) if symbol is not None else None
+                              for symbol in values]
             hits = sum(x == y for x, y in zip(values, target, strict=True))
             misses = sum(x is not None for x in values) - hits
             return hits - misses, hits
@@ -105,17 +118,25 @@ class VerifierGatedNexusAgent:
             return False
         for operator, before, after in zip(feedback.program, feedback.states[:-1],
                                            feedback.states[1:], strict=True):
+            if self._orders is not None:
+                matches = [i for i in (1, 2) if self._order(before, i) == after and before != after]
+                order = matches[0] if len(matches) == 1 else 0
+                self._orders[order][operator] = min(255, self._orders[order][operator] + 1)
+                before = self._order(before, order)
             for symbol, result in zip(before, after, strict=True):
                 self.relations.observe_edge(symbol, operator, result)
                 self.episodic.observe_transition(self._key(symbol, bytes((operator,))), result)
-        if len(feedback.program) > 1:
+        if len(feedback.program) > 1 and self._orders is None:
             for symbol, result in zip(feedback.states[0], feedback.states[-1], strict=True):
                 self.episodic.observe_transition(self._key(symbol, feedback.program), result)
         return True
 
     def snapshot(self):
         episode = self.episodic.snapshot(max_bytes=self.EPISODIC_BUDGET)
-        payload = self.HEADER.pack(b"VG01", self.gated, len(episode)) + episode + self.relations.snapshot()
+        tag = b"VG01" if self._orders is None else b"VG02"
+        payload = self.HEADER.pack(tag, self.gated, len(episode)) + episode + self.relations.snapshot()
+        if self._orders is not None:
+            payload += b"".join(self._orders)
         if len(payload) > self.BUDGET:
             raise ValueError("synthesis adaptive budget exceeded")
         return payload
@@ -126,10 +147,13 @@ class VerifierGatedNexusAgent:
             raise ValueError("invalid synthesis snapshot size")
         tag, gated, n = cls.HEADER.unpack_from(payload)
         split = cls.HEADER.size + n
-        if tag != b"VG01" or gated not in (0, 1) or split >= len(payload):
+        end = len(payload) - (768 if tag == b"VG02" else 0)
+        if tag not in (b"VG01", b"VG02") or gated not in (0, 1) or split >= end:
             raise ValueError("invalid synthesis snapshot header")
-        model = cls(gated=bool(gated))
+        model = cls(gated=bool(gated), structured=tag == b"VG02")
         model.episodic = ConsolidatingMemory.restore(payload[cls.HEADER.size:split],
                                                      max_bytes=cls.EPISODIC_BUDGET)
-        model.relations.restore(payload[split:])
+        model.relations.restore(payload[split:end])
+        if model._orders is not None:
+            model._orders = [bytearray(payload[i:i + 256]) for i in range(end, len(payload), 256)]
         return model

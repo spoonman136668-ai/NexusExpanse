@@ -142,7 +142,7 @@ def fingerprint(agent, world, tasks):
     return code.hexdigest()
 
 
-def play(agent, world, tasks, seed, phase):
+def play(agent, world, tasks, seed, phase, *, trace_for=None):
     start, cpu = time.perf_counter(), time.process_time()
     rows = []
     peak = len(agent.snapshot()) if agent else 0
@@ -154,12 +154,16 @@ def play(agent, world, tasks, seed, phase):
             program = agent.propose(p.source, p.target, programs, used) if agent else programs[sequence]
             used.add(program)
             checked = world.verify(p, program)
-            admitted = agent.observe(checked) if agent else False
+            visible = checked if trace_for is None else trace_for(checked, seed, phase, i)
+            admitted = agent.observe(visible) if agent else False
             if agent:
                 peak = max(peak, len(agent.snapshot()))
             probes.append(dict(program=program.hex(), trace=[s.hex() for s in checked.states],
                                residual=checked.residual.hex(), surprise=checked.surprise,
                                accepted=checked.passed, admitted=admitted))
+            if trace_for is not None:
+                probes[-1].update(visible_trace=[frame.hex() for frame in visible.states],
+                                  corrupted=checked.states != visible.states)
             if checked.passed:
                 break
         rows.append(dict(source=p.source.hex(), target=p.target.hex(), skin=p.skin, depth=p.depth,
@@ -173,9 +177,9 @@ def paths(directory, prefix, phase):
     return root.with_suffix(".intent.json"), root.with_suffix(".bin"), root.with_suffix(".json")
 
 
-def history(directory, ident, prefix, fixture_hash):
+def history(directory, ident, prefix, fixture_hash, phases=PHASES):
     rows = []
-    for i, phase in enumerate(PHASES):
+    for i, phase in enumerate(phases):
         intent, snapshot, receipt = paths(directory, prefix, i)
         exists = [p.exists() for p in (intent, snapshot, receipt)]
         if not any(exists):
@@ -192,21 +196,22 @@ def history(directory, ident, prefix, fixture_hash):
     return rows
 
 
-def advance(directory, ident, seed, arm):
-    world, tasks, key = fixture(seed)
+def advance(directory, ident, seed, arm, *, phases=PHASES, make_fixture=fixture, reset=(1, 2),
+            structured=False, trace_for=None):
+    world, tasks, key = make_fixture(seed)
     prefix = f"{seed}-{arm}"
     with writer(directory, prefix):
-        rows = history(directory, ident, prefix, key)
+        rows = history(directory, ident, prefix, key, phases)
         i = len(rows)
-        if i == len(PHASES):
+        if i == len(phases):
             return
         previous = rows[-1] if rows else None
         payload = paths(directory, prefix, i - 1)[1].read_bytes() if previous else b""
-        if arm == FRESH and i in (1, 2):
+        if arm == FRESH and i in reset:
             payload = b""
         agent = None
         if arm != RANDOM:
-            agent = VerifierGatedNexusAgent.restore(payload) if payload else VerifierGatedNexusAgent(gated=arm != UNGATED)
+            agent = VerifierGatedNexusAgent.restore(payload) if payload else VerifierGatedNexusAgent(gated=arm != UNGATED, structured=structured)
         restore = None
         if payload:
             restore = dict(fresh_process=previous["pid"] != os.getpid(),
@@ -215,11 +220,11 @@ def advance(directory, ident, seed, arm):
                                     restore["probe"] == previous["fingerprint"]))
             if not restore["equal"]:
                 raise ValueError("synthesis cold restore did not match")
-        data = dict(identity=ident, phase=PHASES[i], fixture_sha256=key, arm=prefix,
+        data = dict(identity=ident, phase=phases[i], fixture_sha256=key, arm=prefix,
                     parent=previous["sha256"] if previous else None)
         intent, snapshot, receipt = paths(directory, prefix, i)
         atomic(intent, data)
-        result = play(agent, world, tasks[i], seed, i)
+        result = play(agent, world, tasks[i], seed, i, trace_for=trace_for)
         with snapshot.open("xb") as out:
             out.write(agent.snapshot() if agent else b"")
             out.flush()
@@ -228,14 +233,14 @@ def advance(directory, ident, seed, arm):
                     fingerprint=fingerprint(agent, world, tasks[0]))
         atomic(receipt, data)
         rows.append(data)
-        if len(rows) == len(PHASES):
+        if len(rows) == len(phases):
             atomic(directory / f"{prefix}.json", dict(seed=seed, arm=arm, phases=rows))
-        print(json.dumps(dict(seed=seed, phase=PHASES[i], arm=arm,
+        print(json.dumps(dict(seed=seed, phase=phases[i], arm=arm,
                               solved=sum(t["solved"] for t in result["tasks"]))))
 
 
 def summarize(phases):
-    shifted, cold = ([t for t in phases[i]["tasks"] if t["scored"]] for i in (1, 3))
+    shifted, cold = ([t for t in phases[i]["tasks"] if t["scored"]] for i in (1, -1))
     solved = [len(t["probes"]) for t in shifted + cold if t["solved"]]
     return dict(shifted_rate=sum(t["solved"] for t in shifted) / len(shifted),
                 cold_rate=sum(t["solved"] for t in cold) / len(cold),
@@ -265,22 +270,22 @@ def decision(runs):
     return dict(status=status, engineering=engineering, checks=checks)
 
 
-def merge(directory, ident, dest):
+def merge(directory, ident, dest, *, phases=PHASES, make_fixture=fixture,
+          schema="nexus-gate21-verifier-synthesis-dev-v1"):
     runs = []
     for seed in SEEDS:
-        _, _, key = fixture(seed)
+        _, _, key = make_fixture(seed)
         arms = {}
         for arm in ARMS:
             prefix = f"{seed}-{arm}"
-            found = history(directory, ident, prefix, key)
-            if (len(found) != len(PHASES) or json.loads((directory / f"{prefix}.json").read_text())
+            found = history(directory, ident, prefix, key, phases)
+            if (len(found) != len(phases) or json.loads((directory / f"{prefix}.json").read_text())
                     != dict(seed=seed, arm=arm, phases=found)):
                 raise ValueError("incomplete synthesis evidence")
             arms[arm] = found
         runs.append(dict(seed=seed, arms=arms, metrics={a: summarize(r) for a, r in arms.items()}))
     verdict = decision(runs)
-    atomic(dest, dict(schema="nexus-gate21-verifier-synthesis-dev-v1",
-                      qualification="SYNTHETIC_FINITE_RAW_BYTE_DEV", identity=ident, runs=runs, **verdict))
+    atomic(dest, dict(schema=schema, qualification="SYNTHETIC_FINITE_RAW_BYTE_DEV", identity=ident, runs=runs, **verdict))
     print(json.dumps(verdict))
 
 
