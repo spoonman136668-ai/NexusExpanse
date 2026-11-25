@@ -1,0 +1,507 @@
+{
+  "schema": "nexus-gate24-v1-rc1-cli-smoke-v1",
+  "qualification": "LINUX_CPU_DEV_SMOKE",
+  "identity": {
+    "source_sha": "0af874d26a91d70bf1c55689c9310ba91edcf496",
+    "tree": "81f0eb4009c543da8f0a033151158faf254adc16",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "torch": "2.10.0+cpu"
+  },
+  "status": "PASS",
+  "steps": [
+    {
+      "args": [
+        "train",
+        "--corpus-dir",
+        "/workspace/work/gate24-smoke/corpus",
+        "--directory",
+        "/workspace/work/gate24-smoke/training",
+        "--device",
+        "cpu",
+        "--dtype",
+        "fp32",
+        "--dim",
+        "32",
+        "--context",
+        "16",
+        "--epochs",
+        "2",
+        "--steps-per-epoch",
+        "1",
+        "--batch-per-domain",
+        "1",
+        "--eval-blocks",
+        "1",
+        "--epoch-limit",
+        "1",
+        "--save-snapshot",
+        "/workspace/work/gate24-smoke/verified-unified.pt"
+      ],
+      "stdin": null,
+      "exit_code": 0,
+      "stdout": "gate17 epoch 1/2 0.05s\n",
+      "stderr": "",
+      "wall_seconds": 3.197529590001068
+    },
+    {
+      "args": [
+        "train",
+        "--corpus-dir",
+        "/workspace/work/gate24-smoke/corpus",
+        "--directory",
+        "/workspace/work/gate24-smoke/training",
+        "--device",
+        "cpu",
+        "--dtype",
+        "fp32",
+        "--dim",
+        "32",
+        "--context",
+        "16",
+        "--epochs",
+        "2",
+        "--steps-per-epoch",
+        "1",
+        "--batch-per-domain",
+        "1",
+        "--eval-blocks",
+        "1",
+        "--epoch-limit",
+        "1",
+        "--save-snapshot",
+        "/workspace/work/gate24-smoke/verified-unified.pt",
+        "--until-complete"
+      ],
+      "stdin": null,
+      "exit_code": 0,
+      "stdout": "gate17 epoch 2/2 0.02s\n{\"completed_epochs\": 2, \"target_bytes\": 79, \"cold_equal\": true, \"parity\": {\"prefix_logits\": 0.0, \"prefix_hidden\": 0.0, \"streaming_logits\": 0.0, \"unified_stream_probabilities\": 0.0}}\n{\"command\": \"train\", \"saved_snapshot\": \"/workspace/work/gate24-smoke/verified-unified.pt\", \"neural_state_sha256\": \"718a5b68cbda0c7fc656c0b54500e222102e40eb8c90e4ed60c4b60e3e05dc46\", \"snapshot_sha256\": \"3abc6b48254be5f7d33dcc757abd4c807cec6c4dc874b4309002170ba8fb29d8\", \"parity\": {\"prefix_logits\": 0.0, \"prefix_hidden\": 0.0, \"streaming_logits\": 0.0, \"unified_stream_probabilities\": 0.0}, \"round_trip_probabilities\": 0.0, \"exact_state\": true}\n",
+      "stderr": "",
+      "wall_seconds": 8.372513342001184
+    },
+    {
+      "args": [
+        "verify",
+        "--snapshot",
+        "/workspace/work/gate24-smoke/verified-unified.pt",
+        "--snapshot-sha256",
+        "3abc6b48254be5f7d33dcc757abd4c807cec6c4dc874b4309002170ba8fb29d8"
+      ],
+      "stdin": null,
+      "exit_code": 0,
+      "stdout": "{\"command\": \"verify\", \"status\": \"PASS\", \"snapshot_bytes\": 138158, \"snapshot_sha256\": \"3abc6b48254be5f7d33dcc757abd4c807cec6c4dc874b4309002170ba8fb29d8\", \"parity\": {\"prefix_logits\": 0.0, \"prefix_hidden\": 0.0, \"streaming_logits\": 0.0, \"unified_stream_probabilities\": 0.0}, \"round_trip_probabilities\": 0.0, \"exact_state\": true}\n",
+      "stderr": "",
+      "wall_seconds": 2.3694386389979627
+    },
+    {
+      "args": [
+        "stream",
+        "--snapshot",
+        "/workspace/work/gate24-smoke/verified-unified.pt",
+        "--snapshot-sha256",
+        "3abc6b48254be5f7d33dcc757abd4c807cec6c4dc874b4309002170ba8fb29d8",
+        "--continuation",
+        "3",
+        "--save-snapshot",
+        "/workspace/work/gate24-smoke/adapted-unified.pt"
+      ],
+      "stdin": "000102\n030405\n",
+      "exit_code": 0,
+      "stdout": "{\"command\": \"stream\", \"observed_hex\": \"000102\", \"next\": [{\"byte\": 32, \"probability\": 0.03818990954238237}, {\"byte\": 101, \"probability\": 0.020563981667574623}, {\"byte\": 10, \"probability\": 0.020563807573518306}, {\"byte\": 114, \"probability\": 0.017626185111269062}, {\"byte\": 61, \"probability\": 0.011752113685290447}], \"continuation_hex\": \"202020\", \"arbitration_updates\": 2}\n{\"command\": \"stream\", \"observed_hex\": \"030405\", \"next\": [{\"byte\": 32, \"probability\": 0.03785294119157915}, {\"byte\": 101, \"probability\": 0.020382588921940146}, {\"byte\": 10, \"probability\": 0.020382352940583836}, {\"byte\": 114, \"probability\": 0.017470591816358228}, {\"byte\": 116, \"probability\": 0.011647596194728403}], \"continuation_hex\": \"202020\", \"arbitration_updates\": 5}\n{\"command\": \"stream\", \"saved_snapshot\": \"/workspace/work/gate24-smoke/adapted-unified.pt\", \"snapshot_sha256\": \"5575b57e89f87871b00272a90feb22bbfcd414de4ec2036d1f0b9e2e7e7e9ccd\", \"parity\": {\"prefix_logits\": 0.0, \"prefix_hidden\": 0.0, \"streaming_logits\": 0.0, \"unified_stream_probabilities\": 0.0}, \"round_trip_probabilities\": 0.0, \"exact_state\": true}\n",
+      "stderr": "",
+      "wall_seconds": 2.366831336999894
+    },
+    {
+      "args": [
+        "solve",
+        "--source-hex",
+        "010203",
+        "--target-hex",
+        "040302",
+        "--depth",
+        "2",
+        "--save-agent-snapshot",
+        "/workspace/work/gate24-smoke/verified-expression.bin"
+      ],
+      "stdin": null,
+      "exit_code": 0,
+      "stdout": "{\"command\": \"solve\", \"solved\": true, \"calls\": 1, \"calibration_calls\": 48, \"output_hex\": \"040302\", \"residual_hex\": \"000000\", \"program\": [\"reverse(x)\", \"mod(add(x, 1), 8)\"]}\n",
+      "stderr": "",
+      "wall_seconds": 2.181856875999074
+    }
+  ],
+  "epoch_workers": [
+    7035,
+    7041
+  ],
+  "training_receipt": {
+    "identity": {
+      "source_sha": "0af874d26a91d70bf1c55689c9310ba91edcf496",
+      "tree": "81f0eb4009c543da8f0a033151158faf254adc16",
+      "gate15_sha256": "1ccfbfd7a6e75b58451858f6963f7a9382c84a22d33384d4fc5f4029654d8628",
+      "backbone": "causal_attention_monarch",
+      "corpora": {
+        "train": {
+          "math": {
+            "bytes": 19,
+            "sha256": "8d8aec3437cd4947e02df2523a1cc9a0ceed4d12277f73894d77a711a7fb9acb"
+          },
+          "code": {
+            "bytes": 31,
+            "sha256": "31f629930e52ef2d74edea83ab5cc82fb385048281490fc62799776d7ec87036"
+          },
+          "prose": {
+            "bytes": 32,
+            "sha256": "9141db58f6753c9808d6493c97db494e39acf54c3b7ed3aed74e7b80bf82d56f"
+          }
+        },
+        "eval": {
+          "math": {
+            "bytes": 14,
+            "sha256": "d6e13d46e8a3033aba2504702b708edf70f67892ccb65b016eed460b7a9edc7b"
+          },
+          "code": {
+            "bytes": 30,
+            "sha256": "5547af955def1768b4adb663afb0ed617ce03a504b0f9dd95e72ffab77691d1d"
+          },
+          "prose": {
+            "bytes": 32,
+            "sha256": "870b8950625ed62c67ab5bbd30bf031c4c1a468988b167bed20dc2fbff54466a"
+          }
+        }
+      },
+      "geometry": {
+        "seed": 42,
+        "dim": 32,
+        "context": 16,
+        "epochs": 2,
+        "steps_per_epoch": 1,
+        "batch_per_domain": 1,
+        "eval_blocks": 1
+      },
+      "smoke": false,
+      "dtype": "fp32",
+      "device": "cpu",
+      "cuda": null,
+      "threads": 1,
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+      "torch": "2.10.0+cpu",
+      "numpy": "2.5.5",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+    },
+    "name": "gate17",
+    "initial_hash": "ec892ebceb47f43fce851d63757452f231aca1a97c52d3787a3dfe6774f06374",
+    "epochs": [
+      {
+        "identity": {
+          "source_sha": "0af874d26a91d70bf1c55689c9310ba91edcf496",
+          "tree": "81f0eb4009c543da8f0a033151158faf254adc16",
+          "gate15_sha256": "1ccfbfd7a6e75b58451858f6963f7a9382c84a22d33384d4fc5f4029654d8628",
+          "backbone": "causal_attention_monarch",
+          "corpora": {
+            "train": {
+              "math": {
+                "bytes": 19,
+                "sha256": "8d8aec3437cd4947e02df2523a1cc9a0ceed4d12277f73894d77a711a7fb9acb"
+              },
+              "code": {
+                "bytes": 31,
+                "sha256": "31f629930e52ef2d74edea83ab5cc82fb385048281490fc62799776d7ec87036"
+              },
+              "prose": {
+                "bytes": 32,
+                "sha256": "9141db58f6753c9808d6493c97db494e39acf54c3b7ed3aed74e7b80bf82d56f"
+              }
+            },
+            "eval": {
+              "math": {
+                "bytes": 14,
+                "sha256": "d6e13d46e8a3033aba2504702b708edf70f67892ccb65b016eed460b7a9edc7b"
+              },
+              "code": {
+                "bytes": 30,
+                "sha256": "5547af955def1768b4adb663afb0ed617ce03a504b0f9dd95e72ffab77691d1d"
+              },
+              "prose": {
+                "bytes": 32,
+                "sha256": "870b8950625ed62c67ab5bbd30bf031c4c1a468988b167bed20dc2fbff54466a"
+              }
+            }
+          },
+          "geometry": {
+            "seed": 42,
+            "dim": 32,
+            "context": 16,
+            "epochs": 2,
+            "steps_per_epoch": 1,
+            "batch_per_domain": 1,
+            "eval_blocks": 1
+          },
+          "smoke": false,
+          "dtype": "fp32",
+          "device": "cpu",
+          "cuda": null,
+          "threads": 1,
+          "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+          "torch": "2.10.0+cpu",
+          "numpy": "2.5.5",
+          "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+        },
+        "name": "gate17",
+        "epoch": 1,
+        "parent": null,
+        "sha256": "1b45910bc7509ba0e61063715820d996b5a0df9d8766e33f977cfa4407fb58f0",
+        "losses": [
+          20.411806106567383
+        ],
+        "wall_seconds": 0.05402005400173948,
+        "cpu_seconds": 0.03754837199999983,
+        "peak_rss_bytes": 303456256,
+        "telemetry": {
+          "target_bytes": 45,
+          "start_model_hash": "ec892ebceb47f43fce851d63757452f231aca1a97c52d3787a3dfe6774f06374",
+          "end_model_hash": "5a1f91c045c1fc637298620f2f49955e2d3674a1025735f79bc6ac83397e57c2",
+          "optimizer_steps_at_start": 0,
+          "bytes_per_second": 833.0239728851617,
+          "worker_pid": 7035,
+          "peak_cuda_allocated_bytes": null,
+          "peak_cuda_reserved_bytes": null
+        }
+      },
+      {
+        "identity": {
+          "source_sha": "0af874d26a91d70bf1c55689c9310ba91edcf496",
+          "tree": "81f0eb4009c543da8f0a033151158faf254adc16",
+          "gate15_sha256": "1ccfbfd7a6e75b58451858f6963f7a9382c84a22d33384d4fc5f4029654d8628",
+          "backbone": "causal_attention_monarch",
+          "corpora": {
+            "train": {
+              "math": {
+                "bytes": 19,
+                "sha256": "8d8aec3437cd4947e02df2523a1cc9a0ceed4d12277f73894d77a711a7fb9acb"
+              },
+              "code": {
+                "bytes": 31,
+                "sha256": "31f629930e52ef2d74edea83ab5cc82fb385048281490fc62799776d7ec87036"
+              },
+              "prose": {
+                "bytes": 32,
+                "sha256": "9141db58f6753c9808d6493c97db494e39acf54c3b7ed3aed74e7b80bf82d56f"
+              }
+            },
+            "eval": {
+              "math": {
+                "bytes": 14,
+                "sha256": "d6e13d46e8a3033aba2504702b708edf70f67892ccb65b016eed460b7a9edc7b"
+              },
+              "code": {
+                "bytes": 30,
+                "sha256": "5547af955def1768b4adb663afb0ed617ce03a504b0f9dd95e72ffab77691d1d"
+              },
+              "prose": {
+                "bytes": 32,
+                "sha256": "870b8950625ed62c67ab5bbd30bf031c4c1a468988b167bed20dc2fbff54466a"
+              }
+            }
+          },
+          "geometry": {
+            "seed": 42,
+            "dim": 32,
+            "context": 16,
+            "epochs": 2,
+            "steps_per_epoch": 1,
+            "batch_per_domain": 1,
+            "eval_blocks": 1
+          },
+          "smoke": false,
+          "dtype": "fp32",
+          "device": "cpu",
+          "cuda": null,
+          "threads": 1,
+          "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+          "torch": "2.10.0+cpu",
+          "numpy": "2.5.5",
+          "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+        },
+        "name": "gate17",
+        "epoch": 2,
+        "parent": "1b45910bc7509ba0e61063715820d996b5a0df9d8766e33f977cfa4407fb58f0",
+        "sha256": "b76f8e113a331d118e8006c7a8f87049517ad310b7b94e346c9d833493786c98",
+        "losses": [
+          19.081628799438477
+        ],
+        "wall_seconds": 0.015106677998119267,
+        "cpu_seconds": 0.014506761999999895,
+        "peak_rss_bytes": 304574464,
+        "telemetry": {
+          "target_bytes": 34,
+          "start_model_hash": "5a1f91c045c1fc637298620f2f49955e2d3674a1025735f79bc6ac83397e57c2",
+          "end_model_hash": "718a5b68cbda0c7fc656c0b54500e222102e40eb8c90e4ed60c4b60e3e05dc46",
+          "optimizer_steps_at_start": 1,
+          "bytes_per_second": 2250.660271188205,
+          "worker_pid": 7041,
+          "peak_cuda_allocated_bytes": null,
+          "peak_cuda_reserved_bytes": null
+        }
+      }
+    ],
+    "steps": 2,
+    "training_seconds": 0.06912673199985875,
+    "training_cpu_seconds": 0.052055133999999725,
+    "checkpoint": "gate17-final.pt",
+    "checkpoint_sha256": "16b537a2b827e8ec51e00f94a0840d71ef2a43c1772427771dbba1f1e98e4923",
+    "final_hash": "718a5b68cbda0c7fc656c0b54500e222102e40eb8c90e4ed60c4b60e3e05dc46",
+    "cold_equal": true,
+    "cold_restore_seconds": 0.00994254000033834,
+    "cold_peak_rss_bytes": 297541632,
+    "evaluation_peak_rss_bytes": 304586752,
+    "fresh_evaluation": {
+      "state_hash": "718a5b68cbda0c7fc656c0b54500e222102e40eb8c90e4ed60c4b60e3e05dc46",
+      "restore_seconds": 0.00994254000033834,
+      "peak_rss_bytes": 297541632,
+      "worker_pid": 7046,
+      "validation": {
+        "math": {
+          "blocks": 1,
+          "target_bytes": 13,
+          "bpb": 25.054569740472743,
+          "wall_seconds": 0.005787395999504952,
+          "bytes_per_second": 2246.2606673384726
+        },
+        "code": {
+          "blocks": 1,
+          "target_bytes": 16,
+          "bpb": 18.44046550451638,
+          "wall_seconds": 0.001189151000289712,
+          "bytes_per_second": 13454.977539523517
+        },
+        "prose": {
+          "blocks": 1,
+          "target_bytes": 16,
+          "bpb": 31.260626033953415,
+          "wall_seconds": 0.0009489399999438319,
+          "bytes_per_second": 16860.91849953321
+        }
+      },
+      "parity": {
+        "prefix_logits": 0.0,
+        "prefix_hidden": 0.0,
+        "streaming_logits": 0.0,
+        "unified_stream_probabilities": 0.0
+      },
+      "unified_initial_serialized_bytes": 138158,
+      "parity_bytes": 16,
+      "peak_cuda_allocated_bytes": null,
+      "peak_cuda_reserved_bytes": null
+    }
+  },
+  "verify": {
+    "command": "verify",
+    "status": "PASS",
+    "snapshot_bytes": 138158,
+    "snapshot_sha256": "3abc6b48254be5f7d33dcc757abd4c807cec6c4dc874b4309002170ba8fb29d8",
+    "parity": {
+      "prefix_logits": 0.0,
+      "prefix_hidden": 0.0,
+      "streaming_logits": 0.0,
+      "unified_stream_probabilities": 0.0
+    },
+    "round_trip_probabilities": 0.0,
+    "exact_state": true
+  },
+  "stream": [
+    {
+      "command": "stream",
+      "observed_hex": "000102",
+      "next": [
+        {
+          "byte": 32,
+          "probability": 0.03818990954238237
+        },
+        {
+          "byte": 101,
+          "probability": 0.020563981667574623
+        },
+        {
+          "byte": 10,
+          "probability": 0.020563807573518306
+        },
+        {
+          "byte": 114,
+          "probability": 0.017626185111269062
+        },
+        {
+          "byte": 61,
+          "probability": 0.011752113685290447
+        }
+      ],
+      "continuation_hex": "202020",
+      "arbitration_updates": 2
+    },
+    {
+      "command": "stream",
+      "observed_hex": "030405",
+      "next": [
+        {
+          "byte": 32,
+          "probability": 0.03785294119157915
+        },
+        {
+          "byte": 101,
+          "probability": 0.020382588921940146
+        },
+        {
+          "byte": 10,
+          "probability": 0.020382352940583836
+        },
+        {
+          "byte": 114,
+          "probability": 0.017470591816358228
+        },
+        {
+          "byte": 116,
+          "probability": 0.011647596194728403
+        }
+      ],
+      "continuation_hex": "202020",
+      "arbitration_updates": 5
+    },
+    {
+      "command": "stream",
+      "saved_snapshot": "/workspace/work/gate24-smoke/adapted-unified.pt",
+      "snapshot_sha256": "5575b57e89f87871b00272a90feb22bbfcd414de4ec2036d1f0b9e2e7e7e9ccd",
+      "parity": {
+        "prefix_logits": 0.0,
+        "prefix_hidden": 0.0,
+        "streaming_logits": 0.0,
+        "unified_stream_probabilities": 0.0
+      },
+      "round_trip_probabilities": 0.0,
+      "exact_state": true
+    }
+  ],
+  "solve": {
+    "command": "solve",
+    "solved": true,
+    "calls": 1,
+    "calibration_calls": 48,
+    "output_hex": "040302",
+    "residual_hex": "000000",
+    "program": [
+      "reverse(x)",
+      "mod(add(x, 1), 8)"
+    ]
+  },
+  "corpus_sha256": {
+    "train_math": "8d8aec3437cd4947e02df2523a1cc9a0ceed4d12277f73894d77a711a7fb9acb",
+    "train_code": "31f629930e52ef2d74edea83ab5cc82fb385048281490fc62799776d7ec87036",
+    "train_prose": "9141db58f6753c9808d6493c97db494e39acf54c3b7ed3aed74e7b80bf82d56f",
+    "eval_math": "d6e13d46e8a3033aba2504702b708edf70f67892ccb65b016eed460b7a9edc7b",
+    "eval_code": "5547af955def1768b4adb663afb0ed617ce03a504b0f9dd95e72ffab77691d1d",
+    "eval_prose": "870b8950625ed62c67ab5bbd30bf031c4c1a468988b167bed20dc2fbff54466a"
+  },
+  "snapshots": {
+    "verified-unified.pt": "3abc6b48254be5f7d33dcc757abd4c807cec6c4dc874b4309002170ba8fb29d8",
+    "adapted-unified.pt": "5575b57e89f87871b00272a90feb22bbfcd414de4ec2036d1f0b9e2e7e7e9ccd",
+    "verified-expression.bin": "cd4e570da8fe8bd3ed339cb59337197beac03a03d0b03d83adaecf6d7ea1d6ee"
+  }
+}
