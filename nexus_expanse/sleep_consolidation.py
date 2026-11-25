@@ -31,9 +31,7 @@ def _ranked(model):
 def _remove(model, contexts, slots):
     memory, rel = model.episodic, model.reasoning
     for key in contexts:
-        memory._row_bytes -= memory._sizes.pop(key)
-        del memory._table[key]
-        del memory._totals[key]
+        memory._drop_context(key)
     if slots:
         removed = set(slots)
         keep = [i for i in range(rel.used) if i not in removed]

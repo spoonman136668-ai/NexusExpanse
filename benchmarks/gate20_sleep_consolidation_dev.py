@@ -77,7 +77,7 @@ def fingerprint(model):
                 forecast=hashlib.sha256(b"".join(held)).hexdigest())
 
 
-def collect(model, rows, *, adapt):
+def collect(model, rows, *, adapt, track_disagreement=False):
     outputs = []
     ledger = {}
     peak = adaptive_bytes(model)
@@ -91,16 +91,22 @@ def collect(model, rows, *, adapt):
             context = block[max(0, i - 8):i]
             nll = -math.log2(max(float(forecast.mixed[byte]), 1e-300))
             loss.append(nll)
+            boundary = adapt and (i <= 3 or i >= len(block) - 3)
+            disagreement = 0.
+            if boundary and track_disagreement:
+                disagreement = min(1., float((forecast.patch - forecast.episodic).abs().sum()) / 2)
             forecast = model.step(byte, adapt=adapt)
             if adapt and (i % 6 == 0 or i == len(block) - 1):
                 model.observe_relation(context[-2:], byte)
-            if adapt and (i <= 3 or i >= len(block) - 3):
+            if boundary:
                 key = context, byte
-                ledger[key] = max(nll, ledger.get(key, 0.))
+                if key not in ledger or sum(ledger[key]) < nll + disagreement:
+                    ledger[key] = nll, disagreement
                 if len(ledger) > REPLAY_LIMIT:
-                    del ledger[min(ledger, key=lambda k: (ledger[k], k))]
-            # One length byte, context, outcome and FP64 surprisal per ledger row.
-            peak = max(peak, adaptive_bytes(model) + sum(10 + len(ctx) for ctx, _ in ledger))
+                    del ledger[min(ledger, key=lambda k: (sum(ledger[k]), k))]
+            # One length byte, context, outcome and FP64 scalars per ledger row.
+            row_overhead = 18 if track_disagreement else 10
+            peak = max(peak, adaptive_bytes(model) + sum(row_overhead + len(ctx) for ctx, _ in ledger))
             if peak > BUDGET:
                 raise ValueError("adaptive state and selected boundary ledger exceed 40 KB")
         outputs.append(dict(sha256=hashlib.sha256(block).hexdigest(), transition_bpb=loss))
@@ -113,7 +119,8 @@ def collect(model, rows, *, adapt):
                  peak_adaptive_bytes=peak, episodic_bytes=model.episodic.serialized_size(),
                  hopfield_entries=model.reasoning.used, adaptive_bytes=adaptive_bytes(model),
                  seconds=time.perf_counter()-time_start, cpu_seconds=time.process_time()-cpu_start),
-            [(ctx, byte, nll) for (ctx, byte), nll in ledger.items()])
+            [(ctx, byte, *(scores if track_disagreement else scores[:1]))
+             for (ctx, byte), scores in ledger.items()])
 
 
 def paths(directory, seed, i):
@@ -142,7 +149,7 @@ def receipts(directory, ident, seed, fixture):
     return history
 
 
-def advance(directory, ident, seed):
+def advance(directory, ident, seed, *, arms=ARMS, boundary_policy=None, quine_arm=None):
     examples, fixture = fixtures(seed)
     with writer(directory, f"{seed}-sleep"):
         history = receipts(directory, ident, seed, fixture)
@@ -154,7 +161,7 @@ def advance(directory, ident, seed):
         restores = {}
         if previous:
             raw = torch.load(paths(directory, seed, i - 1)[1], weights_only=True, map_location="cpu")
-            models = {a: NexusExpanseUnified.restore(raw[a]) for a in ARMS}
+            models = {a: NexusExpanseUnified.restore(raw[a]) for a in arms}
             for a, model in models.items():
                 actual = fingerprint(model)
                 restores[a] = dict(fresh_process=previous["pid"] != os.getpid(),
@@ -162,7 +169,7 @@ def advance(directory, ident, seed):
                 if not restores[a]["fresh_process"] or not restores[a]["equal"]:
                     raise ValueError("sleep fresh-process parity failed")
         else:
-            models = {a: create(seed) for a in ARMS}
+            models = {a: create(seed) for a in arms}
         intent, ck, meta = paths(directory, seed, i)
         data = dict(identity=ident, seed=seed, phase=phase,
                     parent=previous["checkpoint_sha256"] if previous else None, fixture=fixture)
@@ -176,16 +183,20 @@ def advance(directory, ident, seed):
                 n = sum(r["transitions"] for r in domains.values())
                 outcome[arm] = dict(domains=domains, bpb=bits / n, transitions=n)
         else:
-            replay = None
+            ledgers = {}
             for arm, model in models.items():
-                outcome[arm], observed = collect(model, examples["train"][phase], adapt=True)
-                if arm == SLEEP:
-                    replay = observed
-            sleep = models[SLEEP].consolidate_sleep(replay)
-            matched = match_random_prune(models[SLEEP], models[RANDOM], seed * 10 + i)
-            intervention = dict(sleep=sleep, match=matched)
+                outcome[arm], ledgers[arm] = collect(model, examples["train"][phase], adapt=True,
+                                                     track_disagreement=arm == quine_arm)
+            if boundary_policy is None:
+                sleep = models[SLEEP].consolidate_sleep(ledgers[SLEEP])
+                matched = match_random_prune(models[SLEEP], models[RANDOM], seed * 10 + i)
+                intervention = dict(sleep=sleep, match=matched)
+            else:
+                intervention = boundary_policy(models, ledgers, seed, i, phase)
             for arm, model in models.items():
                 outcome[arm]["post_boundary_adaptive_bytes"] = adaptive_bytes(model)
+        if quine_arm is not None:
+            outcome[quine_arm]["retention"] = models[quine_arm].episodic.quine_retention()
         saved = {a: m.snapshot() for a, m in models.items()}
         save_pt(ck, saved)
         state = {a: fingerprint(m) for a, m in models.items()}
