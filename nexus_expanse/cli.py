@@ -327,7 +327,7 @@ def route_stream_command(args):
             difference = route_prefix_check(route, raw, result)
         logp, routing, *measured = result
         names = bank.skill_names
-        if args.router == "bayes_bma":
+        if routing.ndim == 3:
             weights = routing[0]
             active = weights.argmax(-1)
         else:
@@ -395,7 +395,10 @@ def parser():
 
     route = sub.add_parser("route-stream", help="forecast raw bytes with a saved multi-skill bank")
     route.add_argument("--bank", type=Path, required=True)
-    route.add_argument("--router", choices=("bayes_bma", "bayes_argmax", "surprise_sparse"), required=True)
+    route.add_argument(
+        "--router", choices=("bayes_bma", "bayes_argmax", "surprise_sparse", "hmm_bma", "hmm_sparse"),
+        required=True,
+    )
     route.add_argument("--input-hex", action="append", help="repeat for chunks, or send hex lines on stdin")
     route.set_defaults(handler=route_stream_command)
     return p

@@ -1,6 +1,7 @@
 """Frozen raw-byte skill routing using only evidence available before each forecast."""
 from __future__ import annotations
 
+from collections import deque
 from collections.abc import Mapping
 import math
 import os
@@ -11,6 +12,23 @@ import torch
 from torch import nn
 
 from nexus_expanse.checkpoint_transport import CONFIG, CorrectedLinear, ImportedSkill
+
+
+def _sticky_transition(reference, k, switch_prob):
+    if not math.isfinite(switch_prob) or not 0 <= switch_prob <= 1:
+        raise ValueError("switch_prob must be in [0, 1]")
+    if k == 1:
+        return reference.new_zeros(1, 1)
+    return reference.new_full((k, k), switch_prob / (k - 1)).fill_diagonal_(1 - switch_prob).log()
+
+
+def _hmm_predict(log_posterior, transition):
+    return (log_posterior.unsqueeze(-1) + transition).logsumexp(-2).log_softmax(-1)
+
+
+def _hmm_update(log_prior, log_emission, transition):
+    posterior = (log_prior + log_emission).log_softmax(-1)
+    return _hmm_predict(posterior, transition)
 
 
 class MultiSkillBank(nn.Module):
@@ -192,6 +210,88 @@ class MultiSkillBank(nn.Module):
             selections.append(active)
 
         return torch.stack(forecasts, dim=1), torch.stack(selections, dim=1), calls / (batch * steps)
+
+
+    @torch.inference_mode()
+    def forward_hmm_bma(self, raw, switch_prob=0.05, *, include_next=False):
+        """Mix expert probabilities using the predictive Sticky-HMM prior."""
+        components = self.component_log_probs(raw, include_next=include_next)
+        batch, steps, k, _ = components.shape
+        transition = _sticky_transition(components, k, switch_prob)
+        prior = components.new_full((batch, k), -math.log(k))
+        history = [prior]
+        for t in range(1, steps):
+            observed = raw[:, t - 1].long().view(-1, 1, 1).expand(-1, k, 1)
+            emission = components[:, t - 1].gather(-1, observed).squeeze(-1)
+            prior = _hmm_update(prior, emission, transition)
+            history.append(prior)
+        log_weights = torch.stack(history, dim=1)
+        return (components + log_weights.unsqueeze(-1)).logsumexp(-2), log_weights.exp()
+
+    @torch.inference_mode()
+    def forward_hmm_sparse(
+        self, raw, switch_prob=0.05, surprise_threshold_bits=3.0, probe_interval=16, *,
+        include_next=False,
+    ):
+        """Forecast with one expert and return predictive priors and actual call rate.
+
+        A probe filters up to four observed bytes from the stored prior at that
+        window's start. Only a probe scores cross-skill emissions. Other steps
+        apply the transition alone. Replayed state affects future forecasts only.
+        """
+        threshold, interval = self._probe_options(surprise_threshold_bits, probe_interval)
+        raw, steps = self._prepare(raw, include_next)
+        batch = raw.size(0)
+        experts = tuple(self.skills.values())
+        k = len(experts)
+        forecasts = [self._prior(raw)]
+        prior = forecasts[0].new_full((batch, k), -math.log(k))
+        transition = _sticky_transition(prior, k, switch_prob)
+        priors = deque([prior], maxlen=min(4, self.context - 1))
+        weights = [prior.exp()]
+        rows_all = torch.arange(batch, device=raw.device)
+        calls = 0
+
+        for t in range(1, steps):
+            observed = raw[:, t - 1:t]
+            surprise = -forecasts[-1].gather(-1, observed).squeeze(-1) / math.log(2)
+            probe = (surprise > threshold) | (t % interval == 0)
+            n_probe = int(probe.sum().item())
+            prefix = self._prefix(raw, t)
+            prior = _hmm_predict(priors[-1], transition)
+            active = prior.argmax(-1)
+            options = forecasts[-1].new_empty(batch, k, 256)
+            window = len(priors)
+            available = min(window, prefix.size(1) - 1) if n_probe else 0
+            emissions = prior.new_full((n_probe, window, k), -math.log(256))
+            recent = raw[probe, t - available:t].unsqueeze(-1)
+
+            for index, model in enumerate(experts):
+                rows = probe | (active == index)
+                count = int(rows.sum().item())
+                if count == 0:
+                    continue
+                predictions = model(prefix[rows])[:, -(available + 1):].float().log_softmax(-1)
+                options[rows, index] = predictions[:, -1]
+                if available:
+                    earlier = predictions[probe[rows], :-1]
+                    emissions[:, -available:, index] = earlier.gather(-1, recent).squeeze(-1)
+                calls += count
+
+            if n_probe:
+                replay = priors[0][probe]
+                for offset in range(window):
+                    replay = _hmm_update(replay, emissions[:, offset], transition)
+                    if offset + 1 < window:
+                        priors[offset + 1][probe] = replay
+                prior[probe] = replay
+                active = prior.argmax(-1)
+
+            forecasts.append(options[rows_all, active])
+            priors.append(prior)
+            weights.append(prior.exp())
+
+        return torch.stack(forecasts, dim=1), torch.stack(weights, dim=1), calls / (batch * steps)
 
 
 def save_bank(bank: MultiSkillBank, path):

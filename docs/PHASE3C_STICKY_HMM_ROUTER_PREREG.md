@@ -1,0 +1,29 @@
+# Phase 3C Sticky-HMM routing preregistration
+
+Phase 3A showed that discounted likelihood improved prediction, with 14- and 16-byte worst-transition recoveries in the two seeds that recovered on all three transitions. This DEV confirmation tests whether a first-order hidden regime with a fixed switch probability improves held-out switch routing and BPB. It also tests whether delayed cross-skill evidence can preserve a sparse call budget.
+
+## Identity, training and held-out data
+
+Run on Linux CPU from the clean commit adding this protocol, router, CLI, tests and benchmark, directly above Phase 3B tip `cc1a462efce81ffb01ec42b692d7657af2dcd214`. Use the workspace virtual environment, PyTorch 2.15.0+cpu, deterministic FP32 inference and one Torch thread. Use fresh seeds 1601–1605 with no tuning on CHECK. The run uses local Git objects and generated donors.
+
+Reuse the Phase 3A fixture generator, four 256-row donors, byte-to-row permutations, 192-step training and `residual8` import unchanged. The authentic Python and Markdown fixture bytes are pinned at `105e6e754abe940de5c66ca41a75c3bf825aa1cb`. Use the same 96 FIT windows per domain, 32 single-domain 64-byte CHECK windows, and 24 switch CHECK windows. Each switch has 32 bytes per segment. The three ordered transitions are Rule A to Rule B, Python to Markdown, and Markdown to Rule A. Preserve the zero exact 32-byte FIT/CHECK overlap check. Fit donors in a separate producer process and exit before the receiver imports the checkpoint tensors. Guard receiver import, scoring and fresh-process restore against donor execution.
+
+## Predictive filters
+
+- All arms assign the same uniform byte distribution before the first observed byte. At each position t, forecast from bytes strictly before t, with up to 64 prior bytes. All skills remain frozen. There is no receiver backpropagation, domain input, boundary marker or lookahead.
+- `hmm_bma` starts at uniform regime weights. Mix probabilities using the predictive prior. After observing the byte, add its per-expert log likelihood to the log prior, normalize, and propagate through the log transition matrix to form the next predictive prior. With switch probability 0.05, diagonal mass is 0.95 and each off-diagonal gets 0.05 divided by three.
+- `hmm_sparse` uses the top predictive weight to forecast through one expert at each non-probe position. Propagate the sticky transition without cross-expert emission evidence on those steps. Probe all four when the last forecast's surprise exceeds 3.0 bits or the next position is divisible by 16. Refilter the last four observed bytes from the saved prior at the start of that window, or use the shorter window at stream start. At a probe, each expert's single causal prefix pass supplies the aligned earlier output rows and the next forecast. Select that next forecast using the top updated predictive weight. Replace stored intermediate priors within the replay window so an overlapping probe incorporates each emission once. Previously emitted forecasts and weights stay fixed. Count every expert-stream invocation, including every probe.
+- Use the existing matched `oracle_manual`, `bayes_bma` with gamma 0.85, `surprise_sparse` at 3.5 bits and 16 bytes, and `uniform_mixture`. Feed the oracle the true target domain only for that arm. The uniform mixture's top-weight tie uses the base index, matching Phase 3A.
+
+## Metrics and stopping rules
+
+Use the Phase 3A metrics and definitions. Single-domain routing drops the first eight positions. The post-switch routing and BPB comparisons pool the 32 target positions of all held-out switched streams. Report rule-answer top-1 accuracy separately for each suite, at positions 3 modulo 4 in the rule domains. On each switch transition, recovery is the first offset of an eight-byte window with at least 80% routing accuracy across its eight matched streams. Use the worst of the three transition offsets for the seed, with null when any transition never recovers. Count expert-stream calls per forecast position, including the zero-call uniform prior. Record wall milliseconds per byte, costs, donor/checkpoint and corpus digests, and exact bank-state and two-router output digests before and after cold restore.
+
+Freeze all thresholds, seeds and source before the scored run. Reject source or corpus drift, guard failures, and incomplete evidence, and preserve observed failures and null outcomes. Any changed scientific protocol requires its own preregistration.
+
+- **ENGINEERING PASS** requires at least 250 pytest cases with zero failures or skips, 0/100 failures on the legacy prefix check, exact 0.0 prefix causality for both HMM routers across 50 seeds, zero receiver donor forwards and exact cold restores in 5/5 scored seeds.
+- **SCIENTIFIC PASS** requires `hmm_bma` to strictly improve both post-switch BPB and routing accuracy over `bayes_bma` in 5/5 seeds and to recover all three transitions within eight bytes in at least 4/5 seeds. It also requires `hmm_sparse` to use at most 2.4 skill calls per byte in both suites in every seed, to beat `surprise_sparse` on post-switch routing accuracy in at least 4/5 seeds and to beat `uniform_mixture` on that routing metric in 5/5 seeds. Record the uniform-mixture BPB comparison as a diagnostic because its tied routing weights make its reported routing score a weak comparator.
+- **SCIENTIFIC MIXED** requires joint dense BPB and routing improvements in at least 4/5 seeds with one or more PASS requirements unmet.
+- **SCIENTIFIC FAIL** applies when the joint dense comparison succeeds in fewer than 4/5 seeds.
+
+Report the 90% single-domain routing objective for both HMM arms and the eight-byte sparse recovery objective separately. Preserve all raw values in `evidence/phase3c-sticky-hmm-routing-dev-001.json` in the following commit and run the full regression at the final integrated DEV tip.
