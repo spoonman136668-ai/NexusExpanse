@@ -1,0 +1,856 @@
+{
+  "source": "1923aef647d4f51821cb859354049ede3e78fd28",
+  "stage": "bpe-screen",
+  "method": "residual8",
+  "manifest": {
+    "nexus_expanse/core.py": {
+      "file_sha256": "bdc9c4c9a30f8eaa3db17e356ed026a0e424cbbd4f396127d26c1dc7a811eda2",
+      "spans": [
+        [
+          0,
+          "432085976c89329dcf6492ae1c8b94f0ecdf4e0020c0fa8aa6090ac04415e312"
+        ],
+        [
+          64,
+          "4019ad715e1fbdda3b7124b408caf93de7cd08346cb14b77fe723ea61a105b66"
+        ],
+        [
+          128,
+          "9e7636d9a24aaa74981a08cd8918bd49e1cd4e5c30577d6d95d795fd095f73cd"
+        ],
+        [
+          192,
+          "6e8eebb08338a1e08792d28bb07d64acf30d505de38f3069cf0b2777a5177bf6"
+        ],
+        [
+          256,
+          "69139eccecf7b9c107c71a5e6ef9c4f0bad0ca22a695212c2084e2c3380e2566"
+        ],
+        [
+          320,
+          "f857ca2cd40369bb866d91bfc2e2a738340930035134ecfce36d8ddf9d7d4afa"
+        ],
+        [
+          384,
+          "4617a38626a5a45656feee961530a9bd754bbe10a147a808fcc86e865e3bbdd8"
+        ],
+        [
+          448,
+          "0195e25d0bf2436af1b1f353781deb76e4c4c21cde015794f97e3b859a494f05"
+        ],
+        [
+          512,
+          "cb713d0eaa1052b5236d95801df3138369164633fce753eab1d2e789ec52b8ad"
+        ],
+        [
+          576,
+          "5693bf901785fa9055527139ba3a8c5d75c0c2146c7583c912318c7aaed286b6"
+        ],
+        [
+          640,
+          "0b0e7622f757acbe34d7d0846ecfff2a1c8f6070d86d5979e989f8730834478a"
+        ],
+        [
+          704,
+          "e9bb56e2b69329d33d8836c6640b4668c42f04420e1e19bf0abc13c2ffe6db3c"
+        ],
+        [
+          768,
+          "c1da3f298ecbd0181598d488d9aeee1d8a58a307f5f790b1718142f22ea1552d"
+        ],
+        [
+          832,
+          "e8df1586658f83333f3da814e9cd9e72ccb7d38175c78f074836be3dc73a47af"
+        ],
+        [
+          896,
+          "3c269a42eec4d9768d613ba0b66efcc9156c1d8548dbfd24bd93722acb5f642a"
+        ],
+        [
+          960,
+          "636ff3af675a8068221968d731d3adce5fbc2bcbee86015d1828a09cdfda6b9f"
+        ]
+      ],
+      "split": "python"
+    },
+    "nexus_expanse/memory.py": {
+      "file_sha256": "c35d029790ffbf8669eda332d51444ac5e02a4c50a3bddbd685beb8d6e73c91f",
+      "spans": [
+        [
+          0,
+          "8492dd16496a8d3655aa45216fcb766eb3a70a313b5a376fa2cb7986d477c483"
+        ],
+        [
+          128,
+          "426be4aae107f44327ef6ae29a6486dc01b5a05816db4d9eb685358ba92392ac"
+        ],
+        [
+          192,
+          "8691acad488e3ae87c6c420607c42214599a4c48243bee9f7b1adba280f61580"
+        ],
+        [
+          256,
+          "1a609d6da1e9a42b2ea7415a64460c78f7814396f5cfb516c4cf408311f0912f"
+        ],
+        [
+          384,
+          "8e425fd0793cd1b7222789544ad31e73100ba18c4d1a42767bec745f6ff9afe2"
+        ],
+        [
+          448,
+          "efa31831494ee0570de8794831525c60d8e6a2db4f9d5dabc761d2713fee4d9b"
+        ],
+        [
+          512,
+          "91d5f83e9cc34ec11bf201f5cb7fd522a8ad023c4be45ba4a0697dccbb1e714b"
+        ],
+        [
+          576,
+          "87565ff2e74de3b4ddb3213a865d5db127d6488d5dbeb4a7952b7d1000d51cfd"
+        ],
+        [
+          640,
+          "3a0a244d78e331550e9a85dc9909bf524df7e60f1f26087e35bcfe3cd51d7142"
+        ],
+        [
+          704,
+          "c3c4a43262ad64b1e822d9107fb6e7d63c17de7024310c111d93f35045792a7d"
+        ],
+        [
+          768,
+          "47afe2c72b20ff5108505071996dd0f863c82222b89e1fea9d9bbf978b47e1b5"
+        ],
+        [
+          832,
+          "2fac98515c6eb52cd1e82b1bef5f5d52270445f0236e1690d46c7baf7b06263f"
+        ],
+        [
+          896,
+          "4e310b5f3fa9ba114bf5479fe70b94183bda0918a8a9a2ad6f9430b020d19a51"
+        ],
+        [
+          960,
+          "62670e2ffeb49d8f1d755a284c0eb9d36bcd12d735806ffa860798b20432c040"
+        ],
+        [
+          1024,
+          "72b82ae7042dbc22817b0ec43f73da42ef26a2875dbf8514773b49ab11eef66d"
+        ],
+        [
+          1088,
+          "e62c3896cc6ce54099665a107c2145a74a6b42b28c454e06bacbeb9bcbfed567"
+        ]
+      ],
+      "split": "python"
+    },
+    "docs/GATE17_PREREG.md": {
+      "file_sha256": "3409606301b6484efd4ba49a49f8bcab5fea1993be386ed519bfc2f375138088",
+      "spans": [
+        [
+          0,
+          "70f35acb35ffa1287c8c5a19cd889931b07afe261b8620e17ab26b7c69f6e60b"
+        ],
+        [
+          64,
+          "fc57d66ec4399c94d169baf611cc7faf9e0141ec9e65636bd140a861d4cf286d"
+        ],
+        [
+          128,
+          "39f5af2fc36dcf05c58764a9fe94a9c01054f071c9435b50e9e93cc27c30cfa3"
+        ],
+        [
+          192,
+          "bcc2958a5689906cbdc99a57c96fc562fdc0a056022c46440e9177389cf45fe9"
+        ],
+        [
+          256,
+          "6b1fb85463cf824a839b407d44c01c4c173fa4ccc2aacc78e2be261f703c87cd"
+        ],
+        [
+          320,
+          "53e4a64afce73a55741237c0732d2e7b168fd4021332aa3372450bebd5db4347"
+        ],
+        [
+          384,
+          "c1d5619658233e4b3ab55d81c173a1c7eace295ed744a36477b897a133e7ab2c"
+        ],
+        [
+          448,
+          "d5016e564ee41de19e943413693ead8be1ac603af71820af88ffd0705dfb99f4"
+        ],
+        [
+          512,
+          "a7896781aeaec2196db86f80a3856caf4299db67091ae5e92adaea76666c41d1"
+        ],
+        [
+          576,
+          "c39d9de262159e3bdaae19c3f51c3d0156e60d8ffeaea10ddd96e17b55cba0b5"
+        ],
+        [
+          640,
+          "d70b0438e94db27f108955899a93fec25b0b076397ecf791450ea7f3bd902a5a"
+        ],
+        [
+          704,
+          "58f6743188e718eb1b28a819a8d7a53394e6cc645f727bb065f58b9a53723e71"
+        ],
+        [
+          768,
+          "3d6c52e24052822451a379af9704ffc45fa0aa5af16d8656e7139a0ed405ddfa"
+        ],
+        [
+          832,
+          "ad25015041767beb64f869d6a8c2846ebc34733f5c222f22d35260969b044c1c"
+        ],
+        [
+          896,
+          "340168d9d4ecb81ef32c1da3be1140b2854a835a31d3d4792a929f3a03027f66"
+        ],
+        [
+          960,
+          "875aaaa7b3e566f4c3717f89ffc0c0c548021a5bd1864afc2d24ae336c479259"
+        ]
+      ],
+      "split": "fit"
+    },
+    "docs/GATE20_PREREG.md": {
+      "file_sha256": "96e283cf575608581e31f7ea246b3fc0177ee4bc9bcc597fd44f8b6f9202095e",
+      "spans": [
+        [
+          0,
+          "7d7a7f7e1c7db9b2bb426df05d263cb120fdc124d68e287788d9145b024ad00e"
+        ],
+        [
+          64,
+          "06bacdac9e9053e8937dc47f598e91c263e90b8f072e22ab6d8981d46c3cb7f9"
+        ],
+        [
+          128,
+          "d2f63c686a89d9054cdc4d83247e600089fdebdfe3708e2f2e8031afe126badc"
+        ],
+        [
+          192,
+          "86be6e856467fc78349777a393a63c54edf1333836f52cd58f901fbd18676e59"
+        ],
+        [
+          256,
+          "a66e7277c76d6406f6252f1af90cd1943b69be7f1ee9db300c5457ebbb25639d"
+        ],
+        [
+          320,
+          "2fe082bf1bff9797843f7ded8c7dd4c15c41f3df3df1d3e0a01e2340ce5632b6"
+        ],
+        [
+          384,
+          "9392d6473a6d35e77171803b4b8ff2e67ce487524143030b73943ef623d6581c"
+        ],
+        [
+          448,
+          "02a244240f8ef91deca4a3d7830a2e80677a983a27aacc136e09532ddc486b89"
+        ],
+        [
+          512,
+          "5d33dfe9a27a6404c9f88ad35b7c83fadb594b843927d127ff0b9b0abd6137c2"
+        ],
+        [
+          576,
+          "6be65037b4357f7c27699dd137ba809ee83619f47d791c13f2ccdf1887569a42"
+        ],
+        [
+          640,
+          "00003fa779812fbc470b105d1479b317b27049a56ac7db3d7ab4667b9c924ace"
+        ],
+        [
+          704,
+          "17b07e51871cb2ec7eb36e2a15d3520ab1a5b4a74e3ad4ad48dddfddfb7c626f"
+        ],
+        [
+          768,
+          "618083e311ff4cb2f9534e27666ea04be353e61739092ec47f9d62b20e948755"
+        ],
+        [
+          832,
+          "0b6941c9976fe58d14c56efeebcaa90e0f73f1d9eec1209d3bb1602905ab4742"
+        ],
+        [
+          896,
+          "ac53392ed81119c5a5aadd3ea7a6f5a2f4641d046c30d607e8e6fae576ed7ead"
+        ],
+        [
+          960,
+          "33364c950aacff0e5898fd8f92cb1ee589c119985ac73c8f56170926af2e9a43"
+        ]
+      ],
+      "split": "fit"
+    },
+    "docs/GATE22_PREREG.md": {
+      "file_sha256": "75d972c5317ca8f247a3e2d6146cdd6bf54cb701e51f314f237bc17a2790bc4b",
+      "spans": [
+        [
+          0,
+          "9fbbf54c50461eb6368badbbc9748b702ef873700bd9f474404d9c5c02857ad6"
+        ],
+        [
+          64,
+          "73c7f6027e53bcdf74c41a6ca79f1c964aae5cd2f7b8488edbbbb01eff614764"
+        ],
+        [
+          128,
+          "c3b0a3650cfd25a2bf40b433037931e7d37b7dc10edcf69137aebab9ef5696f5"
+        ],
+        [
+          192,
+          "7eca8ffead06f62f316a24bc19a10fe291cb3f7df798fb8b44b259e9bb2614ab"
+        ],
+        [
+          256,
+          "c086dddf6fb986c7863cc071914a9fb6b1e1e8c82c7f0e87f2302eaa4da7821e"
+        ],
+        [
+          320,
+          "91f4a605a9c0e449b7a37b9c903af8dbb5905b28a6aa3f733e1fa6c9e19902ef"
+        ],
+        [
+          384,
+          "4493b7e67c1c16096e9ef276fde66a9d05f58f1dd6c2ebd4b9752361e55877dd"
+        ],
+        [
+          448,
+          "64df4c1084b34d5356d693c65f7ac0675e10d58640d56aef08a2b0dd41a5c35b"
+        ],
+        [
+          512,
+          "48c423b61669801093a75af88c2d93e117caeaa9e659bed4d8b149c7aa16775f"
+        ],
+        [
+          576,
+          "cba0b8b5e384ba0e7b83465a10c0b1cb9d96fd9f9750441fc3fb4e458c6a5f49"
+        ],
+        [
+          640,
+          "c20f0f63673366816698e7229292094273873cc5bcdad80e5279a68ee57fbc59"
+        ],
+        [
+          704,
+          "b46d4d18b246dabb92093c5559ff126f3890eba483f4768c957abb0e8dd5bd28"
+        ],
+        [
+          768,
+          "5b8a5215790c3db4ab1cee5d2be9df88401a354b4b51ce8779004d8d70209d00"
+        ],
+        [
+          832,
+          "58231f6d22c5f3d1f77bde51b42fcbc0242ab53a972bb6ab01f475192a830539"
+        ],
+        [
+          896,
+          "3fe59a219d412c72de40575db04c87826f5293aff7e0b63da9e4e5544bbda3e1"
+        ],
+        [
+          960,
+          "75c7bd7ddaa8a710a435cad1fd1062ed01eaa8fd327d8e81740b20dd49d7a26f"
+        ]
+      ],
+      "split": "val"
+    },
+    "docs/GATE23_PREREG.md": {
+      "file_sha256": "3b3490f6c21a0ea00416be6141eb41f93321213624b5a7aa496a31e4dbc5b2fe",
+      "spans": [
+        [
+          0,
+          "ef615dd34acaf64146603c448e942b8dc5c28fdd13c40174d517e5db7d3d1a52"
+        ],
+        [
+          64,
+          "1181cdc5fa30d54dbcfaff37cdc4313cfd2cf4cd4e54aa39b8c05f3e185ed9d4"
+        ],
+        [
+          128,
+          "59161289da2f209bc912219a346fb6297901ac80aae496b40ec661d25c9c4931"
+        ],
+        [
+          192,
+          "92a0af2df477272c1e7ae020293f63192018df34df1a3afc26c5ab8410e915b2"
+        ],
+        [
+          256,
+          "b9a4823ca476c1344c9cb299f504386457458e9b8b94ee3527177ae0da36f527"
+        ],
+        [
+          320,
+          "8c36d99c07479725f98562a2faca1953f7ef546c3a3e988430f52b97dcdfe840"
+        ],
+        [
+          384,
+          "9ba74ebaf3a6c699eaa69d2fa64087b61c3294196d5f728b3c2ad0fea05b2bd5"
+        ],
+        [
+          448,
+          "f372a6fba582913124e34c61fe0d4d0f096ccdc97c48fd0f9374f31178c9d51f"
+        ],
+        [
+          512,
+          "64913e59f0572c777f4743f1c02af14ea97b81ec00e7511c4c121e5f1da2995d"
+        ],
+        [
+          576,
+          "a8ed00020e5a371733cfb8fab3a96b4fff9928b3e11591ae10f3dc3ee66839d8"
+        ],
+        [
+          640,
+          "5a8d30cfe01f00741b0be2e7d37303a0d4f4b447bf68d9609828d39c1f84e775"
+        ],
+        [
+          704,
+          "d2707106ee4e1e4f50124e389a228d08dce2223b41a5486c8458cf1a1bbc739b"
+        ],
+        [
+          768,
+          "60810830162b3a341fe4dfe35ff911f2f10d23ea5308fc6560c767f427c57414"
+        ],
+        [
+          832,
+          "7d6cacdd6660536fb649f1a484a86e38436dbededdb96c2bfd799cf08845aadc"
+        ],
+        [
+          896,
+          "229d9a5e2b3ce88e706e36df1e34306f8d8c80ef9615dbc07884adc78603ce80"
+        ],
+        [
+          960,
+          "256bdf5ed82743989d5781404532912115bd0af44716edea9bf4ef26e755ad61"
+        ]
+      ],
+      "split": "test"
+    },
+    "nexus_expanse/arbitration.py": {
+      "file_sha256": "607b6499ca86e3a73bfad27bd4815771a63f80d4d432a7a669a5683869867e17",
+      "spans": [
+        [
+          0,
+          "cce4bdba79bcaa711e22a76d67f63d33470a4bb70e8a63a648e1499750361a95"
+        ],
+        [
+          128,
+          "4b9666d9d8e9de8e5e8a6eb25e21631856c887cd90a97ce564c948d6a6f4d731"
+        ],
+        [
+          192,
+          "e92ece9e955dceb16e3716dd2db412265c7d0b038dc400aac59c074367a41e83"
+        ],
+        [
+          256,
+          "17950d80327115dafe1bbe5492766e67e5cea1fe414d637a37cda8104ae66ddc"
+        ],
+        [
+          320,
+          "5d8ec67f1e991e4e44a052647c0969eb88660369d771ba315a214061f4bd0141"
+        ],
+        [
+          384,
+          "984490420ecd37fa1fedc1bc6e4b4141d43bfdbbdc6648123707c61d6b9bc8a1"
+        ],
+        [
+          448,
+          "b317b8734102906afa024d5c8633c474aa13e49ddea50222460277d9fa70a802"
+        ],
+        [
+          512,
+          "1b187c9a08898e67fb6a0b80d7092448c5205b42db5474da004e2a643db2dd7f"
+        ],
+        [
+          576,
+          "6f0948f9df86f132832cc103107175ef0c7f862e72a44f78691d3d4077c2e693"
+        ],
+        [
+          640,
+          "f710361edff60a0a0f217ee95d933809942223796765b9aa7cf84c9df9f5de64"
+        ],
+        [
+          704,
+          "79c8fdc9831b9c291e8401d9e9ee12639ad500563cd644dac167a65a038f7b94"
+        ],
+        [
+          768,
+          "15039ee79326e68c9f2d4ddf4dc6a17801d1389060b0504970b32b486b236794"
+        ],
+        [
+          832,
+          "b1e5f7ec495224f9b30eec699c23c564235bc78acea457afd0fd2d6ce43aaa10"
+        ],
+        [
+          896,
+          "3d9ba5186cbf35f82dff13a70f0a15ea052be66141762f43b51db9d918ba0db9"
+        ],
+        [
+          960,
+          "633022fdbf84510ae155f956afc6beacb108813ac1db158163eff41530e3c4f4"
+        ],
+        [
+          1024,
+          "93a5889411919a8b0a5c3cfa00f2257af207d51da979bbbc1626870c763a3931"
+        ]
+      ],
+      "split": "retention"
+    },
+    "nexus_expanse/fast_checkpoint.py": {
+      "file_sha256": "a3dcd6d66eaeccc57e31dd3ee0ed9b57e6fb7e58c67f5ec57fa8dc969fda7fff",
+      "spans": [
+        [
+          0,
+          "ef7a66b32cb0a639d4c8c56b85c257e56089eecfad91a1761240e55f5ca632af"
+        ],
+        [
+          64,
+          "7bbad3c165a7a3d3ef8d395c3af6e42ca4974f050bf66cc8b0949e9d3826c845"
+        ],
+        [
+          128,
+          "c83577bbbdaebfda628e63fa559427595d500391e27741880b97d9aba8922270"
+        ],
+        [
+          192,
+          "318ca494d1d6bcaa54aad67e7244c4298394c5c20a773dd869dd7b5c992d3186"
+        ],
+        [
+          256,
+          "30944e02f2afc66727d1e4d96a0f491f0f5ae8789be45bc58e9a56b396314408"
+        ],
+        [
+          320,
+          "d2d7f502208a2952f31a3967316fc0363a783931121bacf2d8b0478588dd96ab"
+        ],
+        [
+          384,
+          "83949dcb7fd1553af7b55931977a9fee9ee6dc724402bd003555fe3412185904"
+        ],
+        [
+          448,
+          "258b57125c5376b90ca4ef54137a329ced5a0a1aaef3179d9279f2e1c26173c6"
+        ],
+        [
+          512,
+          "93c3a189d3bd2ab916afaf6589aea1f5a3bdd570fdc2a15dfae78ecfc245f6fc"
+        ],
+        [
+          576,
+          "2ad59ff296e886442aad8f45a78a51d2a24a7482fa659ca251d17946c7d4e602"
+        ],
+        [
+          640,
+          "54c360b71f97650487d5ca46dff9472d8ca8541d82199985b38d34ff57794a13"
+        ],
+        [
+          704,
+          "9317e1f8c87d0b4e98fb20739c76a495e68c5e743cff3b491d988de5348f2f06"
+        ],
+        [
+          768,
+          "3ed5b3188c2a2b345b09419ad37cbdb6816fb6eecefb718083106c0e7ab2230e"
+        ],
+        [
+          832,
+          "b28700a87780f3e55ca6bf4c5696693eb5fdb31397ecfb0c888d217fee43117c"
+        ],
+        [
+          896,
+          "d36b213a915ba378735f846e598bfac7eb5af87e29fafc627fc72b62c2cb5368"
+        ],
+        [
+          960,
+          "c5242dba19d25c773a3048a1fe1dea828c9c7cfb6e4fd3e697eb2f38fd402ed4"
+        ]
+      ],
+      "split": "retention"
+    }
+  },
+  "runs": [
+    {
+      "seed": 601,
+      "producer": {
+        "fit_export_seconds": 0.5166967400000004,
+        "total_seconds": 0.8342862249999996,
+        "fit_steps": 96,
+        "producer_forward_calls": 128,
+        "vocab_size": 320,
+        "fit_tokens_per_byte": 0.60498046875,
+        "probe_tokens_per_byte": {
+          "val": 0.642640128968254,
+          "test": 0.6746031746031746
+        },
+        "donor_sha": "9cbfd16cfd92cd720d7a0a7bf04b07654c42c941dcee89fb88453aa15a62922b",
+        "test": {
+          "bpb": 5.412375938089595,
+          "accuracy": 0.10714285714285714
+        }
+      },
+      "arms": {
+        "suffix_lift": {
+          "zero": {
+            "bpb": 5.5292305259842465,
+            "accuracy": 0.09424603174603174,
+            "kl_bits": 1.1304482811590237,
+            "agreement": 0.2757936507936508
+          },
+          "selected": {
+            "bpb": 5.5292305259842465,
+            "accuracy": 0.09424603174603174,
+            "kl_bits": 1.1304482811590237,
+            "agreement": 0.2757936507936508
+          },
+          "steps": 0,
+          "prepare_seconds": 0.011021045999996204,
+          "total_seconds": 0.021710309999996014,
+          "old_exact": true,
+          "skill_bytes": 198730,
+          "prediction_sha": "b9518fec5d462f7c54b85bf1e953662666d8f7c9a72937938c1ee5c10df5fa17",
+          "matched": false,
+          "near": false
+        },
+        "position_lift": {
+          "zero": {
+            "bpb": 5.527112721586748,
+            "accuracy": 0.1001984126984127,
+            "kl_bits": 1.0482521354472403,
+            "agreement": 0.2847222222222222
+          },
+          "selected": {
+            "bpb": 5.527112721586748,
+            "accuracy": 0.1001984126984127,
+            "kl_bits": 1.0482521354472403,
+            "agreement": 0.2847222222222222
+          },
+          "steps": 0,
+          "prepare_seconds": 0.014051098999999567,
+          "total_seconds": 0.023237760000000662,
+          "old_exact": true,
+          "skill_bytes": 198730,
+          "prediction_sha": "bf356ccb95ad1fb789461a4c89d16d98b0f07dd4013fc6af7d14680235ef3b3e",
+          "matched": false,
+          "near": false
+        },
+        "sum_head": {
+          "zero": {
+            "bpb": 5.594534952470001,
+            "accuracy": 0.07738095238095238,
+            "kl_bits": 1.2612524223900763,
+            "agreement": 0.22420634920634921
+          },
+          "selected": {
+            "bpb": 5.594534952470001,
+            "accuracy": 0.07738095238095238,
+            "kl_bits": 1.2612524223900763,
+            "agreement": 0.22420634920634921
+          },
+          "steps": 0,
+          "prepare_seconds": 0.010259919999995759,
+          "total_seconds": 0.01864582700000028,
+          "old_exact": true,
+          "skill_bytes": 191440,
+          "prediction_sha": "fb6e6f267e2a12880f9a8457fbd8707267800a3d34a2d3dd84a93da45c90de0a",
+          "matched": false,
+          "near": false
+        }
+      },
+      "cold_exact": 0,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 602,
+      "producer": {
+        "fit_export_seconds": 0.5312918119999992,
+        "total_seconds": 0.8249868169999957,
+        "fit_steps": 96,
+        "producer_forward_calls": 128,
+        "vocab_size": 320,
+        "fit_tokens_per_byte": 0.60498046875,
+        "probe_tokens_per_byte": {
+          "val": 0.642640128968254,
+          "test": 0.6746031746031746
+        },
+        "donor_sha": "ce487e0cc1610601ccf89764a6ecb76ca3af958dc1629ec14ceccd26df3a89d2",
+        "test": {
+          "bpb": 5.697659157656016,
+          "accuracy": 0.09821428571428571
+        }
+      },
+      "arms": {
+        "position_lift": {
+          "zero": {
+            "bpb": 5.8236743595700196,
+            "accuracy": 0.09226190476190477,
+            "kl_bits": 1.2783126383757188,
+            "agreement": 0.2767857142857143
+          },
+          "selected": {
+            "bpb": 5.8236743595700196,
+            "accuracy": 0.09226190476190477,
+            "kl_bits": 1.2783126383757188,
+            "agreement": 0.2767857142857143
+          },
+          "steps": 0,
+          "prepare_seconds": 0.010923411000000272,
+          "total_seconds": 0.02032304800000162,
+          "old_exact": true,
+          "skill_bytes": 198730,
+          "prediction_sha": "ea14431948283295e107d8fca53377a4556b596bfd0fabed0ad02ac5b9081f87",
+          "matched": false,
+          "near": false
+        },
+        "sum_head": {
+          "zero": {
+            "bpb": 5.822817032558453,
+            "accuracy": 0.08035714285714286,
+            "kl_bits": 1.5424392781630587,
+            "agreement": 0.23015873015873015
+          },
+          "selected": {
+            "bpb": 5.822817032558453,
+            "accuracy": 0.08035714285714286,
+            "kl_bits": 1.5424392781630587,
+            "agreement": 0.23015873015873015
+          },
+          "steps": 0,
+          "prepare_seconds": 0.010258827999997777,
+          "total_seconds": 0.01916435299999364,
+          "old_exact": true,
+          "skill_bytes": 191440,
+          "prediction_sha": "d1ffbfb56e4bb13440029735eb4b5764b8feaf3fa0e9cdc0726803002016c7dd",
+          "matched": false,
+          "near": false
+        },
+        "suffix_lift": {
+          "zero": {
+            "bpb": 5.774496074237683,
+            "accuracy": 0.07837301587301587,
+            "kl_bits": 1.3633166734013002,
+            "agreement": 0.24801587301587302
+          },
+          "selected": {
+            "bpb": 5.774496074237683,
+            "accuracy": 0.07837301587301587,
+            "kl_bits": 1.3633166734013002,
+            "agreement": 0.24801587301587302
+          },
+          "steps": 0,
+          "prepare_seconds": 0.010698248000004185,
+          "total_seconds": 0.01970233900000551,
+          "old_exact": true,
+          "skill_bytes": 198730,
+          "prediction_sha": "4379029e202db5e13a8626a04c19eceb6a1502d21f60d59366ebe3255f322f4d",
+          "matched": false,
+          "near": false
+        }
+      },
+      "cold_exact": 0,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 603,
+      "producer": {
+        "fit_export_seconds": 0.515645530999997,
+        "total_seconds": 0.8143283009999962,
+        "fit_steps": 96,
+        "producer_forward_calls": 128,
+        "vocab_size": 320,
+        "fit_tokens_per_byte": 0.60498046875,
+        "probe_tokens_per_byte": {
+          "val": 0.642640128968254,
+          "test": 0.6746031746031746
+        },
+        "donor_sha": "821fb28df2a216a91d7a1e7cc2349a5a856eb063a51635dae6e8f02ffc758a7c",
+        "test": {
+          "bpb": 5.837460795723841,
+          "accuracy": 0.09325396825396826
+        }
+      },
+      "arms": {
+        "position_lift": {
+          "zero": {
+            "bpb": 5.852437017266885,
+            "accuracy": 0.09424603174603174,
+            "kl_bits": 1.3492520300885487,
+            "agreement": 0.251984126984127
+          },
+          "selected": {
+            "bpb": 5.852437017266885,
+            "accuracy": 0.09424603174603174,
+            "kl_bits": 1.3492520300885487,
+            "agreement": 0.251984126984127
+          },
+          "steps": 0,
+          "prepare_seconds": 0.011243878999998458,
+          "total_seconds": 0.020926223000003574,
+          "old_exact": true,
+          "skill_bytes": 198730,
+          "prediction_sha": "8ce962605667832fa65dd0ab64a1cb6079a560c2b45be07955280061b77a2351",
+          "matched": false,
+          "near": false
+        },
+        "suffix_lift": {
+          "zero": {
+            "bpb": 5.863993486298462,
+            "accuracy": 0.10416666666666667,
+            "kl_bits": 1.3886957278710108,
+            "agreement": 0.24603174603174602
+          },
+          "selected": {
+            "bpb": 5.863993486298462,
+            "accuracy": 0.10416666666666667,
+            "kl_bits": 1.3886957278710108,
+            "agreement": 0.24603174603174602
+          },
+          "steps": 0,
+          "prepare_seconds": 0.011013158000004353,
+          "total_seconds": 0.020660020000008217,
+          "old_exact": true,
+          "skill_bytes": 198730,
+          "prediction_sha": "6b4e31e4647a7b3dd7ff1cdce627152cc69b2d74d330d643781ae332ea2d5f5e",
+          "matched": false,
+          "near": false
+        },
+        "sum_head": {
+          "zero": {
+            "bpb": 5.929965285480356,
+            "accuracy": 0.08333333333333333,
+            "kl_bits": 1.5512326945030013,
+            "agreement": 0.20833333333333334
+          },
+          "selected": {
+            "bpb": 5.929965285480356,
+            "accuracy": 0.08333333333333333,
+            "kl_bits": 1.5512326945030013,
+            "agreement": 0.20833333333333334
+          },
+          "steps": 0,
+          "prepare_seconds": 0.010184004000002744,
+          "total_seconds": 0.01914522300000243,
+          "old_exact": true,
+          "skill_bytes": 191440,
+          "prediction_sha": "b50867044133beb3ab216c7edca665f37f355e671078fd7b45588b39efcdceb6",
+          "matched": false,
+          "near": false
+        }
+      },
+      "cold_exact": 0,
+      "forbidden_calls": 0
+    }
+  ],
+  "ranking": [
+    [
+      1.3492520300885487,
+      1.2252722679705026,
+      "position_lift"
+    ],
+    [
+      1.3886957278710108,
+      1.2941535608104449,
+      "suffix_lift"
+    ],
+    [
+      1.5512326945030013,
+      1.4516414650187122,
+      "sum_head"
+    ]
+  ]
+}

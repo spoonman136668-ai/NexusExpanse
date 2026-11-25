@@ -67,3 +67,9 @@ The text and rule evidence includes individual time traces, producer costs, chec
 ## Disposition
 
 The frozen ladder is exhausted. Preserve the failed criteria. Before tuning another method, identify the failed seed, comparator and criterion in the raw receipts. Distinguish static fidelity from measured time savings; an uncrossed scratch target leaves the savings censored.
+
+## Multi-byte donor follow-up
+
+Protocol: docs/CHECKPOINT_BPE_PREREG.md. Reproduce with benchmarks/checkpoint_bpe_challenge.py bpe-screen or bpe-confirm and a new JSON output path. The winner was chosen before independent confirmation. The three-seed screen ranking (worst donor KL bits) was position_lift 1.34925, suffix_lift 1.38870, sum_head 1.55123.
+
+Status: confirmation pending. The workflow resumes from the committed screen.
