@@ -16,6 +16,7 @@ from nexus_expanse.hybrid_backbone import HybridDeltaAttentionCore
 from nexus_expanse.hopfield_vsa import HopfieldVSAMemory
 from nexus_expanse.patching import BytePatchReader, CompactBigram
 from nexus_expanse.substrate import DirectMonarchLinear
+from nexus_expanse.sleep_consolidation import EPISODIC_BYTES, SleepHopfieldMemory, sleep
 
 
 class _DeltaStream:
@@ -55,7 +56,7 @@ class NexusExpanseUnified:
     SNAPSHOT_LIMIT = 32_000_000
     SNAPSHOT_VERSION = "nexus-unified-dev-v1"
 
-    def __init__(self, backbone, counts, *, memory=None):
+    def __init__(self, backbone, counts, *, memory=None, sleep_budget=False):
         if not isinstance(counts, CompactBigram):
             raise ValueError("a compact fitted byte bigram is required")
         if not isinstance(backbone, (DeltaNetMonarchByteCore, HybridDeltaAttentionCore, NexusExpanseByteCore)):
@@ -64,10 +65,12 @@ class NexusExpanseUnified:
             raise ValueError("unified DEV requires FP32 CPU weights")
         self.backbone = backbone.requires_grad_(False).eval()
         self.max_seq_len = getattr(backbone, "max_seq_len", 256)
-        self.episodic = ConsolidatingMemory(self.MEMORY_BUDGET, "sparse_support", 8) if memory is None else memory
-        if not isinstance(self.episodic, ConsolidatingMemory) or self.episodic.budget > self.MEMORY_BUDGET:
+        self.sleep_budget = sleep_budget
+        cap = EPISODIC_BYTES if sleep_budget else self.MEMORY_BUDGET
+        self.episodic = ConsolidatingMemory(cap, "sparse_support", 8) if memory is None else memory
+        if not isinstance(self.episodic, ConsolidatingMemory) or self.episodic.budget > cap:
             raise ValueError("unified DEV requires bounded consolidating memory")
-        self.reasoning = HopfieldVSAMemory(self.backbone)
+        self.reasoning = (SleepHopfieldMemory if sleep_budget else HopfieldVSAMemory)(self.backbone)
         self.arbitrator = ReliabilityArbitrator()
         if isinstance(backbone, NexusExpanseByteCore):
             for layer in backbone.layers:
@@ -90,10 +93,10 @@ class NexusExpanseUnified:
         self._previous = None
 
     @torch.inference_mode()
-    def step(self, observed):
+    def step(self, observed, *, adapt=True):
         if type(observed) is not int or not 0 <= observed <= 255:
             raise ValueError("expected a raw byte")
-        if self._previous is not None:
+        if adapt and self._previous is not None:
             patch, episodic, confidence = self._previous
             self.arbitrator.observe(confidence, float(patch[observed]), float(episodic[observed]))
             self.episodic.observe_transition(bytes(self._history), observed)
@@ -114,6 +117,12 @@ class NexusExpanseUnified:
 
     def observe_relation(self, prefix, target):
         self.reasoning.observe(prefix, target)
+
+    def consolidate_sleep(self, boundary_replay=()):
+        """Apply opt-in, bounded offline representation consolidation."""
+        if not self.sleep_budget:
+            raise ValueError("initialize the unified runtime with sleep_budget=True")
+        return sleep(self, boundary_replay)
 
     def _config(self):
         model = self.backbone
@@ -143,6 +152,8 @@ class NexusExpanseUnified:
             preceding_forecast=self._previous,
             delta_state=self.stream.states if kind == "delta" else None,
         )
+        if self.sleep_budget:
+            payload["sleep_budget"] = True
         output = io.BytesIO()
         torch.save(payload, output)
         if output.tell() > self.SNAPSHOT_LIMIT:
@@ -168,7 +179,7 @@ class NexusExpanseUnified:
         backbone.load_state_dict(saved["backbone"])
         counts = CompactBigram.restore(saved["compact_counts"])
         memory = ConsolidatingMemory.restore(saved["episodic"], max_bytes=cls.MEMORY_BUDGET)
-        restored = cls(backbone, counts, memory=memory)
+        restored = cls(backbone, counts, memory=memory, sleep_budget=saved.get("sleep_budget", False))
         restored.reasoning.restore(saved["relation"])
 
         share, weight, updates = saved["arbitration"]
