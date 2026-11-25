@@ -83,6 +83,7 @@ def run_seed(tmp: Path, seed: int, method: str, arms: list[str], screen: bool, s
     for step in range(32):
         x, y = study.batch("text", splits["python"], seed, step, None)
         study.update(old, opt, old.forward_neural(x)[0], y)
+    torch.save(old.eval().state_dict(), tmp / 'old.pt')
 
     limit = study.score_logits(refs["val"], splits["val"][1])["bpb"] + 0.02
     evidence = {}
