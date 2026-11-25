@@ -81,3 +81,20 @@ All three prospective follow-up experiments below branch from `92d43cb` on the s
 | **Mean** | **1.0428 / 27.00%** | 1.1988 / 22.02% | 1.1716 / 17.86% | 1.3136 / 17.96% |
 
 **Disposition:** `position_lift` warm-start + disjoint-corpus validation-stopped offline byte-KL is the strongest BPE -> raw-byte transfer recipe tested so far (`5/5` wins over every baseline and control), but at `dim=32` / 64 transfer windows it stops at `0.94–1.17` bits KL (`~27%` agreement), short of the `< 0.85` / `>= 99%` near-lossless bar. Scaling the unlabeled transfer corpus and student width is the remaining lever.
+
+### Phase 2C: Width Isolation & 3× Disjoint Transfer Corpus (`seeds = [1301–1305]`)
+
+Preregistered at `41db6e0` (`docs/CHECKPOINT_BPE_SCALED_WIDTH_KL_PREREG.md`), recorded at `a362a93` (`evidence/checkpoint-transfer-bpe-scaled-width-kl.json`). Scaling the one-time offline `top_k=16` cache from 64 to **192 disjoint windows** (`589,824 B`) across `GATE10`–`GATE21` preregistration docs (strict 32-byte overlap exclusion) reduced held-out `test` KL monotonically while isolating width (`width32_transfer_kl` vs. `width64_transfer_kl`):
+
+| Seed | `width32_transfer_kl` KL / Agree (Steps) | `width64_transfer_kl` KL / Agree (Steps) | `shuffled_width64_transfer_kl` KL / Agree | `position_lift_32` KL / Agree |
+| ---: | ---: | ---: | ---: | ---: |
+| **1301** | **1.0087 / 32.44%** (56) | 1.0544 / **32.54%** (104) | 1.2317 / 20.34% (8) | 1.2623 / 29.56% (0) |
+| **1302** | **0.9599 / 32.14%** (136) | 0.9808 / 31.45% (152) | 1.1552 / 18.55% (16) | 1.3311 / 10.81% (8) |
+| **1303** | **0.8721 / 36.61%** (120) | 0.9243 / 33.83% (72) | 1.0870 / 31.75% (0) | 1.2417 / 17.16% (8) |
+| **1304** | **0.9020 / 30.46%** (160) | 0.9475 / 27.48% (56) | 1.0451 / 26.49% (0) | 1.2468 / 10.32% (8) |
+| **1305** | **0.9576 / 36.21%** (96) | 1.0002 / 35.32% (88) | 1.1512 / 30.65% (0) | 1.3735 / 10.81% (8) |
+| **Mean** | **0.9401 / 33.57%** | 0.9815 / 32.12% | 1.1340 / 25.56% | 1.2911 / 15.73% |
+
+**Phase 2C Verdict (`ENG PASS / SCI MIXED`):**
+- Both `width32_transfer_kl` and `width64_transfer_kl` beat `position_lift_32` and `shuffled_width64_transfer_kl` in **5/5** seeds (`0` donor calls in receivers, `20/20` exact cold restores).
+- **Transfer corpus volume—not hidden width—is the active scaling lever:** `width32_transfer_kl` beat `width64_transfer_kl` in **5/5** seeds (`0.9401` vs. `0.9815` mean KL; best seed `0.8721` bits / `36.61%` agreement), cutting mean KL from `1.2911` (`position_lift`) → `1.0428` (64 windows) → `0.9401` (192 windows). Further reduction across the BPE -> raw-byte boundary requires a multi-MB unlabeled transfer corpus (consumer GPU run) rather than wider small-data receivers.
