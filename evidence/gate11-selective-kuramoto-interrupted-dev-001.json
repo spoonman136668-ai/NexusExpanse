@@ -1,0 +1,133 @@
+{
+  "schema": "nexus-gate11-interrupted-dev-v1",
+  "qualification": "REUSED_AUTHORED_RELATIONAL_DEV",
+  "status": "UNVERIFIED",
+  "identity": {
+    "source_sha": "08dae90bc478c3bb7cd87541adee3b16fe508590",
+    "tree": "0eff5a6ac1cfd540860296727bdd97e90e71abd9",
+    "manifest_sha256": "99e7a7f9222cc997ac71635ef507d87608a03df44de550036fae12d2db288645",
+    "torch": "2.10.0+cpu",
+    "numpy": "2.3.5",
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "machine": "x86_64",
+    "threads": 1
+  },
+  "bundle_sha256": "8025626030d962b19b25160ec76e19d6612df81b46b5a0c7cdcf599777edd594",
+  "engineering": {
+    "bundle_verified": true,
+    "clean_tree": true,
+    "fsck_full_strict_exit": 0,
+    "git_diff_check_exit": 0,
+    "git_diff_check_base_to_candidate_exit": 0,
+    "pytest_initial": "........................................................................ [ 64%]\n........................................                                 [100%]\n112 passed in 22.04s\n",
+    "pytest_final": "........................................................................ [ 64%]\n........................................                                 [100%]\n112 passed in 21.95s\n",
+    "prefix_initial": {
+      "source_sha": "08dae90bc478c3bb7cd87541adee3b16fe508590",
+      "torch": "2.10.0+cpu",
+      "seeds": 100,
+      "fails": []
+    },
+    "prefix_final": {
+      "source_sha": "08dae90bc478c3bb7cd87541adee3b16fe508590",
+      "torch": "2.10.0+cpu",
+      "seeds": 100,
+      "fails": []
+    },
+    "parity": {
+      "identity": {
+        "source_sha": "08dae90bc478c3bb7cd87541adee3b16fe508590",
+        "tree": "0eff5a6ac1cfd540860296727bdd97e90e71abd9",
+        "manifest_sha256": "99e7a7f9222cc997ac71635ef507d87608a03df44de550036fae12d2db288645",
+        "torch": "2.10.0+cpu",
+        "numpy": "2.3.5",
+        "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+        "machine": "x86_64",
+        "threads": 1
+      },
+      "seeds": 50,
+      "dimensions": [
+        64,
+        128
+      ],
+      "recurrent_state_bytes": {
+        "64": 1024,
+        "128": 2048
+      },
+      "zero_kv_cache": true,
+      "passed": true,
+      "prefix_logits": 0,
+      "prefix_hidden": 0,
+      "streaming_probabilities": 0,
+      "streaming_hidden": 0,
+      "phase_norm_error": 1.000310945187266e-12
+    }
+  },
+  "capacity": {
+    "seed": 42,
+    "ungated_kuramoto": {
+      "steps": 300,
+      "epochs": 15,
+      "train": {
+        "math": 0.25,
+        "science": 0.5
+      },
+      "heldout": {
+        "math": 0.25,
+        "science": 0.5
+      },
+      "training_seconds": 13.04152493399988,
+      "initial_encoder_hash": "1cb517e6dd658c37e00a4224e2d0bd2ac18e485419d2cc5837f39055e546ab86",
+      "final_hash": "2f94e692657379d3ef2c791bfb68dc94a4feaa46596fec56176ab5d784d42cc5",
+      "checkpoint": "42-capacity-ungated_kuramoto-final.pt",
+      "checkpoint_sha256": "d3db335099286fe179e89020528a5cd35b764c1aeeacee4d1bda733bc9da15d5",
+      "cold_equal": true,
+      "epoch_chain_verified_through": 15,
+      "last_epoch_sha256": "0cb08482b4f4d0911f12707b6407bc025d7a114db87ce4275bd86d3a3d9bd8e9"
+    },
+    "selective_kuramoto": {
+      "completed_epochs": 10,
+      "verified_steps": 200,
+      "epoch_chain_verified_through": 10,
+      "last_epoch_sha256": "0f1026b056f9fecd9da322424f1e08166043210ef17825fa3fc4863ae8e3c308",
+      "ambiguous_epoch": 11,
+      "intent": {
+        "identity": {
+          "source_sha": "08dae90bc478c3bb7cd87541adee3b16fe508590",
+          "tree": "0eff5a6ac1cfd540860296727bdd97e90e71abd9",
+          "manifest_sha256": "99e7a7f9222cc997ac71635ef507d87608a03df44de550036fae12d2db288645",
+          "torch": "2.10.0+cpu",
+          "numpy": "2.3.5",
+          "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+          "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+          "machine": "x86_64",
+          "threads": 1
+        },
+        "epoch": 11,
+        "parent": "0f1026b056f9fecd9da322424f1e08166043210ef17825fa3fc4863ae8e3c308"
+      },
+      "partial_checkpoint_bytes": 0,
+      "final_receipt": false,
+      "heldout": null
+    },
+    "causal_attention_monarch": "NOT_STARTED",
+    "seeds_43_44": "NOT_STARTED",
+    "expansion": "NOT_EXECUTED",
+    "objective": "NOT_EXECUTED",
+    "speed": "NOT_EXECUTED"
+  },
+  "execution_failure": {
+    "kind": "INFRASTRUCTURE_TIMEOUT",
+    "detail": "Execution tool terminated seed 42 capacity command during selective epoch 11. Intent and zero-byte .partial exist; no complete checkpoint or metadata. No surviving gate11 process observed. No replay performed. Frozen protocol requires all capacity receipts before expansion or objective training. Requested tool timeout was 180000 ms; effective interruption occurred earlier. Future calls must use bounded epoch slices on a suitable runner.",
+    "classification": "UNVERIFIED_NOT_SCIENTIFIC_FAIL"
+  },
+  "custody": {
+    "archive_name": "nexus-gate11-interrupted-custody.tar.gz",
+    "archive_sha256": "b0985d17e90516a73f22146b5c1fa807e49f92692d4283a1063d6c1a1308f82b",
+    "original_files": 86,
+    "archive_includes": "All local checkpoints, intent/metadata, partial file, original receipts and logs, SHA256 inventory. Archive generated in sandbox; durable binary custody not established by repository evidence publication."
+  },
+  "promotion": false,
+  "deployment": false
+}
