@@ -18,6 +18,30 @@ Use the source SHA in each JSON receipt. Run the workflow with workflow_dispatch
 | 4 | walsh8 | 0.1750173 | 0.1016969 | 183123 |
 | 5 | monarch | 0.4021479 | 0.2138419 | 168171 |
 
+## Confirmation
+
+Source commit `217af0ac9a3dfcbe0ae6fda335b394b5adc40e47`.
+
+| Challenge | Method | Near at zero | Near after tuning | Qualified | Matched time pairs | Median time saved | Range |
+|---|---|---:|---:|---:|---:|---:|---:|
+| Rule | residual8 | 10/10 | 9/10 | 10/10 | 5 | 0.6407 s (97.9%) | 97.5% to 98.3% |
+| Rule | block2 | 4/10 | 4/10 | 10/10 | 5 | 0.6375 s (97.4%) | 96.9% to 98.0% |
+| Markdown | residual8 | 5/5 | 5/5 | 5/5 | 0 | censored | — |
+
+### Charging donor creation
+
+On rule, median net seconds saved when building a new donor for one receiver: -1.4405. The above table assumes an existing checkpoint. Donor cost includes qualification and reference export. Base receiver preparation is common.
+
+### Donor attribution at zero receiver updates
+
+| Method | Correct rule | Opposite rule | Own FFNs + opposite remainder, accuracy on own rule | Opposite FFNs + own remainder, accuracy on own rule |
+|---|---:|---:|---:|---:|
+| residual8 | 99.2% | 0.0% | 4.1% | 72.9% |
+| block2 | 99.1% | 0.1% | 3.7% | 76.6% |
+
+Exact cold restores of imported and old-mode predictions: 70.
+The text and rule evidence includes individual time traces, producer costs, checkpoint sizes, fingerprints and uncensored matched times. A missed target at the tuning ceiling establishes no exact time-to-target.
+
 ## Disposition
 
-Confirmation is pending. Advance the first two rows of the frozen ranking, with the first row entering Markdown.
+The locked precision fallback is next. Preserve the confirmation result.
