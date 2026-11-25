@@ -72,4 +72,14 @@ The frozen ladder is exhausted. Preserve the failed criteria. Before tuning anot
 
 Protocol: docs/CHECKPOINT_BPE_PREREG.md. Reproduce with benchmarks/checkpoint_bpe_challenge.py bpe-screen or bpe-confirm and a new JSON output path. The winner was chosen before independent confirmation. The three-seed screen ranking (worst donor KL bits) was position_lift 1.34925, suffix_lift 1.38870, sum_head 1.55123.
 
-Status: confirmation pending. The workflow resumes from the committed screen.
+Winner: position_lift; near-lossless on 0/5 independent seeds.
+
+| Seed | Zero KL bits | Zero agreement | Final agreement | Final KL bits | Test BPB (receiver / donor) | Matched seconds saved |
+|---:|---:|---:|---:|---:|---:|---:|
+| 701 | 1.3332 | 30.9% | 12.0% | 1.5577 | 4.8263 / 5.9396 | 0.0514 |
+| 702 | 1.2760 | 24.5% | 24.5% | 1.2760 | 5.5603 / 5.5183 | threshold unconfirmed |
+| 703 | 1.2565 | 26.1% | 14.4% | 1.3353 | 4.8108 / 5.6217 | threshold unconfirmed |
+| 704 | 1.1128 | 25.7% | 9.7% | 1.3319 | 4.7969 / 5.4661 | threshold unconfirmed |
+| 705 | 1.1143 | 27.3% | 13.5% | 1.2950 | 4.7856 / 5.5839 | -0.0340 |
+
+All rates concern the canonical-prefix-boundary reference. No oracle distributions entered conversion or gradients. Retain both the compatible positive control and this harder challenge. For an independent next experiment, change one interface mismatch at a time and use fresh files and seeds.
