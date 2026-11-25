@@ -1,0 +1,271 @@
+{
+  "schema": "nexus-gate17-harness-smoke-dev-v1",
+  "qualification": "LINUX_CPU_FP32_SMOKE",
+  "status": "PASS",
+  "train_workers": [
+    3601,
+    3610
+  ],
+  "exact_resume": true,
+  "identity": {
+    "source_sha": "3c4abd269d5a8c9f75bea0376f4008c64fe52040",
+    "tree": "64a15d7c08166bfbeb61df6a3692468a6143b2ef",
+    "gate15_sha256": "1ccfbfd7a6e75b58451858f6963f7a9382c84a22d33384d4fc5f4029654d8628",
+    "backbone": "causal_attention_monarch",
+    "corpora": {
+      "train": {
+        "math": {
+          "bytes": 382,
+          "sha256": "cfc00a676b064c5d4af02ef568bf8750f4648248c8a5eecddd61a4e6478f8192"
+        },
+        "code": {
+          "bytes": 384,
+          "sha256": "df9b2c6969346424134477ae43466e48602a2b4d87b299f249ee8b3631e7c48e"
+        },
+        "prose": {
+          "bytes": 384,
+          "sha256": "db32544a1959554091808c21d3655defd659c4d6bb2698d0c20911d423439fde"
+        }
+      },
+      "eval": {
+        "math": {
+          "bytes": 160,
+          "sha256": "7a8e31b139657d3b4ae7a26e60b273d88baeb048ea5a53746b20a92f031142fc"
+        },
+        "code": {
+          "bytes": 128,
+          "sha256": "1e9c4c59299162e20f14bd239dab3c55c286019cf69578e2add3f79af8d3765b"
+        },
+        "prose": {
+          "bytes": 128,
+          "sha256": "71896397a035bf07816412a367262d628cda6c8241df450749b52d99b751faf9"
+        }
+      }
+    },
+    "geometry": {
+      "seed": 42,
+      "dim": 32,
+      "context": 32,
+      "epochs": 2,
+      "steps_per_epoch": 2,
+      "batch_per_domain": 1,
+      "eval_blocks": 2
+    },
+    "smoke": true,
+    "dtype": "fp32",
+    "device": "cpu",
+    "cuda": null,
+    "threads": 1,
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "torch": "2.10.0+cpu",
+    "numpy": "2.5.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "name": "gate17",
+  "initial_hash": "a2dfc3cb93c22f0763d6a3c0bfd0ee810577345ebc27eb17a2f3e503aa39939b",
+  "epochs": [
+    {
+      "identity": {
+        "source_sha": "3c4abd269d5a8c9f75bea0376f4008c64fe52040",
+        "tree": "64a15d7c08166bfbeb61df6a3692468a6143b2ef",
+        "gate15_sha256": "1ccfbfd7a6e75b58451858f6963f7a9382c84a22d33384d4fc5f4029654d8628",
+        "backbone": "causal_attention_monarch",
+        "corpora": {
+          "train": {
+            "math": {
+              "bytes": 382,
+              "sha256": "cfc00a676b064c5d4af02ef568bf8750f4648248c8a5eecddd61a4e6478f8192"
+            },
+            "code": {
+              "bytes": 384,
+              "sha256": "df9b2c6969346424134477ae43466e48602a2b4d87b299f249ee8b3631e7c48e"
+            },
+            "prose": {
+              "bytes": 384,
+              "sha256": "db32544a1959554091808c21d3655defd659c4d6bb2698d0c20911d423439fde"
+            }
+          },
+          "eval": {
+            "math": {
+              "bytes": 160,
+              "sha256": "7a8e31b139657d3b4ae7a26e60b273d88baeb048ea5a53746b20a92f031142fc"
+            },
+            "code": {
+              "bytes": 128,
+              "sha256": "1e9c4c59299162e20f14bd239dab3c55c286019cf69578e2add3f79af8d3765b"
+            },
+            "prose": {
+              "bytes": 128,
+              "sha256": "71896397a035bf07816412a367262d628cda6c8241df450749b52d99b751faf9"
+            }
+          }
+        },
+        "geometry": {
+          "seed": 42,
+          "dim": 32,
+          "context": 32,
+          "epochs": 2,
+          "steps_per_epoch": 2,
+          "batch_per_domain": 1,
+          "eval_blocks": 2
+        },
+        "smoke": true,
+        "dtype": "fp32",
+        "device": "cpu",
+        "cuda": null,
+        "threads": 1,
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+        "torch": "2.10.0+cpu",
+        "numpy": "2.5.5",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+      },
+      "name": "gate17",
+      "epoch": 1,
+      "parent": null,
+      "sha256": "646b23ab3f07c3c5aaedb5a2fb6bf2a7101681ef2d0dc663cd2d24864afde029",
+      "losses": [
+        19.145692825317383,
+        20.334762573242188
+      ],
+      "wall_seconds": 0.022386824999557575,
+      "cpu_seconds": 0.021455325999999886,
+      "peak_rss_bytes": 304504832,
+      "telemetry": {
+        "target_bytes": 192,
+        "start_model_hash": "a2dfc3cb93c22f0763d6a3c0bfd0ee810577345ebc27eb17a2f3e503aa39939b",
+        "end_model_hash": "d9596bf3ed39b1b1cf1bb661bbb741c5003c0e6c7388f91499cfe31a36a45666",
+        "optimizer_steps_at_start": 0,
+        "bytes_per_second": 8576.47299265503,
+        "worker_pid": 3601,
+        "peak_cuda_allocated_bytes": null,
+        "peak_cuda_reserved_bytes": null
+      }
+    },
+    {
+      "identity": {
+        "source_sha": "3c4abd269d5a8c9f75bea0376f4008c64fe52040",
+        "tree": "64a15d7c08166bfbeb61df6a3692468a6143b2ef",
+        "gate15_sha256": "1ccfbfd7a6e75b58451858f6963f7a9382c84a22d33384d4fc5f4029654d8628",
+        "backbone": "causal_attention_monarch",
+        "corpora": {
+          "train": {
+            "math": {
+              "bytes": 382,
+              "sha256": "cfc00a676b064c5d4af02ef568bf8750f4648248c8a5eecddd61a4e6478f8192"
+            },
+            "code": {
+              "bytes": 384,
+              "sha256": "df9b2c6969346424134477ae43466e48602a2b4d87b299f249ee8b3631e7c48e"
+            },
+            "prose": {
+              "bytes": 384,
+              "sha256": "db32544a1959554091808c21d3655defd659c4d6bb2698d0c20911d423439fde"
+            }
+          },
+          "eval": {
+            "math": {
+              "bytes": 160,
+              "sha256": "7a8e31b139657d3b4ae7a26e60b273d88baeb048ea5a53746b20a92f031142fc"
+            },
+            "code": {
+              "bytes": 128,
+              "sha256": "1e9c4c59299162e20f14bd239dab3c55c286019cf69578e2add3f79af8d3765b"
+            },
+            "prose": {
+              "bytes": 128,
+              "sha256": "71896397a035bf07816412a367262d628cda6c8241df450749b52d99b751faf9"
+            }
+          }
+        },
+        "geometry": {
+          "seed": 42,
+          "dim": 32,
+          "context": 32,
+          "epochs": 2,
+          "steps_per_epoch": 2,
+          "batch_per_domain": 1,
+          "eval_blocks": 2
+        },
+        "smoke": true,
+        "dtype": "fp32",
+        "device": "cpu",
+        "cuda": null,
+        "threads": 1,
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+        "torch": "2.10.0+cpu",
+        "numpy": "2.5.5",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+      },
+      "name": "gate17",
+      "epoch": 2,
+      "parent": "646b23ab3f07c3c5aaedb5a2fb6bf2a7101681ef2d0dc663cd2d24864afde029",
+      "sha256": "2ffdecb573accc7a5b37169fcdc28e66aec4b425784287cf4b4768a3cdbbac1f",
+      "losses": [
+        17.78528594970703,
+        17.676122665405273
+      ],
+      "wall_seconds": 0.024343966000742512,
+      "cpu_seconds": 0.02367243600000002,
+      "peak_rss_bytes": 304615424,
+      "telemetry": {
+        "target_bytes": 192,
+        "start_model_hash": "d9596bf3ed39b1b1cf1bb661bbb741c5003c0e6c7388f91499cfe31a36a45666",
+        "end_model_hash": "727699a6bd40bab95ea989fbdffef43e660014669aa5c01a2b01108287127c65",
+        "optimizer_steps_at_start": 2,
+        "bytes_per_second": 7886.964679220462,
+        "worker_pid": 3610,
+        "peak_cuda_allocated_bytes": null,
+        "peak_cuda_reserved_bytes": null
+      }
+    }
+  ],
+  "steps": 4,
+  "training_seconds": 0.04673079100030009,
+  "training_cpu_seconds": 0.045127761999999905,
+  "checkpoint": "gate17-final.pt",
+  "checkpoint_sha256": "202562204b8959a33bbc8eea566d382a73f5b6462b63c9251c85a514732bfb89",
+  "final_hash": "727699a6bd40bab95ea989fbdffef43e660014669aa5c01a2b01108287127c65",
+  "cold_equal": true,
+  "cold_restore_seconds": 0.007809569000528427,
+  "cold_peak_rss_bytes": 299368448,
+  "evaluation_peak_rss_bytes": 304631808,
+  "fresh_evaluation": {
+    "state_hash": "727699a6bd40bab95ea989fbdffef43e660014669aa5c01a2b01108287127c65",
+    "restore_seconds": 0.007809569000528427,
+    "peak_rss_bytes": 299368448,
+    "worker_pid": 3617,
+    "validation": {
+      "math": {
+        "blocks": 2,
+        "target_bytes": 64,
+        "bpb": 24.59659962662389,
+        "wall_seconds": 0.0038448519990197383,
+        "bytes_per_second": 16645.63421851272
+      },
+      "code": {
+        "blocks": 2,
+        "target_bytes": 64,
+        "bpb": 19.451602415803485,
+        "wall_seconds": 0.0018501530030334834,
+        "bytes_per_second": 34591.733708004984
+      },
+      "prose": {
+        "blocks": 2,
+        "target_bytes": 64,
+        "bpb": 28.086596781301832,
+        "wall_seconds": 0.0019235850013501476,
+        "bytes_per_second": 33271.20972303223
+      }
+    },
+    "parity": {
+      "prefix_logits": 0.0,
+      "prefix_hidden": 0.0,
+      "streaming_logits": 0.0,
+      "unified_stream_probabilities": 0.0
+    },
+    "unified_initial_serialized_bytes": 173486,
+    "parity_bytes": 32,
+    "peak_cuda_allocated_bytes": null,
+    "peak_cuda_reserved_bytes": null
+  }
+}
