@@ -1,0 +1,1428 @@
+{
+  "schema": "nexus-gate9-jepa-dev-v1",
+  "qualification": "AUTHORED_MICRO_DEV",
+  "identity": {
+    "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+    "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+    "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+    "torch": "2.10.0+cpu",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "threads": 1
+  },
+  "status": "FAIL",
+  "runs": [
+    {
+      "seed": 42,
+      "arms": {
+        "untrained_kuramoto": {
+          "identity": {
+            "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+            "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+            "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "threads": 1
+          },
+          "seed": 42,
+          "arm": "untrained_kuramoto",
+          "initial_encoder_hash": "1cb517e6dd658c37e00a4224e2d0bd2ac18e485419d2cc5837f39055e546ab86",
+          "final_hash": "1cb517e6dd658c37e00a4224e2d0bd2ac18e485419d2cc5837f39055e546ab86",
+          "checkpoint": "42-untrained_kuramoto-final.pt",
+          "checkpoint_sha256": "cd2d192787d3fc9252de8ee263bd05d6102e23060c14bcd6e4bf0ecd3966b8b8",
+          "cold_equal": true,
+          "training_seconds": 0.0,
+          "steps": 0,
+          "losses": [],
+          "domain_accuracy": 1.0,
+          "math_accuracy": 0.8125,
+          "noncollapse": {
+            "math": {
+              "effective_rank": 12.829495429992676,
+              "mean_std": 0.2342279553413391
+            },
+            "code": {
+              "effective_rank": 12.06581974029541,
+              "mean_std": 0.8489034175872803
+            },
+            "science": {
+              "effective_rank": 13.279065132141113,
+              "mean_std": 0.4064950942993164
+            }
+          },
+          "retrieval": {
+            "top1": 0.041666666666666664,
+            "mrr": 0.17010148416398416,
+            "per_domain": {
+              "math": {
+                "top1": 0.0,
+                "mrr": 0.11863076159951161,
+                "ranks": [
+                  12,
+                  13,
+                  9,
+                  4,
+                  15,
+                  9,
+                  6,
+                  6,
+                  6,
+                  12,
+                  15,
+                  7,
+                  10,
+                  13,
+                  16,
+                  6
+                ]
+              },
+              "code": {
+                "top1": 0.125,
+                "mrr": 0.23771081349206347,
+                "ranks": [
+                  15,
+                  16,
+                  9,
+                  15,
+                  15,
+                  8,
+                  1,
+                  15,
+                  14,
+                  12,
+                  6,
+                  2,
+                  6,
+                  12,
+                  1,
+                  6
+                ]
+              },
+              "science": {
+                "top1": 0.0,
+                "mrr": 0.1539628774003774,
+                "ranks": [
+                  4,
+                  11,
+                  15,
+                  2,
+                  9,
+                  5,
+                  5,
+                  4,
+                  15,
+                  8,
+                  13,
+                  9,
+                  15,
+                  14,
+                  5,
+                  13
+                ]
+              }
+            }
+          },
+          "inference_ms_span": 0.7974493749998146,
+          "encoder_param_bytes": 194056,
+          "whole_model_param_bytes": 194056,
+          "max_stream_vs_batch_diff": 0.0,
+          "peak_rss_bytes": 333209600
+        },
+        "next_byte_ce_kuramoto": {
+          "identity": {
+            "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+            "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+            "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "threads": 1
+          },
+          "seed": 42,
+          "arm": "next_byte_ce_kuramoto",
+          "initial_encoder_hash": "1cb517e6dd658c37e00a4224e2d0bd2ac18e485419d2cc5837f39055e546ab86",
+          "final_hash": "4cfb69fbd64a855a655719e0189f2a44d25cde9acb7cbb0e10721ef5aac367dc",
+          "checkpoint": "42-next_byte_ce_kuramoto-final.pt",
+          "checkpoint_sha256": "eb60d1de18f9d262a035822348a3c0f8f5b71878fbc315352d736ac302b9bbb5",
+          "cold_equal": true,
+          "training_seconds": 2.2487796920004257,
+          "steps": 24,
+          "losses": [
+            40.160709381103516,
+            37.48751449584961,
+            38.98661804199219,
+            33.723026275634766,
+            33.198909759521484,
+            32.48155212402344,
+            29.509252548217773,
+            27.867874145507812,
+            25.891399383544922,
+            25.84081268310547,
+            23.34783172607422,
+            20.808216094970703,
+            19.805044174194336,
+            19.172212600708008,
+            17.0999755859375,
+            16.14035415649414,
+            14.787351608276367,
+            13.639833450317383,
+            13.085487365722656,
+            11.943868637084961,
+            11.231110572814941,
+            10.53346061706543,
+            9.877185821533203,
+            9.524151802062988
+          ],
+          "domain_accuracy": 0.875,
+          "math_accuracy": 0.5,
+          "noncollapse": {
+            "math": {
+              "effective_rank": 7.844648838043213,
+              "mean_std": 0.010404592379927635
+            },
+            "code": {
+              "effective_rank": 9.548089027404785,
+              "mean_std": 0.14930593967437744
+            },
+            "science": {
+              "effective_rank": 10.153778076171875,
+              "mean_std": 0.01885146275162697
+            }
+          },
+          "retrieval": {
+            "top1": 0.08333333333333333,
+            "mrr": 0.23031635609760612,
+            "per_domain": {
+              "math": {
+                "top1": 0.0625,
+                "mrr": 0.21511500652125654,
+                "ranks": [
+                  11,
+                  16,
+                  4,
+                  7,
+                  15,
+                  9,
+                  9,
+                  14,
+                  3,
+                  1,
+                  12,
+                  8,
+                  2,
+                  13,
+                  6,
+                  4
+                ]
+              },
+              "code": {
+                "top1": 0.0625,
+                "mrr": 0.22031952422577422,
+                "ranks": [
+                  13,
+                  10,
+                  2,
+                  8,
+                  13,
+                  7,
+                  3,
+                  4,
+                  16,
+                  15,
+                  1,
+                  6,
+                  4,
+                  11,
+                  5,
+                  12
+                ]
+              },
+              "science": {
+                "top1": 0.125,
+                "mrr": 0.25551453754578757,
+                "ranks": [
+                  5,
+                  8,
+                  4,
+                  1,
+                  16,
+                  12,
+                  4,
+                  5,
+                  7,
+                  14,
+                  12,
+                  1,
+                  13,
+                  3,
+                  7,
+                  15
+                ]
+              }
+            }
+          },
+          "inference_ms_span": 0.7582919375105727,
+          "encoder_param_bytes": 194056,
+          "whole_model_param_bytes": 194056,
+          "max_stream_vs_batch_diff": 0.0,
+          "peak_rss_bytes": 411291648
+        },
+        "kuramoto_jepa": {
+          "identity": {
+            "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+            "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+            "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "threads": 1
+          },
+          "seed": 42,
+          "arm": "kuramoto_jepa",
+          "initial_encoder_hash": "1cb517e6dd658c37e00a4224e2d0bd2ac18e485419d2cc5837f39055e546ab86",
+          "final_hash": "6e2a98a12212e1086c218ef14e03d7dfbb5390a2ec101c97aa6bb198edc756a6",
+          "checkpoint": "42-kuramoto_jepa-final.pt",
+          "checkpoint_sha256": "d1ab7e4ce3b980af6d8322cede49ac22273a628cc72509378268d7361e01e7c0",
+          "cold_equal": true,
+          "training_seconds": 1.4152493909996338,
+          "steps": 24,
+          "losses": [
+            62.99985885620117,
+            60.424137115478516,
+            62.788780212402344,
+            58.3644905090332,
+            55.93606185913086,
+            57.156436920166016,
+            55.793575286865234,
+            51.81686019897461,
+            52.187068939208984,
+            52.29875564575195,
+            51.11860275268555,
+            50.441280364990234,
+            47.7657470703125,
+            49.90924835205078,
+            49.21132278442383,
+            48.031280517578125,
+            46.15016555786133,
+            48.19431686401367,
+            43.1796989440918,
+            48.576133728027344,
+            44.6552848815918,
+            43.67578887939453,
+            43.97964859008789,
+            45.966487884521484
+          ],
+          "domain_accuracy": 0.9166666666666666,
+          "math_accuracy": 0.6875,
+          "noncollapse": {
+            "math": {
+              "effective_rank": 11.742929458618164,
+              "mean_std": 0.21172286570072174
+            },
+            "code": {
+              "effective_rank": 11.449579238891602,
+              "mean_std": 0.8660328984260559
+            },
+            "science": {
+              "effective_rank": 12.851667404174805,
+              "mean_std": 0.34478968381881714
+            }
+          },
+          "retrieval": {
+            "top1": 0.125,
+            "mrr": 0.28551069879194874,
+            "per_domain": {
+              "math": {
+                "top1": 0.1875,
+                "mrr": 0.3569816468253968,
+                "ranks": [
+                  2,
+                  1,
+                  15,
+                  2,
+                  5,
+                  16,
+                  5,
+                  4,
+                  9,
+                  1,
+                  2,
+                  12,
+                  15,
+                  1,
+                  10,
+                  14
+                ]
+              },
+              "code": {
+                "top1": 0.0625,
+                "mrr": 0.2291651057276057,
+                "ranks": [
+                  16,
+                  15,
+                  7,
+                  5,
+                  11,
+                  13,
+                  4,
+                  3,
+                  14,
+                  4,
+                  3,
+                  1,
+                  3,
+                  16,
+                  7,
+                  4
+                ]
+              },
+              "science": {
+                "top1": 0.125,
+                "mrr": 0.27038534382284385,
+                "ranks": [
+                  15,
+                  16,
+                  2,
+                  1,
+                  10,
+                  1,
+                  13,
+                  12,
+                  4,
+                  6,
+                  11,
+                  5,
+                  12,
+                  16,
+                  2,
+                  12
+                ]
+              }
+            }
+          },
+          "inference_ms_span": 0.7569354166700274,
+          "encoder_param_bytes": 194056,
+          "whole_model_param_bytes": 401168,
+          "native_retrieval_diagnostic": {
+            "top1": 0.08333333333333333,
+            "mrr": 0.2249379382191882,
+            "per_domain": {
+              "math": {
+                "top1": 0.125,
+                "mrr": 0.2545867327117327,
+                "ranks": [
+                  13,
+                  6,
+                  12,
+                  15,
+                  5,
+                  10,
+                  9,
+                  9,
+                  15,
+                  1,
+                  11,
+                  4,
+                  6,
+                  3,
+                  1,
+                  4
+                ]
+              },
+              "code": {
+                "top1": 0.0,
+                "mrr": 0.17080315517815517,
+                "ranks": [
+                  4,
+                  7,
+                  6,
+                  6,
+                  8,
+                  13,
+                  7,
+                  2,
+                  14,
+                  11,
+                  7,
+                  3,
+                  4,
+                  13,
+                  8,
+                  14
+                ]
+              },
+              "science": {
+                "top1": 0.125,
+                "mrr": 0.24942392676767677,
+                "ranks": [
+                  4,
+                  12,
+                  10,
+                  6,
+                  16,
+                  9,
+                  6,
+                  15,
+                  1,
+                  10,
+                  11,
+                  2,
+                  1,
+                  9,
+                  11,
+                  11
+                ]
+              }
+            }
+          },
+          "max_stream_vs_batch_diff": 0.0,
+          "peak_rss_bytes": 368836608
+        }
+      },
+      "checks": {
+        "noncollapse": false,
+        "beats_untrained": false,
+        "beats_ce_bar": false
+      }
+    },
+    {
+      "seed": 43,
+      "arms": {
+        "untrained_kuramoto": {
+          "identity": {
+            "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+            "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+            "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "threads": 1
+          },
+          "seed": 43,
+          "arm": "untrained_kuramoto",
+          "initial_encoder_hash": "cb3f077dd2921ef716845034cb7df896dffe7d6aff3a021a5141663c8940f349",
+          "final_hash": "cb3f077dd2921ef716845034cb7df896dffe7d6aff3a021a5141663c8940f349",
+          "checkpoint": "43-untrained_kuramoto-final.pt",
+          "checkpoint_sha256": "14b0d706e889acc4f730a9e3cea92f27ca3e2b74828062524bbf85bdb13a516d",
+          "cold_equal": true,
+          "training_seconds": 0.0,
+          "steps": 0,
+          "losses": [],
+          "domain_accuracy": 0.9791666666666666,
+          "math_accuracy": 0.75,
+          "noncollapse": {
+            "math": {
+              "effective_rank": 12.415886878967285,
+              "mean_std": 0.26048576831817627
+            },
+            "code": {
+              "effective_rank": 12.392148971557617,
+              "mean_std": 0.8192532062530518
+            },
+            "science": {
+              "effective_rank": 13.756457328796387,
+              "mean_std": 0.3907518684864044
+            }
+          },
+          "retrieval": {
+            "top1": 0.10416666666666667,
+            "mrr": 0.2519518386705886,
+            "per_domain": {
+              "math": {
+                "top1": 0.1875,
+                "mrr": 0.3728019376456876,
+                "ranks": [
+                  1,
+                  6,
+                  15,
+                  11,
+                  1,
+                  3,
+                  16,
+                  11,
+                  1,
+                  2,
+                  6,
+                  2,
+                  13,
+                  2,
+                  3,
+                  13
+                ]
+              },
+              "code": {
+                "top1": 0.125,
+                "mrr": 0.2563949938949939,
+                "ranks": [
+                  6,
+                  3,
+                  4,
+                  1,
+                  15,
+                  12,
+                  1,
+                  3,
+                  10,
+                  5,
+                  7,
+                  13,
+                  15,
+                  14,
+                  9,
+                  10
+                ]
+              },
+              "science": {
+                "top1": 0.0,
+                "mrr": 0.12665858447108447,
+                "ranks": [
+                  11,
+                  10,
+                  5,
+                  5,
+                  13,
+                  6,
+                  10,
+                  11,
+                  12,
+                  8,
+                  9,
+                  13,
+                  14,
+                  10,
+                  3,
+                  10
+                ]
+              }
+            }
+          },
+          "inference_ms_span": 0.7391740833403068,
+          "encoder_param_bytes": 194056,
+          "whole_model_param_bytes": 194056,
+          "max_stream_vs_batch_diff": 0.0,
+          "peak_rss_bytes": 333324288
+        },
+        "next_byte_ce_kuramoto": {
+          "identity": {
+            "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+            "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+            "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "threads": 1
+          },
+          "seed": 43,
+          "arm": "next_byte_ce_kuramoto",
+          "initial_encoder_hash": "cb3f077dd2921ef716845034cb7df896dffe7d6aff3a021a5141663c8940f349",
+          "final_hash": "66876c9e9f046326f8363aeca8ea55cd53cec0deb09be09579a65c324515cc8d",
+          "checkpoint": "43-next_byte_ce_kuramoto-final.pt",
+          "checkpoint_sha256": "3faed5c1375edca27e24f85ff1fe7b67ed08c19c1dc85c8d75314d693c59117c",
+          "cold_equal": true,
+          "training_seconds": 2.510980746998939,
+          "steps": 24,
+          "losses": [
+            37.05626678466797,
+            36.12348556518555,
+            33.799617767333984,
+            33.85560607910156,
+            30.372400283813477,
+            28.411163330078125,
+            27.168384552001953,
+            26.210350036621094,
+            23.79720687866211,
+            22.652297973632812,
+            20.563140869140625,
+            19.884706497192383,
+            18.798978805541992,
+            17.548967361450195,
+            16.676679611206055,
+            16.04364585876465,
+            15.509517669677734,
+            14.70222282409668,
+            13.363113403320312,
+            12.32671070098877,
+            11.9168062210083,
+            11.252737998962402,
+            10.120019912719727,
+            9.987831115722656
+          ],
+          "domain_accuracy": 0.875,
+          "math_accuracy": 0.5,
+          "noncollapse": {
+            "math": {
+              "effective_rank": 11.106534957885742,
+              "mean_std": 0.02209794521331787
+            },
+            "code": {
+              "effective_rank": 9.727692604064941,
+              "mean_std": 0.15228255093097687
+            },
+            "science": {
+              "effective_rank": 11.336777687072754,
+              "mean_std": 0.03370273858308792
+            }
+          },
+          "retrieval": {
+            "top1": 0.041666666666666664,
+            "mrr": 0.19729070119695122,
+            "per_domain": {
+              "math": {
+                "top1": 0.0625,
+                "mrr": 0.2257052842990343,
+                "ranks": [
+                  1,
+                  13,
+                  4,
+                  5,
+                  14,
+                  2,
+                  7,
+                  15,
+                  10,
+                  2,
+                  16,
+                  11,
+                  10,
+                  12,
+                  6,
+                  5
+                ]
+              },
+              "code": {
+                "top1": 0.0,
+                "mrr": 0.14341136294261295,
+                "ranks": [
+                  16,
+                  5,
+                  14,
+                  10,
+                  12,
+                  5,
+                  5,
+                  3,
+                  8,
+                  13,
+                  4,
+                  7,
+                  6,
+                  10,
+                  9,
+                  14
+                ]
+              },
+              "science": {
+                "top1": 0.0625,
+                "mrr": 0.22275545634920635,
+                "ranks": [
+                  3,
+                  3,
+                  3,
+                  7,
+                  9,
+                  1,
+                  16,
+                  3,
+                  12,
+                  12,
+                  10,
+                  6,
+                  15,
+                  14,
+                  5,
+                  7
+                ]
+              }
+            }
+          },
+          "inference_ms_span": 0.7683869791700696,
+          "encoder_param_bytes": 194056,
+          "whole_model_param_bytes": 194056,
+          "max_stream_vs_batch_diff": 0.0,
+          "peak_rss_bytes": 411463680
+        },
+        "kuramoto_jepa": {
+          "identity": {
+            "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+            "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+            "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "threads": 1
+          },
+          "seed": 43,
+          "arm": "kuramoto_jepa",
+          "initial_encoder_hash": "cb3f077dd2921ef716845034cb7df896dffe7d6aff3a021a5141663c8940f349",
+          "final_hash": "bde7d0079eedd6e0dce7777ca60a31783c6cca840714395ea85ec259d44d73ee",
+          "checkpoint": "43-kuramoto_jepa-final.pt",
+          "checkpoint_sha256": "f0709f633a8fcd22fc101fb136c4e127a65a114c5df991dcae7c0d4bc927a8f5",
+          "cold_equal": true,
+          "training_seconds": 1.6511298409996016,
+          "steps": 24,
+          "losses": [
+            64.64895629882812,
+            59.07235336303711,
+            57.23828887939453,
+            57.79119873046875,
+            54.25846481323242,
+            53.83995819091797,
+            51.157474517822266,
+            53.14278793334961,
+            49.50227355957031,
+            49.40620422363281,
+            48.236820220947266,
+            50.37297821044922,
+            45.62173843383789,
+            48.26292037963867,
+            46.93041229248047,
+            48.200748443603516,
+            46.5045051574707,
+            45.65309524536133,
+            44.026588439941406,
+            46.36130905151367,
+            46.249778747558594,
+            44.871925354003906,
+            47.52936935424805,
+            41.89619827270508
+          ],
+          "domain_accuracy": 0.9583333333333334,
+          "math_accuracy": 0.625,
+          "noncollapse": {
+            "math": {
+              "effective_rank": 11.63498306274414,
+              "mean_std": 0.22628670930862427
+            },
+            "code": {
+              "effective_rank": 11.5264310836792,
+              "mean_std": 0.7832294702529907
+            },
+            "science": {
+              "effective_rank": 12.495477676391602,
+              "mean_std": 0.3397410213947296
+            }
+          },
+          "retrieval": {
+            "top1": 0.10416666666666667,
+            "mrr": 0.24250549797424795,
+            "per_domain": {
+              "math": {
+                "top1": 0.0625,
+                "mrr": 0.22605025183150182,
+                "ranks": [
+                  2,
+                  13,
+                  6,
+                  8,
+                  5,
+                  7,
+                  6,
+                  1,
+                  16,
+                  9,
+                  4,
+                  4,
+                  9,
+                  9,
+                  7,
+                  5
+                ]
+              },
+              "code": {
+                "top1": 0.125,
+                "mrr": 0.25731646825396826,
+                "ranks": [
+                  14,
+                  1,
+                  10,
+                  2,
+                  12,
+                  10,
+                  7,
+                  10,
+                  16,
+                  4,
+                  5,
+                  12,
+                  1,
+                  9,
+                  4,
+                  16
+                ]
+              },
+              "science": {
+                "top1": 0.125,
+                "mrr": 0.24414977383727382,
+                "ranks": [
+                  16,
+                  13,
+                  12,
+                  9,
+                  16,
+                  3,
+                  7,
+                  1,
+                  3,
+                  11,
+                  11,
+                  9,
+                  4,
+                  15,
+                  11,
+                  1
+                ]
+              }
+            }
+          },
+          "inference_ms_span": 0.7231518125081493,
+          "encoder_param_bytes": 194056,
+          "whole_model_param_bytes": 401168,
+          "native_retrieval_diagnostic": {
+            "top1": 0.020833333333333332,
+            "mrr": 0.16436503311503312,
+            "per_domain": {
+              "math": {
+                "top1": 0.0625,
+                "mrr": 0.2072964362026862,
+                "ranks": [
+                  9,
+                  13,
+                  14,
+                  8,
+                  12,
+                  15,
+                  13,
+                  16,
+                  8,
+                  1,
+                  6,
+                  8,
+                  3,
+                  2,
+                  4,
+                  7
+                ]
+              },
+              "code": {
+                "top1": 0.0,
+                "mrr": 0.12066900113775113,
+                "ranks": [
+                  11,
+                  5,
+                  8,
+                  16,
+                  16,
+                  11,
+                  4,
+                  6,
+                  16,
+                  13,
+                  4,
+                  13,
+                  9,
+                  14,
+                  6,
+                  15
+                ]
+              },
+              "science": {
+                "top1": 0.0,
+                "mrr": 0.16512966200466198,
+                "ranks": [
+                  3,
+                  6,
+                  8,
+                  11,
+                  16,
+                  8,
+                  3,
+                  16,
+                  11,
+                  8,
+                  15,
+                  13,
+                  15,
+                  6,
+                  4,
+                  2
+                ]
+              }
+            }
+          },
+          "max_stream_vs_batch_diff": 0.0,
+          "peak_rss_bytes": 368082944
+        }
+      },
+      "checks": {
+        "noncollapse": false,
+        "beats_untrained": false,
+        "beats_ce_bar": true
+      }
+    },
+    {
+      "seed": 44,
+      "arms": {
+        "untrained_kuramoto": {
+          "identity": {
+            "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+            "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+            "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "threads": 1
+          },
+          "seed": 44,
+          "arm": "untrained_kuramoto",
+          "initial_encoder_hash": "c655efd57c516b7c1a4a83b9145b89df8b9090c7abefd9d8a75456ad474237bc",
+          "final_hash": "c655efd57c516b7c1a4a83b9145b89df8b9090c7abefd9d8a75456ad474237bc",
+          "checkpoint": "44-untrained_kuramoto-final.pt",
+          "checkpoint_sha256": "d5fcc2d51132d55701be50c49fa5ad67fd545b43f076c8b580389f54dc40672d",
+          "cold_equal": true,
+          "training_seconds": 0.0,
+          "steps": 0,
+          "losses": [],
+          "domain_accuracy": 1.0,
+          "math_accuracy": 0.75,
+          "noncollapse": {
+            "math": {
+              "effective_rank": 12.37868881225586,
+              "mean_std": 0.24543972313404083
+            },
+            "code": {
+              "effective_rank": 11.817900657653809,
+              "mean_std": 0.8042000532150269
+            },
+            "science": {
+              "effective_rank": 12.89917278289795,
+              "mean_std": 0.3461971879005432
+            }
+          },
+          "retrieval": {
+            "top1": 0.08333333333333333,
+            "mrr": 0.2271582005957006,
+            "per_domain": {
+              "math": {
+                "top1": 0.0625,
+                "mrr": 0.23120039682539684,
+                "ranks": [
+                  4,
+                  9,
+                  8,
+                  3,
+                  8,
+                  1,
+                  5,
+                  3,
+                  15,
+                  5,
+                  15,
+                  14,
+                  4,
+                  6,
+                  3,
+                  15
+                ]
+              },
+              "code": {
+                "top1": 0.0625,
+                "mrr": 0.2027886176323676,
+                "ranks": [
+                  13,
+                  10,
+                  15,
+                  1,
+                  14,
+                  7,
+                  11,
+                  5,
+                  10,
+                  10,
+                  5,
+                  6,
+                  6,
+                  5,
+                  16,
+                  2
+                ]
+              },
+              "science": {
+                "top1": 0.125,
+                "mrr": 0.24748558732933734,
+                "ranks": [
+                  7,
+                  16,
+                  10,
+                  3,
+                  13,
+                  1,
+                  12,
+                  2,
+                  11,
+                  11,
+                  15,
+                  1,
+                  11,
+                  6,
+                  14,
+                  12
+                ]
+              }
+            }
+          },
+          "inference_ms_span": 1.0744489583392653,
+          "encoder_param_bytes": 194056,
+          "whole_model_param_bytes": 194056,
+          "max_stream_vs_batch_diff": 0.0,
+          "peak_rss_bytes": 332808192
+        },
+        "next_byte_ce_kuramoto": {
+          "identity": {
+            "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+            "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+            "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "threads": 1
+          },
+          "seed": 44,
+          "arm": "next_byte_ce_kuramoto",
+          "initial_encoder_hash": "c655efd57c516b7c1a4a83b9145b89df8b9090c7abefd9d8a75456ad474237bc",
+          "final_hash": "bf6464178808bdcd478912501eec4d590ac64a1a2c6f82818c7ef7df48e11e62",
+          "checkpoint": "44-next_byte_ce_kuramoto-final.pt",
+          "checkpoint_sha256": "e0af99b9dd5990f7c05e0cfe209d986362435b593936fa7aea3b5cbafb432f0a",
+          "cold_equal": true,
+          "training_seconds": 2.479537445999995,
+          "steps": 24,
+          "losses": [
+            39.96354675292969,
+            38.2374382019043,
+            35.55916976928711,
+            33.9172477722168,
+            30.774606704711914,
+            29.735361099243164,
+            26.84688949584961,
+            25.056079864501953,
+            22.907562255859375,
+            20.74022102355957,
+            19.177614212036133,
+            18.086301803588867,
+            16.202322006225586,
+            14.89130973815918,
+            14.266331672668457,
+            13.624772071838379,
+            12.062682151794434,
+            11.854793548583984,
+            10.302791595458984,
+            9.958492279052734,
+            9.16010856628418,
+            8.82231330871582,
+            8.153557777404785,
+            8.008206367492676
+          ],
+          "domain_accuracy": 0.875,
+          "math_accuracy": 0.5,
+          "noncollapse": {
+            "math": {
+              "effective_rank": 9.131702423095703,
+              "mean_std": 0.0077341049909591675
+            },
+            "code": {
+              "effective_rank": 9.398601531982422,
+              "mean_std": 0.11501538753509521
+            },
+            "science": {
+              "effective_rank": 11.480538368225098,
+              "mean_std": 0.015535563230514526
+            }
+          },
+          "retrieval": {
+            "top1": 0.08333333333333333,
+            "mrr": 0.22073181448181445,
+            "per_domain": {
+              "math": {
+                "top1": 0.0625,
+                "mrr": 0.2057400065212565,
+                "ranks": [
+                  1,
+                  13,
+                  7,
+                  6,
+                  16,
+                  3,
+                  9,
+                  15,
+                  10,
+                  4,
+                  12,
+                  8,
+                  9,
+                  14,
+                  2,
+                  11
+                ]
+              },
+              "code": {
+                "top1": 0.0625,
+                "mrr": 0.2138106684981685,
+                "ranks": [
+                  12,
+                  6,
+                  15,
+                  6,
+                  7,
+                  14,
+                  2,
+                  16,
+                  14,
+                  16,
+                  4,
+                  3,
+                  1,
+                  13,
+                  5,
+                  6
+                ]
+              },
+              "science": {
+                "top1": 0.125,
+                "mrr": 0.2426447684260184,
+                "ranks": [
+                  4,
+                  8,
+                  9,
+                  10,
+                  11,
+                  13,
+                  16,
+                  5,
+                  3,
+                  1,
+                  15,
+                  14,
+                  12,
+                  5,
+                  9,
+                  1
+                ]
+              }
+            }
+          },
+          "inference_ms_span": 0.7713977916713096,
+          "encoder_param_bytes": 194056,
+          "whole_model_param_bytes": 194056,
+          "max_stream_vs_batch_diff": 0.0,
+          "peak_rss_bytes": 410824704
+        },
+        "kuramoto_jepa": {
+          "identity": {
+            "source_sha": "5e18612a1539da9f2041d0401fdbe47af77db7ab",
+            "tree": "3a4f79d8d1500358766a028e19d552f8504a73d0",
+            "manifest_sha256": "4f6e68bc9cdb32ff45dd2026e512c12fcdc45fd90c29df6e96f7aab53678e9b5",
+            "torch": "2.10.0+cpu",
+            "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+            "threads": 1
+          },
+          "seed": 44,
+          "arm": "kuramoto_jepa",
+          "initial_encoder_hash": "c655efd57c516b7c1a4a83b9145b89df8b9090c7abefd9d8a75456ad474237bc",
+          "final_hash": "2e3b507fc1959f2c974c3edead44314a0866e66b681984fdfd2bbb1d60c1ea04",
+          "checkpoint": "44-kuramoto_jepa-final.pt",
+          "checkpoint_sha256": "d9fde46306dd1bdc6e28b21da6de2c06a312f1f10c119da7490dc20895a7a6d4",
+          "cold_equal": true,
+          "training_seconds": 1.5241796249983963,
+          "steps": 24,
+          "losses": [
+            60.96046829223633,
+            60.02412796020508,
+            56.953330993652344,
+            55.990169525146484,
+            54.07245635986328,
+            51.27342224121094,
+            49.885562896728516,
+            53.89820861816406,
+            49.88022232055664,
+            51.12623596191406,
+            49.459083557128906,
+            50.89216995239258,
+            49.41331100463867,
+            47.88820266723633,
+            45.16367721557617,
+            47.25624084472656,
+            48.75096893310547,
+            44.024349212646484,
+            42.142112731933594,
+            43.41037368774414,
+            44.3885612487793,
+            42.771942138671875,
+            43.57183074951172,
+            46.539669036865234
+          ],
+          "domain_accuracy": 0.9375,
+          "math_accuracy": 0.5625,
+          "noncollapse": {
+            "math": {
+              "effective_rank": 12.380327224731445,
+              "mean_std": 0.1840723305940628
+            },
+            "code": {
+              "effective_rank": 10.778970718383789,
+              "mean_std": 0.7716280221939087
+            },
+            "science": {
+              "effective_rank": 12.54485034942627,
+              "mean_std": 0.21484461426734924
+            }
+          },
+          "retrieval": {
+            "top1": 0.0625,
+            "mrr": 0.23350431397306395,
+            "per_domain": {
+              "math": {
+                "top1": 0.125,
+                "mrr": 0.30502232142857144,
+                "ranks": [
+                  1,
+                  7,
+                  2,
+                  5,
+                  2,
+                  1,
+                  3,
+                  5,
+                  12,
+                  16,
+                  15,
+                  6,
+                  8,
+                  8,
+                  8,
+                  4
+                ]
+              },
+              "code": {
+                "top1": 0.0,
+                "mrr": 0.17504171176046174,
+                "ranks": [
+                  11,
+                  3,
+                  11,
+                  16,
+                  12,
+                  7,
+                  6,
+                  6,
+                  7,
+                  9,
+                  3,
+                  4,
+                  7,
+                  10,
+                  2,
+                  12
+                ]
+              },
+              "science": {
+                "top1": 0.0625,
+                "mrr": 0.2204489087301587,
+                "ranks": [
+                  7,
+                  14,
+                  12,
+                  7,
+                  15,
+                  2,
+                  12,
+                  16,
+                  1,
+                  3,
+                  14,
+                  2,
+                  8,
+                  9,
+                  15,
+                  6
+                ]
+              }
+            }
+          },
+          "inference_ms_span": 0.7058362083398606,
+          "encoder_param_bytes": 194056,
+          "whole_model_param_bytes": 401168,
+          "native_retrieval_diagnostic": {
+            "top1": 0.10416666666666667,
+            "mrr": 0.2421921828171828,
+            "per_domain": {
+              "math": {
+                "top1": 0.125,
+                "mrr": 0.24101011835386835,
+                "ranks": [
+                  1,
+                  14,
+                  5,
+                  6,
+                  15,
+                  7,
+                  3,
+                  11,
+                  13,
+                  10,
+                  16,
+                  11,
+                  9,
+                  7,
+                  1,
+                  5
+                ]
+              },
+              "code": {
+                "top1": 0.125,
+                "mrr": 0.2602144383394383,
+                "ranks": [
+                  15,
+                  9,
+                  16,
+                  12,
+                  9,
+                  16,
+                  2,
+                  6,
+                  7,
+                  14,
+                  1,
+                  3,
+                  4,
+                  13,
+                  1,
+                  8
+                ]
+              },
+              "science": {
+                "top1": 0.0625,
+                "mrr": 0.22535199175824178,
+                "ranks": [
+                  8,
+                  13,
+                  13,
+                  2,
+                  12,
+                  1,
+                  2,
+                  6,
+                  16,
+                  14,
+                  5,
+                  7,
+                  3,
+                  12,
+                  12,
+                  10
+                ]
+              }
+            }
+          },
+          "max_stream_vs_batch_diff": 0.0,
+          "peak_rss_bytes": 368525312
+        }
+      },
+      "checks": {
+        "noncollapse": false,
+        "beats_untrained": false,
+        "beats_ce_bar": false
+      }
+    }
+  ]
+}
