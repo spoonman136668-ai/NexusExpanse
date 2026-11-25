@@ -1,0 +1,60 @@
+name: Wider receiver checkpoint qualification
+on:
+  push:
+    branches: [dev/checkpoint-transfer-fidelity]
+    paths:
+      - docs/CHECKPOINT_WIDTH_PREREG.md
+      - benchmarks/checkpoint_width_lift.py
+      - .github/workflows/checkpoint-transfer-width.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: checkpoint-transfer-width
+  cancel-in-progress: false
+jobs:
+  qualification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy pytest
+      - run: |
+          set -euo pipefail
+          mkdir -p results
+          git config user.name 'Nexus development'
+          git config user.email 'nexus-dev@local.invalid'
+          file=checkpoint-transfer-width.json
+          if ! test -s "evidence/$file"; then
+            python benchmarks/checkpoint_width_lift.py "results/$file" results/demo
+            python benchmarks/checkpoint_width_lift.py demo results/demo | tee results/demo-log.txt
+            cp "results/$file" evidence/
+            python benchmarks/checkpoint_transfer_findings.py
+            git add "evidence/$file" docs/CHECKPOINT_TRANSFER_FINDINGS.md
+            git commit -m "Record wider receiver outcomes, matched timing and research handoff"
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi
+          python -m pytest -q | tee results/tests.txt
+          python benchmarks/prefix_causality_dev.py | tee results/prefix.txt
+          git diff --check d48b2df..HEAD
+          git fsck --full --strict
+      - uses: actions/upload-artifact@v4
+        if: always() && hashFiles('results/demo/example.json') != ''
+        with:
+          name: checkpoint-transfer-width-demo
+          path: results/demo/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: width-receipts
+          path: |
+            results/*.txt
+            results/*.partial
+            results/*.json

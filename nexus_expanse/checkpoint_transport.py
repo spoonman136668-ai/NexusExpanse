@@ -61,10 +61,10 @@ class CorrectedLinear(nn.Module):
 
 
 class ImportedSkill(nn.Module):
-    def __init__(self):
+    def __init__(self, width=CONFIG['dim']):
         super().__init__()
-        self.core=NexusExpanseByteCore(**CONFIG)
-        self.readout=nn.Linear(CONFIG['dim'],256,bias=False)
+        self.core=NexusExpanseByteCore(**dict(CONFIG,dim=width))
+        self.readout=nn.Linear(width,256,bias=False)
 
     def forward(self, raw):
         hidden=self.core.forward_neural(raw)[1]
@@ -82,14 +82,42 @@ class SkillBank(nn.Module):
         return self.skill(raw) if use_skill else self.base.forward_neural(raw)[0]
 
 
-def load_skill(path, method):
+def lift_dense_state(state, factor, *, scale_attention=True):
+    """Embed a dense checkpoint in a wider repeated-coordinate subspace."""
+    if type(factor) is not int or factor<1:
+        raise ValueError('positive integer width factor required')
+    if factor==1:
+        return state
+    lifted={}
+    for key,tensor in state.items():
+        if key in ('emb.weight','pos_emb.weight'):
+            value=tensor.repeat_interleave(factor,1)
+        elif key=='readout.weight':
+            value=tensor.repeat_interleave(factor,1)/factor
+        elif 'norm.' in key:
+            value=tensor.repeat_interleave(factor,0)
+        elif key.endswith('weight'):
+            value=tensor.repeat_interleave(factor,0).repeat_interleave(factor,1)/factor
+        elif key.endswith('bias'):
+            value=tensor.repeat_interleave(factor,0)
+        else:
+            raise ValueError('unexpected donor tensor '+key)
+        if scale_attention and '.attn.in_proj_' in key:
+            q,k,v=value.chunk(3)
+            value=torch.cat((q*factor**(-.25),k*factor**(-.25),v))
+        lifted[key]=value
+    return lifted
+
+
+def load_skill(path, method, *, width_factor=1, scale_attention=True):
     """Input is tensors and a byte-to-row vocabulary. No input examples or teacher."""
     with forbid_donor_forward() as guard, torch.no_grad():
         package=torch.load(path,weights_only=True,map_location='cpu')
         state, ids=package['weights'],package['byte_to_row']
         if not torch.equal(ids.sort().values,torch.arange(256)):
             raise ValueError('expected a bijection of all singleton bytes')
-        skill=ImportedSkill()
+        state=lift_dense_state(state,width_factor,scale_attention=scale_attention)
+        skill=ImportedSkill(state['emb.weight'].shape[1])
         core=skill.core
         core.emb.weight.copy_(state['emb.weight'][ids])
         core.pos_emb.weight.copy_(state['pos_emb.weight'])
