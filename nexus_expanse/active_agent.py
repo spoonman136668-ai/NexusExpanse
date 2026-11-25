@@ -6,6 +6,7 @@ import struct
 from nexus_expanse.arbitration import ReliabilityArbitrator
 from nexus_expanse.consolidation import ConsolidatingMemory
 from nexus_expanse.hopfield_vsa import HopfieldVSAMemory
+from nexus_expanse.po_belief import LockBelief
 
 
 def raw_symbol(value):
@@ -90,13 +91,38 @@ class NexusActiveAgent:
     SWITCH_MATCH = .50
     SWITCH_COUNT = 2
 
-    def __init__(self):
+    def __init__(self, *, po_mode=False):
+        self.belief = LockBelief() if po_mode else None
         self.banks = [_TransitionBank(), _TransitionBank()]
         self.active = 0
         self.held = []
         self._pending = None
 
+    def begin_attempt(self):
+        if self._pending is not None:
+            raise ValueError("finish the outstanding action before resetting belief")
+        if self.belief is not None:
+            self.belief.reset()
+
     def choose(self, observation, candidates, goal):
+        if self.belief is None:
+            return self._choose_markov(observation, candidates, goal)
+        obs = raw_symbol(observation)
+        raw_symbol(goal)
+        candidates = tuple(candidates)
+        for action in candidates:
+            raw_symbol(action)
+        if not candidates or len(set(candidates)) != len(candidates):
+            raise ValueError("candidate actions must be nonempty and distinct")
+        choices = self.belief.options(self.active, candidates)
+        selected, forecast = self._choose_markov(observation, choices, goal)
+        self._goal = goal
+        weight = self.belief.motion_probability(self.active, raw_symbol(selected))
+        forecast.mul_(weight)
+        forecast[obs] += 1 - weight
+        return selected, forecast
+
+    def _choose_markov(self, observation, candidates, goal):
         if self._pending is not None:
             raise ValueError("observe the outstanding action before choosing again")
         raw_symbol(observation)
@@ -124,6 +150,22 @@ class NexusActiveAgent:
         return selected, predicted.clone()
 
     def observe(self, successor):
+        if self.belief is None:
+            return self._observe_markov(successor)
+        raw_symbol(successor)
+        if self._pending is None:
+            raise ValueError("choose an action before observing a successor")
+        obs, action, _, _ = self._pending
+        moved = obs != successor
+        if moved:
+            feedback = self._observe_markov(successor)
+        else:
+            self._pending = None
+            feedback = False, False
+        self.belief.observe(self.active, raw_symbol(action), moved, successor == self._goal)
+        return feedback
+
+    def _observe_markov(self, successor):
         target = raw_symbol(successor)
         if self._pending is None:
             raise ValueError("choose an action before observing a successor")
@@ -153,12 +195,21 @@ class NexusActiveAgent:
         payload = b"NA01" + bytes((self.active, len(self.held)))
         payload += b"".join(b"".join(triple) for triple in self.held)
         payload += b"".join(bank.snapshot() for bank in self.banks)
+        if self.belief is not None:
+            payload = b"NP01" + len(payload).to_bytes(2, "little") + payload + self.belief.snapshot()
         if len(payload) > self.BUDGET:
             raise ValueError("adaptive state exceeds the serialized limit")
         return payload
 
     @classmethod
     def restore(cls, payload):
+        if 6 <= len(payload) <= cls.BUDGET and payload[:4] == b"NP01":
+            end = 6 + int.from_bytes(payload[4:6], "little")
+            if payload[6:10] != b"NA01" or end > len(payload):
+                raise ValueError("invalid partially observable checkpoint")
+            agent = cls.restore(payload[6:end])
+            agent.belief = LockBelief.restore(payload[end:])
+            return agent
         if not 6 <= len(payload) <= cls.BUDGET or payload[:4] != b"NA01":
             raise ValueError("invalid active agent snapshot")
         active, held_count = payload[4:6]
