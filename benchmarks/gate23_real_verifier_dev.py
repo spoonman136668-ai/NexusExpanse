@@ -1,6 +1,7 @@
 """AST-executed synthesis with matched deterministic failed-trace corruption."""
 import argparse
 import hashlib
+import itertools
 import json
 from pathlib import Path
 import random
@@ -12,7 +13,7 @@ sys.path.insert(0, str(ROOT))
 from benchmarks.dev_artifacts import digest
 from benchmarks.gate11_selective_kuramoto_dev import SEEDS, identity, setup
 from benchmarks.gate21_verifier_synthesis_dev import (
-    ARMS, advance, compositions, merge, primitives,
+    ARMS, Problem, advance, merge, primitives,
 )
 from benchmarks.gate_custody import prepare_directory
 from nexus_expanse.expr_verifier import EXPRESSIONS, run_pipeline, verify
@@ -38,10 +39,56 @@ class ExpressionWorld:
         return verify(problem.source, problem.target, program, self.expressions)
 
 
+def composition_tasks(world, rng):
+    ops = world.skins[0]
+    reference = (bytes(range(8)), bytes((3, 1, 5, 2)), bytes((2, 5, 1)))
+    programs = {n: [bytes(p) for p in itertools.product(ops, repeat=n)] for n in (1, 2, 3)}
+    seen = {reference}
+    splits = {}
+    for n, paths in programs.items():
+        groups = {}
+        for path in paths:
+            key = tuple(world.run(x, path, 0)[-1] for x in reference)
+            if key not in seen:
+                groups.setdefault(key, []).append(path)
+        seen.update(groups)
+        ordered = sorted(groups)
+        rng.shuffle(ordered)
+        midpoint = len(ordered) // 2
+        splits[n] = tuple([p for key in half for p in groups[key]]
+                          for half in (ordered[:midpoint], ordered[midpoint:]))
+    phases = []
+    for stage in (0, 1):
+        tasks = []
+        for depth in (2, 3):
+            count = 0
+            used = set()
+            for _ in range(4000):
+                source = bytes(rng.randrange(8) for _ in range(3 + stage))
+                path = rng.choice(splits[depth][stage])
+                target = world.run(source, path, 0)[-1]
+                shorter = [p for n in range(1, depth) for p in programs[n]]
+                excluded = shorter + splits[depth][1 - stage]
+                if target == source or (source, target) in used or any(
+                    world.run(source, other, 0)[-1] == target for other in excluded
+                ):
+                    continue
+                tasks.append(Problem(source, target, 0, depth, True))
+                used.add((source, target))
+                count += 1
+                if count == 16:
+                    break
+            if count != 16:
+                raise ValueError("could not allocate the frozen exact-depth tasks")
+        rng.shuffle(tasks)
+        phases.append(tasks)
+    return phases
+
+
 def fixture(seed):
     world = ExpressionWorld(seed)
     rng = random.Random(seed + 2300)
-    seen, cold = compositions(world, rng)
+    seen, cold = composition_tasks(world, rng)
     initial = primitives(world, 0, range(8))
     rng.shuffle(initial)
     phases = initial, seen, cold
