@@ -74,3 +74,15 @@ The scored Linux CPU run recorded 0/80 false births, 0 receiver donor calls, 5/5
 The CPU smoke runs corpus preparation, train, verify, import-skill, HMM route-stream and solve in separate processes. It verifies the training corpus and snapshot digests, loads the actual imported skill into the routed bank, and checks the exact solve residual. The import command consumes a static donor pack, while verify consumes the unified training snapshot. Windows CUDA qualification remains an owner run.
 
 [Preregistration](PHASE4_SKILL_BIRTH_PREREG.md) · [Raw evidence](../evidence/phase4-skill-birth-dev-001.json)
+
+## Phase 5 born-skill mastery DEV review
+
+**DEV science FAIL.** Episodic-assisted birth reached 95.31–97.66% Rule C answer accuracy and 96.88% Rule C routing after cold restore. It beat the 32-step baseline on answer accuracy in 5/5 seeds and its largest original-domain BPB increase was +0.02826. 192-step neural birth reached 7.81–12.50% Rule C answer accuracy and 91.99–95.12% Rule C routing after cold restore. It beat the 32-step baseline on answer accuracy in 2/5 seeds and its largest original-domain BPB increase was +0.02846. The episodic mode met the answer and routing thresholds in all five seeds. Its routed Python BPB rose by 0.02826 in seed 1802 and 0.02104 in seed 1805, above the 0.02 per-domain ceiling. The 32-step Phase 4 birth arm had identical original-domain drift in all five seeds.
+
+Median consolidation took 0.260 s for episodic-assisted birth and 1.567 s for 192-step neural birth. The suffix table added 615–670 tensor bytes and covered 95.31–97.66% of held-out answer positions in the banks that triggered.
+
+Rule C CHECK uses fresh byte windows with recurring cue bindings. The accuracy measure includes answer positions with an unseen cue. The matched arms use the same observed encounter prefix and retain exact resident parameters and individual forecasts when expansion succeeds.
+
+The scored CPU run logged 0/80 false births, 0 receiver donor forwards, 5/5 exact resident weight and forecast comparisons, and 5/5 exact cold restores across the three birth modes. The combined regression has 419 cases. Windows CUDA and independent scientific qualification await their own receipts.
+
+[Preregistration](PHASE5_SKILL_MASTERY_PREREG.md) · [Unrounded five-seed evidence](../evidence/phase5-skill-mastery-dev-001.json)
