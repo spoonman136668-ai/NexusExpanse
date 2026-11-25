@@ -1,0 +1,20 @@
+# Gate 16 preregistration
+
+This is a local synthetic interactive DEV experiment. Run the four fixed policies on seeds 42, 43 and 44. Each seed binds an opaque raw-byte alphabet to 14 observations and three independent candidate actions. The runner generates three disjoint groups of 24 start/goal pairs. Each goal is exactly two transitions from the start under both action maps and impossible in zero or one. The task budget is four actions. A goal ends the attempt early and the harness records actual interactions as well as the equal maximum allowance.
+
+The runner samples three hidden Hamiltonian transition cycles and rotates their action association for World B. Transition outcomes change silently for the persistent and reactive policies. World A returns for the final phase. The runner supplies only separate current observation, ordered raw action candidates and requested goal. The learner receives the selected action's actual successor after selection. Neither learner sees transition tables, parser offsets, an oracle intermediate state, or the fixture generator. The same starts, goals, candidate order schedule, action availability and maximum interaction budget apply to each arm. All phases are scored online, including early learning. Phase 3's 24 pairs are distinct from the preceding pairs. It measures cold return with permitted online adaptation.
+
+## Fixed policies and state
+
+- Random takes the first uniformly shuffled candidate. Its adaptive state is empty.
+- Reactive chooses the largest one-step goal probability from sparse-support ConsolidatingMemory, using its full 40,000-byte budget and order 2.
+- The fresh planner uses the complete planning policy with a reset at every phase boundary. Its reset is the experimental control intervention.
+- The persistent planner uses two bounded transition banks. Each bank combines established Hopfield VSA and ConsolidatingMemory predictions via one-bin reliability. Each VSA bank has 44 slots and each episodic bank has 6,000 serialized bytes. Both banks plus phase-selection state share a 40,000-byte serialized ceiling. Restore the live state and expected prediction digest in a fresh process before Phase 3. Neither policy bank receives the goal as an outcome label.
+
+Reactive and planning scores add the same exploration bonus .30/(1+exact context support). Planning adds .90 times the expected one-action goal opportunity from observed successor states. The action is chosen before the successor is available. Ordinary outcomes update the active bank's two experts and their reliability. With support at least two and actual outcome probability below .20, put the surprising observed transition aside. Switch to the other bank after two such cases, or when its matching context has support at least two and probability at least .50. Apply only those already-observed transitions to the selected bank. Keep the other bank's prior knowledge. Check serialized size after every outcome. This ceiling counts adaptive bytes. It does not count the fixed codebooks, runtime allocations or logs.
+
+## Decision and execution
+
+PASS requires the persistent planner to strictly beat every control on total completions and Phase 3 completions in each seed, with exact fresh restore 3/3 and every policy within its state budget. MIXED requires engineering qualification and strict total wins over random and reactive in all three seeds, with at least one Phase 3 tie/loss to the fresh planner. Other completed misses are FAIL. Preserve action-consequence traces, prediction likelihoods, bank switches, cold digests, timings and actual interactions for each cell. Conclusions apply to these closed-loop DEV worlds.
+
+Freeze code, unit tests and this document before running any scored world. Run `--seed N --arm NAME --directory OUTSIDE --epoch-limit 1` once per phase with separate processes. Each completed phase has a hash-checked immutable intent, checkpoint and receipt. An ambiguous consumed phase blocks replay. Verify all 36 phase receipts with `--directory OUTSIDE --merge OUTSIDE/result.json` and commit the raw output in `evidence/gate16-agency-dev-001.json`.
