@@ -98,3 +98,20 @@ Preregistered at `41db6e0` (`docs/CHECKPOINT_BPE_SCALED_WIDTH_KL_PREREG.md`), re
 **Phase 2C Verdict (`ENG PASS / SCI MIXED`):**
 - Both `width32_transfer_kl` and `width64_transfer_kl` beat `position_lift_32` and `shuffled_width64_transfer_kl` in **5/5** seeds (`0` donor calls in receivers, `20/20` exact cold restores).
 - **Transfer corpus volume—not hidden width—is the active scaling lever:** `width32_transfer_kl` beat `width64_transfer_kl` in **5/5** seeds (`0.9401` vs. `0.9815` mean KL; best seed `0.8721` bits / `36.61%` agreement), cutting mean KL from `1.2911` (`position_lift`) → `1.0428` (64 windows) → `0.9401` (192 windows). Further reduction across the BPE -> raw-byte boundary requires a multi-MB unlabeled transfer corpus (consumer GPU run) rather than wider small-data receivers.
+
+### Phase 2D: 768-Window Disjoint Corpus Pure-KL + CLI `import-skill` (`seeds = [1401–1405]`)
+
+Preregistered at `adffa73` (`docs/CHECKPOINT_BPE_PHASE2D_PREREG.md`), recorded at `93dc0fc` (`evidence/checkpoint-transfer-bpe-phase2d.json`). Scaling the disjoint unlabeled transfer corpus to **768 64-byte windows** (`top_k=32`, `4,718,592 B` cache, `<= 320` cosine-LR steps) broke below `0.85` bits mean KL while adding first-class `nexus_expanse.cli import-skill` (`--width-factor 1|2`, `0` donor calls, `0.0` prefix/round-trip parity):
+
+| Seed | `scaled_pure_kl_32` KL / Agree (Steps) | `scaled_mixed_kl_32` KL / Agree / BPB | `shuffled_scaled_kl_32` KL / Agree | `position_lift_32` KL / Agree |
+| ---: | ---: | ---: | ---: | ---: |
+| **1401** | 0.8262 / 33.13% (288) | **0.8079 / 34.82%** / 4.6775 (304) | 1.0546 / 17.36% (16) | 1.2756 / 11.90% (8) |
+| **1402** | **0.7975 / 41.77%** (320) | 0.7980 / **41.77%** / 4.6145 (256) | 1.0793 / 32.54% (0) | 1.0793 / 32.54% (0) |
+| **1403** | **0.9237 / 33.23%** (320) | 0.9296 / 32.74% / 4.6481 (304) | 1.1720 / 17.06% (208) | 1.4109 / 11.41% (8) |
+| **1404** | **0.8613** / 31.55% (320) | 0.8727 / **33.33%** / 4.7220 (288) | 1.1141 / 21.53% (16) | 1.4294 / 11.41% (8) |
+| **1405** | **0.7834 / 34.03%** (304) | 0.7884 / 33.93% / 4.6905 (272) | 1.0248 / 19.15% (16) | 1.3062 / 13.19% (8) |
+| **Mean** | **0.8384** / 34.74% | 0.8393 / **35.32%** / **4.6705** | 1.0890 / 21.53% | 1.3003 / 16.09% |
+
+**Phase 2D Verdict (`ENG PASS / SCI MIXED`):**
+- Monotonic corpus-scaling law across 4 independent experiments (`0` donor calls in receivers, `0` BPE tokenizer at inference): `1.3003` bits (`0` transfer windows) -> `1.0428` (`64` windows) -> `0.9401` (`192` windows) -> **`0.8384` bits (`768` windows, best seed `0.7834` bits / `41.77%` agreement)**.
+- Both `scaled_pure_kl_32` and `scaled_mixed_kl_32` beat `position_lift_32` and `shuffled_scaled_kl_32` in **5/5** seeds and cleared the `< 0.85`-bit KL target, while mean top-1 agreement (`35.32%`) stopped short of the `40%` joint threshold. `scaled_mixed_kl_32` preserved both `< 0.84` bits KL and the strongest held-out byte BPB (`4.6705` vs. donor `5.643`).

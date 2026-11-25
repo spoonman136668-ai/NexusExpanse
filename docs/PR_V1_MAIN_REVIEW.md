@@ -27,3 +27,9 @@ Everything below is DEV-verified on Linux CPU (`PyTorch 2.10/2.15+cpu`). Protect
    python -m nexus_expanse.cli train --device cuda --dtype bf16 --corpus-dir .\data --directory ..\nexus-gpu-run --dim 64 --context 256 --batch-per-domain 4 --steps-per-epoch 64 --epochs 64 --epoch-limit 1 --until-complete --save-snapshot ..\nexus-gpu-run\unified.pt
    ```
 2. **PR Merge to `main`:** Ready for owner review once the GPU run receipt is logged or if you wish to merge the CPU-verified v1.0-rc1 + Checkpoint Transfer suite first.
+
+## Phase 2D Addendum (`dev/checkpoint-transfer-phase2d-scale-and-cli`)
+
+- **CLI `import-skill`**: Added `python -m nexus_expanse.cli import-skill --donor <donor.pt> --method residual8 --width-factor <1|2> --out <skill.pt>` with mechanical `donor_forward_calls == 0`, `0.0` prefix causality, and `0.0` cold-restore round-trip verification (`tests/test_cli_import_skill.py`).
+- **768-Window Disjoint-Corpus Offline Byte-KL (`93dc0fc`)**: Cleared `< 0.85` bits mean KL on both `scaled_pure_kl_32` (`0.8384` bits) and `scaled_mixed_kl_32` (`0.8393` bits, `35.32%` mean agreement, `4.6705` BPB), beating `position_lift_32` (`1.3003` bits) and `shuffled_scaled_kl_32` (`1.0890` bits) in `5/5` seeds (`1401–1405`).
+- **Updated Regression Count**: **191 passed**, `0` failed, `0` skipped; `0/100` prefix causality failures.
