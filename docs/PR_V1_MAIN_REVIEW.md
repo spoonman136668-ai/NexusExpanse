@@ -54,3 +54,13 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 ~~~
 
 The generated workload is 4,000,000 raw bytes across math, code and prose train/eval files. The manifest carries exact file sizes and SHA-256 digests. The builder verifies zero exact 32-byte overlaps between train and eval before publication. Existing corpus files are preserved. The Windows CUDA launch awaits owner execution and a GPU receipt.
+
+## Phase 3C Sticky-HMM DEV review
+
+**DEV science MIXED.** On fresh seeds 1601–1605, HMM BMA lowered post-switch BPB in 5/5 seeds and also improved routing in 4/5 versus discounted BMA. It reached the eight-byte recovery bar on all three transitions in 0/5 seeds. HMM sparse used 2.401 to 2.555 skill calls per byte (36.13–39.98% below the four-skill reference, short of the 40% target) and improved post-switch routing over surprise sparse in 3/5 seeds and uniform mixture in 5/5. Dense HMM recovered Python to Markdown sooner in all five seeds. Rule A to Rule B missed the eight-byte bar in all five seeds for both HMM arms.
+
+Post-warmup single-domain routing ranged from 76.28% to 86.61% for HMM BMA and 73.44% to 86.22% for HMM sparse. The 90% bar was reached in 0/5 and 0/5 seeds, respectively. The Linux CPU experiment recorded 0 forbidden donor calls and 5/5 exact cold restores.
+
+Focused tests cover 50 exact prefix checks on both routers, cold compatibility with the existing snapshot format, CLI smoke, and a controlled abrupt switch. The combined regression contains 307 cases. Scientific qualification and Windows CUDA deployment remain separate owner decisions.
+
+[Preregistration](PHASE3C_STICKY_HMM_ROUTER_PREREG.md) · [Raw five-seed evidence](../evidence/phase3c-sticky-hmm-routing-dev-001.json)

@@ -62,3 +62,11 @@ $py = ".\.venv\Scripts\python.exe"
 The command reports the active skill, the named routing weights and one next-byte forecast per chunk in a JSON object. All chunks share one causal history, with a total input limit of 4,096 bytes. It verifies exact prefix causality before emitting results.
 
 The offline corpus builder produces six Gate 17 raw files, verifies train/eval 32-byte disjointness, and records size and SHA-256 in the manifest. The default pack contains 4 MB. Windows CUDA qualification requires a separate owner run. [Corpus build and Windows PowerShell sequence](PR_V1_MAIN_REVIEW.md#prepare-a-corpus-and-launch-on-windows-cuda)
+
+## Phase 3C Sticky-HMM routing
+
+The phase adds `hmm_bma` and `hmm_sparse` to `route-stream` with the existing tensor-only bank format. Both report predictive regime weights for the next byte. HMM BMA uses those weights to mix probabilities. HMM sparse forecasts through the top skill, propagates the sticky prior between probes, and refilters the last four observed bytes at a probe. The replay updates stored state for subsequent forecasts.
+
+**DEV science MIXED.** On fresh seeds 1601–1605, HMM BMA lowered post-switch BPB in 5/5 seeds and also improved routing in 4/5 versus discounted BMA. It reached the eight-byte recovery bar on all three transitions in 0/5 seeds. HMM sparse used 2.401 to 2.555 skill calls per byte (36.13–39.98% below the four-skill reference, short of the 40% target) and improved post-switch routing over surprise sparse in 3/5 seeds and uniform mixture in 5/5. Dense HMM recovered Python to Markdown sooner in all five seeds. Rule A to Rule B missed the eight-byte bar in all five seeds for both HMM arms. Post-warmup single-domain routing ranged from 76.28% to 86.61% for HMM BMA and 73.44% to 86.22% for HMM sparse. The 90% bar was reached in 0/5 and 0/5 seeds, respectively. The Linux CPU experiment recorded 0 forbidden donor calls and 5/5 exact cold restores.
+
+[Preregistration](PHASE3C_STICKY_HMM_ROUTER_PREREG.md) · [Raw five-seed evidence](../evidence/phase3c-sticky-hmm-routing-dev-001.json)
