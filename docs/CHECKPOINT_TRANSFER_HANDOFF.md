@@ -1,5 +1,23 @@
 # Checkpoint transfer handoff
 
-Stage: preregistered, awaiting CPU execution. The checkpoint-transfer workflow continues independently of the chat and pushes a separate commit per evidence stage to this research branch. The branch starts at Gate 26's published tip d48b2df. No local Gates 27–32 commits are dependencies.
+Isolated DEV series based on d48b2df. All decisions and thresholds were frozen in docs/CHECKPOINT_TRANSFER_PROTOCOL.md.
+The donor producer is a separate process. The importer accepts tensors and byte-row metadata only. Audit probabilities are created by the producer and never supplied to the importer or optimizer.
+The original Python route is frozen and explicitly selected. These results cover compatible attention geometry and 256 singleton-byte symbols. Both models perform neural inference when their own predictions are requested.
 
-Read CHECKPOINT_TRANSFER_PROTOCOL.md before interpreting any result. The converter is nexus_expanse/checkpoint_transport.py; the runner is benchmarks/checkpoint_transfer_study.py. A completed stage writes evidence/checkpoint-transfer-{screen,confirm,escalate}.json as applicable. The workflow regenerates this handoff after each stage. To resume, dispatch .github/workflows/checkpoint-transfer.yml on this branch. It skips committed stages, runs the frozen remainder, then verifies the suite and original prefix reproducer. Partial receipts can be recovered from the run's checkpoint-study artifact. No threshold edits across stages.
+## Recovery and reproduction
+
+Use the source SHA in each JSON receipt. Run the workflow with workflow_dispatch on this branch to resume at the first absent receipt. On Linux CPU with Python 3.12, PyTorch 2.10.0+cpu, NumPy and pytest, run the stage commands in .github/workflows/checkpoint-transfer.yml. Keep earlier result files in evidence/ for deterministic selection. Incremental partial receipts are diagnostic; a restarted stage recomputes its whole frozen cohort. The action archives partial results and test logs on failure.
+
+## Screen
+
+| Rank | Method | Worst KL, bits | Mean KL, bits | Skill checkpoint B |
+|---:|---|---:|---:|---:|
+| 1 | residual8 | 0.0000011 | 0.0000008 | 179859 |
+| 2 | block2 | 0.0318441 | 0.0269340 | 183443 |
+| 3 | spectral4 | 0.1150958 | 0.0519212 | 176979 |
+| 4 | walsh8 | 0.1750173 | 0.1016969 | 183123 |
+| 5 | monarch | 0.4021479 | 0.2138419 | 168171 |
+
+## Disposition
+
+Confirmation is pending. Advance the first two rows of the frozen ranking, with the first row entering Markdown.

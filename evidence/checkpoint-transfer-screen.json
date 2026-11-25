@@ -1,0 +1,1311 @@
+{
+  "stage": "screen",
+  "source": "c50443e596d46b08b82594a1aaddfc8e5cc5c2ca",
+  "base": "d48b2dfc2b15607c27f6d89672f690ebdce18265",
+  "torch": "2.10.0+cpu",
+  "manifest": {
+    "nexus_expanse/core.py": {
+      "file_sha256": "bdc9c4c9a30f8eaa3db17e356ed026a0e424cbbd4f396127d26c1dc7a811eda2",
+      "spans": [
+        [
+          0,
+          "432085976c89329dcf6492ae1c8b94f0ecdf4e0020c0fa8aa6090ac04415e312"
+        ],
+        [
+          64,
+          "4019ad715e1fbdda3b7124b408caf93de7cd08346cb14b77fe723ea61a105b66"
+        ],
+        [
+          128,
+          "9e7636d9a24aaa74981a08cd8918bd49e1cd4e5c30577d6d95d795fd095f73cd"
+        ],
+        [
+          192,
+          "6e8eebb08338a1e08792d28bb07d64acf30d505de38f3069cf0b2777a5177bf6"
+        ],
+        [
+          256,
+          "69139eccecf7b9c107c71a5e6ef9c4f0bad0ca22a695212c2084e2c3380e2566"
+        ],
+        [
+          320,
+          "f857ca2cd40369bb866d91bfc2e2a738340930035134ecfce36d8ddf9d7d4afa"
+        ],
+        [
+          384,
+          "4617a38626a5a45656feee961530a9bd754bbe10a147a808fcc86e865e3bbdd8"
+        ],
+        [
+          448,
+          "0195e25d0bf2436af1b1f353781deb76e4c4c21cde015794f97e3b859a494f05"
+        ],
+        [
+          512,
+          "cb713d0eaa1052b5236d95801df3138369164633fce753eab1d2e789ec52b8ad"
+        ],
+        [
+          576,
+          "5693bf901785fa9055527139ba3a8c5d75c0c2146c7583c912318c7aaed286b6"
+        ],
+        [
+          640,
+          "0b0e7622f757acbe34d7d0846ecfff2a1c8f6070d86d5979e989f8730834478a"
+        ],
+        [
+          704,
+          "e9bb56e2b69329d33d8836c6640b4668c42f04420e1e19bf0abc13c2ffe6db3c"
+        ],
+        [
+          768,
+          "c1da3f298ecbd0181598d488d9aeee1d8a58a307f5f790b1718142f22ea1552d"
+        ],
+        [
+          832,
+          "e8df1586658f83333f3da814e9cd9e72ccb7d38175c78f074836be3dc73a47af"
+        ],
+        [
+          896,
+          "3c269a42eec4d9768d613ba0b66efcc9156c1d8548dbfd24bd93722acb5f642a"
+        ],
+        [
+          960,
+          "636ff3af675a8068221968d731d3adce5fbc2bcbee86015d1828a09cdfda6b9f"
+        ]
+      ],
+      "split": "python"
+    },
+    "nexus_expanse/memory.py": {
+      "file_sha256": "c35d029790ffbf8669eda332d51444ac5e02a4c50a3bddbd685beb8d6e73c91f",
+      "spans": [
+        [
+          0,
+          "8492dd16496a8d3655aa45216fcb766eb3a70a313b5a376fa2cb7986d477c483"
+        ],
+        [
+          128,
+          "426be4aae107f44327ef6ae29a6486dc01b5a05816db4d9eb685358ba92392ac"
+        ],
+        [
+          192,
+          "8691acad488e3ae87c6c420607c42214599a4c48243bee9f7b1adba280f61580"
+        ],
+        [
+          256,
+          "1a609d6da1e9a42b2ea7415a64460c78f7814396f5cfb516c4cf408311f0912f"
+        ],
+        [
+          384,
+          "8e425fd0793cd1b7222789544ad31e73100ba18c4d1a42767bec745f6ff9afe2"
+        ],
+        [
+          448,
+          "efa31831494ee0570de8794831525c60d8e6a2db4f9d5dabc761d2713fee4d9b"
+        ],
+        [
+          512,
+          "91d5f83e9cc34ec11bf201f5cb7fd522a8ad023c4be45ba4a0697dccbb1e714b"
+        ],
+        [
+          576,
+          "87565ff2e74de3b4ddb3213a865d5db127d6488d5dbeb4a7952b7d1000d51cfd"
+        ],
+        [
+          640,
+          "3a0a244d78e331550e9a85dc9909bf524df7e60f1f26087e35bcfe3cd51d7142"
+        ],
+        [
+          704,
+          "c3c4a43262ad64b1e822d9107fb6e7d63c17de7024310c111d93f35045792a7d"
+        ],
+        [
+          768,
+          "47afe2c72b20ff5108505071996dd0f863c82222b89e1fea9d9bbf978b47e1b5"
+        ],
+        [
+          832,
+          "2fac98515c6eb52cd1e82b1bef5f5d52270445f0236e1690d46c7baf7b06263f"
+        ],
+        [
+          896,
+          "4e310b5f3fa9ba114bf5479fe70b94183bda0918a8a9a2ad6f9430b020d19a51"
+        ],
+        [
+          960,
+          "62670e2ffeb49d8f1d755a284c0eb9d36bcd12d735806ffa860798b20432c040"
+        ],
+        [
+          1024,
+          "72b82ae7042dbc22817b0ec43f73da42ef26a2875dbf8514773b49ab11eef66d"
+        ],
+        [
+          1088,
+          "e62c3896cc6ce54099665a107c2145a74a6b42b28c454e06bacbeb9bcbfed567"
+        ]
+      ],
+      "split": "python"
+    },
+    "README.md": {
+      "file_sha256": "e376ee0e041f5db01315e643a97c85590ac93393c6ca26effd4e7475795d8132",
+      "spans": [
+        [
+          0,
+          "6436d034f0a49ae4fde500fcc387711c1b189ae97c15f39c353bb69d166eeca4"
+        ],
+        [
+          64,
+          "2b72604dbcba8c48b310d98a3e51a6a9926ffc17d29ee746dd3d3a2367b1d43d"
+        ],
+        [
+          128,
+          "24aef65a22028740efc901632cd44d56fc7ffa80000b099879049ac714c547d0"
+        ],
+        [
+          192,
+          "9a153c094ca6f32739b8b341c5e8988581e749f7b324bfeb6835e1bc122f6267"
+        ],
+        [
+          256,
+          "665ed5515d2ec783556d74f9ba7c6aaf8d9b5d50d1ae5558f943065bf55a7737"
+        ],
+        [
+          320,
+          "28b38186ea9a4277b1156b90c9a63e25cb4896007d68a7d82ecbaf8029446474"
+        ],
+        [
+          384,
+          "68dd2efe07fef162a23e72336f4fd1305cd5e8a2121ce727bab87e3aa5970cc3"
+        ],
+        [
+          448,
+          "b0a537b2cc6c4519f5e55c7d90fd6069e14baa6e7fc1dccfe2a860ed1acc6086"
+        ],
+        [
+          512,
+          "66613e5f0c31d18fd5cc08a28d6b804aff45787db201563de3310217a0df7407"
+        ],
+        [
+          576,
+          "5ac6345316ba851874698e877f2cdf50aab76c5fc53b8c229f17db797febed27"
+        ],
+        [
+          704,
+          "5c36d47f716c5aac4bcb12ec95707180f444904ce17dee8f50478aa0a88febe0"
+        ],
+        [
+          768,
+          "d68fdd6cb18b843732dff66f63a9150386d63b9c1d27382340eded0da20306a5"
+        ],
+        [
+          832,
+          "fb7c5bd73bc8a8dbb9258b13d621844103977ad55c393cf28e2c829782d1f6eb"
+        ],
+        [
+          896,
+          "ad45f036e592696da52546fa1bc6dcc93c8cc14d097a0746b387b32d55962754"
+        ],
+        [
+          960,
+          "ec9cb5e8e3e3d5a30e01bc3ced285c5c11797fe42b4a3f99cdcee9d9e9bfd754"
+        ],
+        [
+          1024,
+          "d54ba03ff4f42279b49f3d7ae5bda6dbe0168d98e51c41cbd8f6084c72581c56"
+        ]
+      ],
+      "split": "fit"
+    },
+    "docs/ARCHITECTURE_V1.md": {
+      "file_sha256": "a02250cac778b57ba87edb793b23508aa6cbe84a5e0324d7221da9265408c7d7",
+      "spans": [
+        [
+          0,
+          "1f6c060e87321279ad2b88acbb22a0b8b827d1057280afe1603fe04d1fc49854"
+        ],
+        [
+          64,
+          "00f36de6c4f7983bff9b291f902a5854c437d49079567bb04930220aff16a905"
+        ],
+        [
+          128,
+          "9f06f6816da9d0042afb8bc8660af576b6cd6c5cfee8c89bf137e92e420119b7"
+        ],
+        [
+          192,
+          "47cbceeefc103d24fd551e66eb842644ab3b8e0fc08f39b205d6b6763d11a607"
+        ],
+        [
+          256,
+          "29f8d27a742ef3ae16510cb0b558dd7d12cf249074a951236cf033c3b2f727d9"
+        ],
+        [
+          320,
+          "efa19a086ffa2a5f76d21d56192daa0403661b8d93356683b5f689c0bc2395d7"
+        ],
+        [
+          384,
+          "e0cdfa3d7dee50622df3f299c7472177ef31dddef663e7f1e737ffaeb12a0ab5"
+        ],
+        [
+          448,
+          "ae6b39c401f56d97db9f5fbff0900cae1b99abc641d95352887ec58ed7547fa1"
+        ],
+        [
+          512,
+          "e99cf64d12aaada3508571e75f20f065049e2ae43cea357916a8b26c34e935c3"
+        ],
+        [
+          576,
+          "92ce8fb1ec3b1c1aae71d826ebbaa4f0b3b1ecd9417fb4a36d4b82475c25d780"
+        ],
+        [
+          640,
+          "9dc8e51bec2d088738f31e95e2d6fda966133fe5f35ec6cb91f3f1990ecfe1d7"
+        ],
+        [
+          704,
+          "b45a714c046bfa9e06576354ca1dc6cab3dfa968a71738954112ed6a1854eb1b"
+        ],
+        [
+          768,
+          "995f1578a1109547f781d6843f561fdcee72eb454d32c12c14bf87ff2fd46267"
+        ],
+        [
+          832,
+          "bce7424799859959ebca1e2a068bcdb508afa0182eb8959f07ec9f0be26a6ac3"
+        ],
+        [
+          896,
+          "86003445bebcde66d14cb7c439f2469ae73bc6c40b06d00f2f94cfc3579e8b13"
+        ],
+        [
+          960,
+          "f71dfd5ccc12b6c5fa8201d5b8a10d232a63127a136689d51e9c89da4a94feb7"
+        ]
+      ],
+      "split": "fit"
+    },
+    "docs/GATE25_PREREG.md": {
+      "file_sha256": "bb387a85b811184f07c8df5835f4eb9812b066877b40748ea6b38a67a856c162",
+      "spans": [
+        [
+          0,
+          "12746f4401531a3224f1826c613987315bc5bc4e511302abd5acb416197e892d"
+        ],
+        [
+          64,
+          "3901ef3fd1feee9818bfaf68a5dc4ccce0acc44866d24f8a3c72ef555bf0d1ba"
+        ],
+        [
+          128,
+          "5aa02b2f2badde2f00e6763b747b90a74bd7c393b66d2a111a99c5ea39d23ffd"
+        ],
+        [
+          192,
+          "da545d326e825851633469ac0e27da3dd6859cba5f9dd30cf01f2a440e991925"
+        ],
+        [
+          256,
+          "41ecca18cd4f7985e61cc852a6705bffc28fa18696bc2678dda9d0cca41fda71"
+        ],
+        [
+          320,
+          "f72f1745655d343d9879cb28f512cf9d101198d90cdb4fa766ac71404cfa7e0e"
+        ],
+        [
+          384,
+          "a59c8dd5871bcbb06270fd010304411bfd6cc76651ea8899a42f3783333ba8d4"
+        ],
+        [
+          448,
+          "c0f136cca535a0df90f471bf696e15a81c6b85b331d61e2350f49c222d4d8e35"
+        ],
+        [
+          512,
+          "486f632956ab907b99868bc32d6905b6bb06b4af44fc6872f4d93a967e8ec5d7"
+        ],
+        [
+          576,
+          "08c4cba5bd1066cf172f2c705433f2156b061bf5214083158aada4db05fee1d7"
+        ],
+        [
+          640,
+          "d10c1e1cc3f629b6fd1234dea7fca31c964077ed57ae743196853474c64aa047"
+        ],
+        [
+          704,
+          "e774c8a715b85aaa3a522b2e6fa73995ca6731716e92fb467a043c34170984cf"
+        ],
+        [
+          768,
+          "90616e219c9a88a305f02b7a0bfa0085a7e2379a1d4a83ca81369c7512786beb"
+        ],
+        [
+          832,
+          "a349188d8ac3c6474ff0c28b4671d561eb531ea31ee28d40da1033b8497e670e"
+        ],
+        [
+          896,
+          "6277d0cd43171b612141314a80f657b79852728445ec132f2d8897574c8e02c9"
+        ],
+        [
+          960,
+          "42e37f794984f74aea3d36d887a3d71d211a34cc029efde368a18bb439ba8f17"
+        ]
+      ],
+      "split": "val"
+    },
+    "docs/GATE26_PREREG.md": {
+      "file_sha256": "d22e0a1d8a05f888a953ff2be048808902ae4e055afe9892ae1b970bbbbbc041",
+      "spans": [
+        [
+          64,
+          "b1ccef5a1764cb38f6939596cf99dc996e87f1f980c998d9ce8045de74a0d2ab"
+        ],
+        [
+          128,
+          "d8ddcadf34c39651296c95ebbe39bd69814af08cd347505ef806b782acc30aac"
+        ],
+        [
+          384,
+          "e29fc25fe55cf657f64a2e505b497a544c693b93a5da60cf0b23036c0b0c4a0e"
+        ],
+        [
+          448,
+          "f159b28dd3fbb7f75b4524f47526ead000700c521afb1fc95289ed0d293e23e2"
+        ],
+        [
+          512,
+          "1edd81c2e96b2c8410ef71207bb373f693830ece64b7aebec5a3d8bcbd1a9fcf"
+        ],
+        [
+          576,
+          "4d5156887fe10a146aeb93a5f2438e0b4f580d89e273efd2ab3e8525a6db612f"
+        ],
+        [
+          640,
+          "bf0a2274573259a50e90fea82903b3d9edeb626ad19540e946f07eafb25086db"
+        ],
+        [
+          704,
+          "1ffd315bc3933c58a1c85f6b0401ab7d02885f44ef025b56cb86d0d2afd052ea"
+        ],
+        [
+          768,
+          "6fa5c4193bb7b1cf5005de8c6f22684c4f7c8f5d2f4e42090ddfa7adeb0624d5"
+        ],
+        [
+          832,
+          "949e8f5bc8b2fef68462ea61b458dae0c4a4d276d01c84e49fbe77fd05145e35"
+        ],
+        [
+          896,
+          "fbe90075507acab8fdf684d161bfafa2e2ce296a78df41e28ef7d10b11c09adf"
+        ],
+        [
+          960,
+          "6c8bfeada3abf47f20feb79d0d7bf913a3a19800518df53639218d8c251ef9fd"
+        ],
+        [
+          1024,
+          "be55bdb6a54258efaabeab7efbde195bddf7bacf082a330d1b6b44ddb880f3eb"
+        ],
+        [
+          1088,
+          "d63ad5dbbdaaec93ef15404b227384303f85226fbfb7622702f98e6942941f9d"
+        ],
+        [
+          1152,
+          "9eb703e3bef587913b79fa4723c023451be5aaf9450c3aef61407ed29b0015fa"
+        ],
+        [
+          1216,
+          "df94ff18fafc27aa3f35cd61e2d7554d06229d21f0929ce38fa27f6bf6ddb072"
+        ]
+      ],
+      "split": "test"
+    },
+    "nexus_expanse/arbitration.py": {
+      "file_sha256": "607b6499ca86e3a73bfad27bd4815771a63f80d4d432a7a669a5683869867e17",
+      "spans": [
+        [
+          0,
+          "cce4bdba79bcaa711e22a76d67f63d33470a4bb70e8a63a648e1499750361a95"
+        ],
+        [
+          128,
+          "4b9666d9d8e9de8e5e8a6eb25e21631856c887cd90a97ce564c948d6a6f4d731"
+        ],
+        [
+          192,
+          "e92ece9e955dceb16e3716dd2db412265c7d0b038dc400aac59c074367a41e83"
+        ],
+        [
+          256,
+          "17950d80327115dafe1bbe5492766e67e5cea1fe414d637a37cda8104ae66ddc"
+        ],
+        [
+          320,
+          "5d8ec67f1e991e4e44a052647c0969eb88660369d771ba315a214061f4bd0141"
+        ],
+        [
+          384,
+          "984490420ecd37fa1fedc1bc6e4b4141d43bfdbbdc6648123707c61d6b9bc8a1"
+        ],
+        [
+          448,
+          "b317b8734102906afa024d5c8633c474aa13e49ddea50222460277d9fa70a802"
+        ],
+        [
+          512,
+          "1b187c9a08898e67fb6a0b80d7092448c5205b42db5474da004e2a643db2dd7f"
+        ],
+        [
+          576,
+          "6f0948f9df86f132832cc103107175ef0c7f862e72a44f78691d3d4077c2e693"
+        ],
+        [
+          640,
+          "f710361edff60a0a0f217ee95d933809942223796765b9aa7cf84c9df9f5de64"
+        ],
+        [
+          704,
+          "79c8fdc9831b9c291e8401d9e9ee12639ad500563cd644dac167a65a038f7b94"
+        ],
+        [
+          768,
+          "15039ee79326e68c9f2d4ddf4dc6a17801d1389060b0504970b32b486b236794"
+        ],
+        [
+          832,
+          "b1e5f7ec495224f9b30eec699c23c564235bc78acea457afd0fd2d6ce43aaa10"
+        ],
+        [
+          896,
+          "3d9ba5186cbf35f82dff13a70f0a15ea052be66141762f43b51db9d918ba0db9"
+        ],
+        [
+          960,
+          "633022fdbf84510ae155f956afc6beacb108813ac1db158163eff41530e3c4f4"
+        ],
+        [
+          1024,
+          "93a5889411919a8b0a5c3cfa00f2257af207d51da979bbbc1626870c763a3931"
+        ]
+      ],
+      "split": "retention"
+    },
+    "nexus_expanse/fast_checkpoint.py": {
+      "file_sha256": "a3dcd6d66eaeccc57e31dd3ee0ed9b57e6fb7e58c67f5ec57fa8dc969fda7fff",
+      "spans": [
+        [
+          0,
+          "ef7a66b32cb0a639d4c8c56b85c257e56089eecfad91a1761240e55f5ca632af"
+        ],
+        [
+          64,
+          "7bbad3c165a7a3d3ef8d395c3af6e42ca4974f050bf66cc8b0949e9d3826c845"
+        ],
+        [
+          128,
+          "c83577bbbdaebfda628e63fa559427595d500391e27741880b97d9aba8922270"
+        ],
+        [
+          192,
+          "318ca494d1d6bcaa54aad67e7244c4298394c5c20a773dd869dd7b5c992d3186"
+        ],
+        [
+          256,
+          "30944e02f2afc66727d1e4d96a0f491f0f5ae8789be45bc58e9a56b396314408"
+        ],
+        [
+          320,
+          "d2d7f502208a2952f31a3967316fc0363a783931121bacf2d8b0478588dd96ab"
+        ],
+        [
+          384,
+          "83949dcb7fd1553af7b55931977a9fee9ee6dc724402bd003555fe3412185904"
+        ],
+        [
+          448,
+          "258b57125c5376b90ca4ef54137a329ced5a0a1aaef3179d9279f2e1c26173c6"
+        ],
+        [
+          512,
+          "93c3a189d3bd2ab916afaf6589aea1f5a3bdd570fdc2a15dfae78ecfc245f6fc"
+        ],
+        [
+          576,
+          "2ad59ff296e886442aad8f45a78a51d2a24a7482fa659ca251d17946c7d4e602"
+        ],
+        [
+          640,
+          "54c360b71f97650487d5ca46dff9472d8ca8541d82199985b38d34ff57794a13"
+        ],
+        [
+          704,
+          "9317e1f8c87d0b4e98fb20739c76a495e68c5e743cff3b491d988de5348f2f06"
+        ],
+        [
+          768,
+          "3ed5b3188c2a2b345b09419ad37cbdb6816fb6eecefb718083106c0e7ab2230e"
+        ],
+        [
+          832,
+          "b28700a87780f3e55ca6bf4c5696693eb5fdb31397ecfb0c888d217fee43117c"
+        ],
+        [
+          896,
+          "d36b213a915ba378735f846e598bfac7eb5af87e29fafc627fc72b62c2cb5368"
+        ],
+        [
+          960,
+          "c5242dba19d25c773a3048a1fe1dea828c9c7cfb6e4fd3e697eb2f38fd402ed4"
+        ]
+      ],
+      "split": "retention"
+    }
+  },
+  "rules": [
+    {
+      "seed": 101,
+      "domain": "rule",
+      "cold_exact": 0,
+      "producer": {
+        "common_build_seconds": 0.5259337699999946,
+        "parent_creation_seconds": 0.23769224699999825,
+        "receiver_creation_seconds": 0.2882415229999964,
+        "donors": {
+          "A": {
+            "training_steps": 144,
+            "producer_forward_calls": 164,
+            "creation_and_reference_seconds": 0.6778139379999999,
+            "checkpoint_bytes": 150613,
+            "checkpoint_sha256": "55882c665d2bccf3920874530f39adc6580d2fccae3e7122b3b2ba09dc964a12",
+            "validation": {
+              "bpb": 0.058694226783334885,
+              "accuracy": 1.0
+            },
+            "test": {
+              "bpb": 0.04774396146530783,
+              "accuracy": 1.0
+            }
+          },
+          "B": {
+            "training_steps": 320,
+            "producer_forward_calls": 362,
+            "creation_and_reference_seconds": 1.4997017889999995,
+            "checkpoint_bytes": 150613,
+            "checkpoint_sha256": "eced31cb1fca5b6fe3229e2b60eadda2f88632b30a966efbb9553c4807a0b6e5",
+            "validation": {
+              "bpb": 0.23543382910113037,
+              "accuracy": 0.9765625
+            },
+            "test": {
+              "bpb": 0.25274184825296353,
+              "accuracy": 0.9765625
+            }
+          }
+        }
+      },
+      "donor_forward_calls_during_transfer": 0,
+      "runs": [
+        {
+          "method": "spectral4",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.18726383867463942,
+            "accuracy": 0.96875,
+            "kl_bits": 0.115095840061392,
+            "agreement": 0.96875,
+            "near": false,
+            "opposite_accuracy": 0.03125
+          },
+          "selected": {
+            "bpb": 0.18726383867463942,
+            "accuracy": 0.96875,
+            "kl_bits": 0.115095840061392,
+            "agreement": 0.96875,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.20579982489996917,
+              0.96875,
+              0.013905148000006307
+            ]
+          ],
+          "preparation_seconds": 0.009029815000005215,
+          "total_receiver_seconds": 0.013905148000006307,
+          "matched_target": false,
+          "old_mode_exact": true,
+          "skill_bytes": 176979,
+          "prediction_sha256": "fe7ef9bfef4c01b2e230b99e3961d9a79fab166ad44082718d1f3215bfdf46e2",
+          "label": "A",
+          "timing_repetitions": [
+            0.013905148000006307
+          ]
+        },
+        {
+          "method": "monarch",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.4897702504672918,
+            "accuracy": 0.8515625,
+            "kl_bits": 0.40214794819918076,
+            "agreement": 0.8515625,
+            "near": false,
+            "opposite_accuracy": 0.0703125
+          },
+          "selected": {
+            "bpb": 0.4897702504672918,
+            "accuracy": 0.8515625,
+            "kl_bits": 0.40214794819918076,
+            "agreement": 0.8515625,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.5371913915459195,
+              0.84375,
+              0.00935002699999643
+            ]
+          ],
+          "preparation_seconds": 0.00586262400000237,
+          "total_receiver_seconds": 0.00935002699999643,
+          "matched_target": false,
+          "old_mode_exact": true,
+          "skill_bytes": 168171,
+          "prediction_sha256": "bd502df4b3f373cbb45884ecf50b5df895093f77d24d4191f2554d6f6917550e",
+          "label": "A",
+          "timing_repetitions": [
+            0.00935002699999643
+          ]
+        },
+        {
+          "method": "residual8",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.04771378635683834,
+            "accuracy": 1.0,
+            "kl_bits": 6.305298957276622e-07,
+            "agreement": 1.0,
+            "near": true,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.04771378635683834,
+            "accuracy": 1.0,
+            "kl_bits": 6.305298957276622e-07,
+            "agreement": 1.0,
+            "near": true
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.05858994968699304,
+              1.0,
+              0.011336826000004407
+            ]
+          ],
+          "preparation_seconds": 0.007550331000004462,
+          "total_receiver_seconds": 0.011336826000004407,
+          "matched_target": true,
+          "old_mode_exact": true,
+          "skill_bytes": 179859,
+          "prediction_sha256": "79a60a47ba5038521725c391b86f83962841c2593a2f42336646c1ab0cd4a2b4",
+          "label": "A",
+          "timing_repetitions": [
+            0.011336826000004407
+          ]
+        },
+        {
+          "method": "walsh8",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.25327960992950554,
+            "accuracy": 0.9765625,
+            "kl_bits": 0.1750173126315056,
+            "agreement": 0.9765625,
+            "near": false,
+            "opposite_accuracy": 0.0234375
+          },
+          "selected": {
+            "bpb": 0.25327960992950554,
+            "accuracy": 0.9765625,
+            "kl_bits": 0.1750173126315056,
+            "agreement": 0.9765625,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.2917001202180661,
+              0.96875,
+              0.01108048299998643
+            ]
+          ],
+          "preparation_seconds": 0.007413512999988825,
+          "total_receiver_seconds": 0.01108048299998643,
+          "matched_target": false,
+          "old_mode_exact": true,
+          "skill_bytes": 183123,
+          "prediction_sha256": "8b021b0e4878679207e25ebd8fdba44f481573b18f8c9639ae2e926a9007500a",
+          "label": "A",
+          "timing_repetitions": [
+            0.01108048299998643
+          ]
+        },
+        {
+          "method": "block2",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.08570820255555188,
+            "accuracy": 1.0,
+            "kl_bits": 0.03184409106889743,
+            "agreement": 1.0,
+            "near": false,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.08570820255555188,
+            "accuracy": 1.0,
+            "kl_bits": 0.03184409106889743,
+            "agreement": 1.0,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.11021580407142804,
+              0.9921875,
+              0.012891090000010763
+            ]
+          ],
+          "preparation_seconds": 0.008613801000009857,
+          "total_receiver_seconds": 0.012891090000010763,
+          "matched_target": true,
+          "old_mode_exact": true,
+          "skill_bytes": 183443,
+          "prediction_sha256": "7f93686e13ca53f1c138664504af3c01e903946b0391d0f853125ab92abf699b",
+          "label": "A",
+          "timing_repetitions": [
+            0.012891090000010763
+          ]
+        }
+      ],
+      "crossed_components": {}
+    },
+    {
+      "seed": 102,
+      "domain": "rule",
+      "cold_exact": 0,
+      "producer": {
+        "common_build_seconds": 0.5350582760000009,
+        "parent_creation_seconds": 0.23917751999999837,
+        "receiver_creation_seconds": 0.2958807560000025,
+        "donors": {
+          "A": {
+            "training_steps": 320,
+            "producer_forward_calls": 362,
+            "creation_and_reference_seconds": 1.5296532280000008,
+            "checkpoint_bytes": 150613,
+            "checkpoint_sha256": "dc5b9b9874ae3cf1736b98e887a67eb29056ccd512b85cf7a6ddba5c1cd4a816",
+            "validation": {
+              "bpb": 0.1540670389921917,
+              "accuracy": 0.984375
+            },
+            "test": {
+              "bpb": 0.2206293649053242,
+              "accuracy": 0.984375
+            }
+          },
+          "B": {
+            "training_steps": 160,
+            "producer_forward_calls": 182,
+            "creation_and_reference_seconds": 0.766978710999993,
+            "checkpoint_bytes": 150613,
+            "checkpoint_sha256": "2c10a316ccb42a6f8c9a2535c60de8572f74289e8b00abed71f5b245022ec3d1",
+            "validation": {
+              "bpb": 0.013165174596738409,
+              "accuracy": 1.0
+            },
+            "test": {
+              "bpb": 0.12786498667721127,
+              "accuracy": 0.9765625
+            }
+          }
+        }
+      },
+      "donor_forward_calls_during_transfer": 0,
+      "runs": [
+        {
+          "method": "walsh8",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.23655132331300027,
+            "accuracy": 0.96875,
+            "kl_bits": 0.06896889110056602,
+            "agreement": 0.9765625,
+            "near": false,
+            "opposite_accuracy": 0.015625
+          },
+          "selected": {
+            "bpb": 0.23655132331300027,
+            "accuracy": 0.96875,
+            "kl_bits": 0.06896889110056602,
+            "agreement": 0.9765625,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.16544814773388017,
+              0.953125,
+              0.011368424000011146
+            ]
+          ],
+          "preparation_seconds": 0.007438993000008054,
+          "total_receiver_seconds": 0.011368424000011146,
+          "matched_target": false,
+          "old_mode_exact": true,
+          "skill_bytes": 183123,
+          "prediction_sha256": "27834ab782291484588840a4fcf6f4440978e8880c22059bd6de76f16f966695",
+          "label": "A",
+          "timing_repetitions": [
+            0.011368424000011146
+          ]
+        },
+        {
+          "method": "spectral4",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.21859834547757856,
+            "accuracy": 0.984375,
+            "kl_bits": 0.00811912205189645,
+            "agreement": 0.9921875,
+            "near": true,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.21859834547757856,
+            "accuracy": 0.984375,
+            "kl_bits": 0.00811912205189645,
+            "agreement": 0.9921875,
+            "near": true
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.09706993938072149,
+              0.984375,
+              0.011075164000004634
+            ]
+          ],
+          "preparation_seconds": 0.007485087000006274,
+          "total_receiver_seconds": 0.011075164000004634,
+          "matched_target": false,
+          "old_mode_exact": true,
+          "skill_bytes": 176979,
+          "prediction_sha256": "98c07e4d51e50b759f7c70551df992086a7d46016be7e62a082241d258c09f1b",
+          "label": "A",
+          "timing_repetitions": [
+            0.011075164000004634
+          ]
+        },
+        {
+          "method": "residual8",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.22049533065085777,
+            "accuracy": 0.984375,
+            "kl_bits": 1.0642856941951967e-06,
+            "agreement": 1.0,
+            "near": true,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.22049533065085777,
+            "accuracy": 0.984375,
+            "kl_bits": 1.0642856941951967e-06,
+            "agreement": 1.0,
+            "near": true
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.15442272461813802,
+              0.984375,
+              0.010422491999989347
+            ]
+          ],
+          "preparation_seconds": 0.006763978999998699,
+          "total_receiver_seconds": 0.010422491999989347,
+          "matched_target": false,
+          "old_mode_exact": true,
+          "skill_bytes": 179859,
+          "prediction_sha256": "ce8f575fc29470ed6a4e022a522efc9cfba7125d00370cfc9fdcce56b65005ca",
+          "label": "A",
+          "timing_repetitions": [
+            0.010422491999989347
+          ]
+        },
+        {
+          "method": "monarch",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.2750152489701507,
+            "accuracy": 0.96875,
+            "kl_bits": 0.12330874568876299,
+            "agreement": 0.9765625,
+            "near": false,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.2750152489701507,
+            "accuracy": 0.96875,
+            "kl_bits": 0.12330874568876299,
+            "agreement": 0.9765625,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.16217951255207969,
+              0.984375,
+              0.009553124999996498
+            ]
+          ],
+          "preparation_seconds": 0.006075852999998688,
+          "total_receiver_seconds": 0.009553124999996498,
+          "matched_target": false,
+          "old_mode_exact": true,
+          "skill_bytes": 168171,
+          "prediction_sha256": "f68320ec959a3e59f23351bf64ed20c86fb531777129e2fc9ebe645836856f38",
+          "label": "A",
+          "timing_repetitions": [
+            0.009553124999996498
+          ]
+        },
+        {
+          "method": "block2",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.20605655072171747,
+            "accuracy": 0.9765625,
+            "kl_bits": 0.018296279584763406,
+            "agreement": 0.9921875,
+            "near": true,
+            "opposite_accuracy": 0.0078125
+          },
+          "selected": {
+            "bpb": 0.20605655072171747,
+            "accuracy": 0.9765625,
+            "kl_bits": 0.018296279584763406,
+            "agreement": 0.9921875,
+            "near": true
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.09623439129826834,
+              0.984375,
+              0.012620553000004975
+            ]
+          ],
+          "preparation_seconds": 0.008595342999996092,
+          "total_receiver_seconds": 0.012620553000004975,
+          "matched_target": false,
+          "old_mode_exact": true,
+          "skill_bytes": 183443,
+          "prediction_sha256": "96997f3d05e84bb7f267e454ddd992c6438552b204e52de5462b62ad4e9d7e65",
+          "label": "A",
+          "timing_repetitions": [
+            0.012620553000004975
+          ]
+        }
+      ],
+      "crossed_components": {}
+    },
+    {
+      "seed": 103,
+      "domain": "rule",
+      "cold_exact": 0,
+      "producer": {
+        "common_build_seconds": 0.5258861960000019,
+        "parent_creation_seconds": 0.2375549879999994,
+        "receiver_creation_seconds": 0.28833120800000245,
+        "donors": {
+          "A": {
+            "training_steps": 112,
+            "producer_forward_calls": 128,
+            "creation_and_reference_seconds": 0.5320991690000056,
+            "checkpoint_bytes": 150613,
+            "checkpoint_sha256": "d8c899742f2776159d80f90d5ae42ecdddd37c4a7833fcf402089f31e213a1ed",
+            "validation": {
+              "bpb": 0.03768865857986114,
+              "accuracy": 1.0
+            },
+            "test": {
+              "bpb": 0.057063675004357675,
+              "accuracy": 1.0
+            }
+          },
+          "B": {
+            "training_steps": 104,
+            "producer_forward_calls": 119,
+            "creation_and_reference_seconds": 0.494101778000001,
+            "checkpoint_bytes": 150613,
+            "checkpoint_sha256": "1e92d5841490e13c66f24c071dddaf3b7239d20bc2789b08f069aeadac08c872",
+            "validation": {
+              "bpb": 0.047347674770497845,
+              "accuracy": 1.0
+            },
+            "test": {
+              "bpb": 0.2640024180814815,
+              "accuracy": 0.9453125
+            }
+          }
+        }
+      },
+      "donor_forward_calls_during_transfer": 0,
+      "runs": [
+        {
+          "method": "walsh8",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.15490173839277321,
+            "accuracy": 0.984375,
+            "kl_bits": 0.061104554791141866,
+            "agreement": 0.984375,
+            "near": false,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.15490173839277321,
+            "accuracy": 0.984375,
+            "kl_bits": 0.061104554791141866,
+            "agreement": 0.984375,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.0939325310991201,
+              1.0,
+              0.011643871000003969
+            ]
+          ],
+          "preparation_seconds": 0.007731755999998313,
+          "total_receiver_seconds": 0.011643871000003969,
+          "matched_target": true,
+          "old_mode_exact": true,
+          "skill_bytes": 183123,
+          "prediction_sha256": "59983cd5f21a426271b7fc8b9e8bdce07178c24b0ba163f91dd80f7e2f888471",
+          "label": "A",
+          "timing_repetitions": [
+            0.011643871000003969
+          ]
+        },
+        {
+          "method": "residual8",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.05717387771934763,
+            "accuracy": 1.0,
+            "kl_bits": 8.539457977410417e-07,
+            "agreement": 1.0,
+            "near": true,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.05717387771934763,
+            "accuracy": 1.0,
+            "kl_bits": 8.539457977410417e-07,
+            "agreement": 1.0,
+            "near": true
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.037756666320348166,
+              1.0,
+              0.010463872999991963
+            ]
+          ],
+          "preparation_seconds": 0.006818909999992684,
+          "total_receiver_seconds": 0.010463872999991963,
+          "matched_target": true,
+          "old_mode_exact": true,
+          "skill_bytes": 179859,
+          "prediction_sha256": "a5c7ce38fd94385f2f5f639e747c252fdd0ff6c42d7b01039d2b246db6596067",
+          "label": "A",
+          "timing_repetitions": [
+            0.010463872999991963
+          ]
+        },
+        {
+          "method": "block2",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.1298367367091711,
+            "accuracy": 0.984375,
+            "kl_bits": 0.030661515204592562,
+            "agreement": 0.984375,
+            "near": false,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.1298367367091711,
+            "accuracy": 0.984375,
+            "kl_bits": 0.030661515204592562,
+            "agreement": 0.984375,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.06264170785761052,
+              1.0,
+              0.012792463000010912
+            ]
+          ],
+          "preparation_seconds": 0.008495485000011627,
+          "total_receiver_seconds": 0.012792463000010912,
+          "matched_target": true,
+          "old_mode_exact": true,
+          "skill_bytes": 183443,
+          "prediction_sha256": "6dd8615e8d452361de1605ff354c4c4dd3ae9ba2593faaaf0eab8f716619107d",
+          "label": "A",
+          "timing_repetitions": [
+            0.012792463000010912
+          ]
+        },
+        {
+          "method": "spectral4",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.11514539942795876,
+            "accuracy": 0.9921875,
+            "kl_bits": 0.032548734798300914,
+            "agreement": 0.9921875,
+            "near": false,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.11514539942795876,
+            "accuracy": 0.9921875,
+            "kl_bits": 0.032548734798300914,
+            "agreement": 0.9921875,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.07664180134703753,
+              1.0,
+              0.011830556999996134
+            ]
+          ],
+          "preparation_seconds": 0.007610611000004042,
+          "total_receiver_seconds": 0.011830556999996134,
+          "matched_target": true,
+          "old_mode_exact": true,
+          "skill_bytes": 176979,
+          "prediction_sha256": "28b00e3b3784a74664b56c74abef12a1a4277acb098b936067d2aee162699f18",
+          "label": "A",
+          "timing_repetitions": [
+            0.011830556999996134
+          ]
+        },
+        {
+          "method": "monarch",
+          "arm": "import",
+          "zero": {
+            "bpb": 0.2209635153762584,
+            "accuracy": 0.984375,
+            "kl_bits": 0.11606887361068448,
+            "agreement": 0.984375,
+            "near": false,
+            "opposite_accuracy": 0.0
+          },
+          "selected": {
+            "bpb": 0.2209635153762584,
+            "accuracy": 0.984375,
+            "kl_bits": 0.11606887361068448,
+            "agreement": 0.984375,
+            "near": false
+          },
+          "steps": 0,
+          "trace": [
+            [
+              0,
+              0.1406920724548585,
+              1.0,
+              0.009868483999994737
+            ]
+          ],
+          "preparation_seconds": 0.006029425999997784,
+          "total_receiver_seconds": 0.009868483999994737,
+          "matched_target": false,
+          "old_mode_exact": true,
+          "skill_bytes": 168171,
+          "prediction_sha256": "42e4f8fd87034428a585096f976cdf419fdd5f99deb46fc9393ebc87929e8e40",
+          "label": "A",
+          "timing_repetitions": [
+            0.009868483999994737
+          ]
+        }
+      ],
+      "crossed_components": {}
+    }
+  ],
+  "text": [],
+  "ranking": [
+    [
+      1.0642856941951967e-06,
+      8.495871292213003e-07,
+      179859,
+      "residual8"
+    ],
+    [
+      0.03184409106889743,
+      0.02693396195275113,
+      183443,
+      "block2"
+    ],
+    [
+      0.115095840061392,
+      0.05192123230386312,
+      176979,
+      "spectral4"
+    ],
+    [
+      0.1750173126315056,
+      0.10169691950773783,
+      183123,
+      "walsh8"
+    ],
+    [
+      0.40214794819918076,
+      0.21384185583287607,
+      168171,
+      "monarch"
+    ]
+  ]
+}
