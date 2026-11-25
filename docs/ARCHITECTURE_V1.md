@@ -104,3 +104,15 @@ The stronger 0.005 BPB target held in 1/5 seeds. Mean first routing to a new ski
 The scored Linux CPU run recorded 0/160 false birth flags and 0/20 duplicate births. Rule C received at least 90% routing on 20/20 cold revisits. Receiver donor forwards were 0. Resident state and forecasts and earlier-born states were exact in 5/5 seeds, with 5/5 exact K=7 cold restores.
 
 [Preregistration](PHASE6_HIERARCHICAL_SCALING_PREREG.md) · [Unrounded evidence and per-domain results](../evidence/phase6-hierarchical-scaling-dev-001.json)
+
+## Phase 7 sparse routing and calibrated tail novelty
+
+The hierarchical sparse HMM shares the dense initial and transition priors. It calls one skill between probes and refilters up to two observed bytes at a probe. Tail novelty keeps a frozen validation limit per resident and requires every score to exceed its own limit. Suite B applies an identical ASCII answer-byte bijection to the static A/B checkpoints and their data, then varies the novel cue-to-answer binding.
+
+**Suite A science FAIL.** Sparse routing used 3.162–3.434 calls per byte, saving 50.95–54.82% against nominal K=7. It met the call budget in 0/5 seeds. The minimum C/D/E answer accuracy was 85.94–93.75% across seeds, meeting the mastery bound in 5/5. Maximum resident drift was 0.16429–0.29205 BPB and held within 0.015 BPB in 0/5 seeds.
+
+**Suite B science FAIL.** The validation-only tail detector triggered in 0/5 seeds, and the mean detector triggered in 0/5. The tail arm reached 5.47–14.06% novel answer accuracy and 0.00% cold routing, with 0/5 seeds meeting both birth and mastery. Maximum original-domain drift was 0.00000 BPB, within 0.02 BPB in 5/5 seeds. Fixed K=4 scored 2.255–2.402 BPB on the novel domain.
+
+The guarded run measured 0 receiver donor calls and 5/5 exact K=7 and 5/5 exact Suite B restores. False-birth flags were 0/160 in Suite A, 1/80 for the tail detector and 0/80 for the mean detector. The tail detector flagged one held-out Markdown probe in seed 2002, which fails the zero-false-birth engineering gate. Neither detector added a novel slot in any seed, so their zero retention drift measures the unchanged K=4 bank.
+
+[Preregistration](PHASE7_HARD_NOVELTY_SPARSE_K7_PREREG.md) · [Unrounded evidence and per-domain metrics](../evidence/phase7-hard-novelty-sparse-k7-dev-001.json)

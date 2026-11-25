@@ -1,0 +1,3770 @@
+{
+  "schema": "nexus-phase7-hard-novelty-sparse-k7-dev-v1",
+  "source_sha": "617342b313fea3467b3064401df717a37bbd2656",
+  "source_tree": "99dfdd845565ba0a4e2d62450709b1fb3623ccdc",
+  "base_sha": "916b10151e761dad738a7c2df834bd267e6f1cb6",
+  "fixture_source_sha": "105e6e754abe940de5c66ca41a75c3bf825aa1cb",
+  "prereg_sha256": "47bf6b94055254c03c91b3a2e49da7de06590c4a87c64137be16866d90dd0cd4",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "torch": "2.15.0+cpu",
+  "numpy": "2.3.5",
+  "torch_threads": 1,
+  "elapsed_seconds": 357.0962079769997,
+  "peak_rss_kib": 436728,
+  "peak_child_rss_kib": 436728,
+  "receiver_checks": {
+    "seeds": 5,
+    "forbidden_calls": 0,
+    "false_births_a": 0,
+    "false_births_b": {
+      "open_world_tail_novelty": 1,
+      "mean_bpb_only_birth": 0
+    },
+    "in_distribution_probes_a": 160,
+    "in_distribution_probes_per_b_detector": 80,
+    "exact_resident_preservation_a": 5,
+    "exact_cold_restores_a": 5,
+    "exact_cold_restores_b": 5
+  },
+  "scientific": {
+    "suite_a": {
+      "verdict": "FAIL",
+      "call_budget": 0,
+      "mastery_all_three": 5,
+      "within_retention_limit": 0,
+      "joint_pass": 0,
+      "seeds_with_two_criteria": 0
+    },
+    "suite_b": {
+      "verdict": "FAIL",
+      "births": 0,
+      "birth_and_mastery": 0,
+      "within_retention_limit": 5,
+      "false_births": 1,
+      "joint_pass": 0
+    }
+  },
+  "rows": [
+    {
+      "seed": 2001,
+      "corpus_manifest": {
+        "fit": {
+          "base_python": "9504c14662357bf57341c08693bf781d0ce557a9ec80b57b395f1a836b6d3ec3",
+          "rule_A": "9002d6901eb4bc820bf52470a9ac68734890ac1def0cf271bd70ad432ac096f0",
+          "rule_B": "bd0ed52c7c9291459238348f6dd43b958bd391e2c65034c2070aa7cfda9f2516",
+          "markdown_prose": "bf9ccbd27b65d96409a9985f43e3fa61847a392c545447e47740c17baa410073"
+        },
+        "held_out": {
+          "single": "30c4f2aa481c51a833521e78f1955ebdc5894be5d6b17dcae3857d87043c8c19",
+          "switch": "4d0a2c0ba13c4cae9300759bf6b79e2abd7be73b5e8ca2caa7af589ce9fa3fb7"
+        },
+        "fit_check_32byte_overlap": 0
+      },
+      "producer": {
+        "base_python": {
+          "source_sha256": "656cb9114e1bc0cece31bfcb9e50ba5fb60c59f6dc721c81757c8b5c2d05ac27",
+          "bytes": 152725,
+          "seconds": 1.6113954700012982,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_A": {
+          "source_sha256": "7ebe634eb773409636bb355945f8400bcb1cf3065c3810fa2562dd76a5e18af6",
+          "bytes": 150901,
+          "seconds": 1.6679244970000582,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_B": {
+          "source_sha256": "36b93a55ece659c6ec17625fc8ad9683be25abe5978365f0cbc182c9a1fdc455",
+          "bytes": 150901,
+          "seconds": 1.558460690001084,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "markdown_prose": {
+          "source_sha256": "d2492be58f62773e89da0b82429f2dfdd215c260b928711243d5e1add4af66b1",
+          "bytes": 152821,
+          "seconds": 1.5620825000005425,
+          "steps": 192,
+          "producer_forward_calls": 192
+        }
+      },
+      "ascii_checkpoint_sha256": {
+        "rule_A": "5840ab82d1197d917b43607d4fe538db2f48d9c4b875a90928f8d9daeb3e0371",
+        "rule_B": "8becaf65853fe96e30ceb36eadb2399a1174071f4bcb9f0d1c0d08616e72f571"
+      },
+      "forbidden_calls": 0,
+      "seconds": 70.91556307700012,
+      "suite_a": {
+        "arms": {
+          "hierarchical_sparse_k7": {
+            "original_bpb": 3.3345222010488103,
+            "domains": {
+              "base_python": {
+                "bpb": 4.320232887683074,
+                "routing_accuracy_pct": 74.4140625
+              },
+              "rule_A": {
+                "bpb": 2.245058331675347,
+                "routing_accuracy_pct": 89.6484375,
+                "answer_accuracy_pct": 26.5625
+              },
+              "rule_B": {
+                "bpb": 2.0337382055644513,
+                "routing_accuracy_pct": 92.578125,
+                "answer_accuracy_pct": 37.5
+              },
+              "markdown_prose": {
+                "bpb": 4.739059379272369,
+                "routing_accuracy_pct": 83.984375
+              },
+              "rule_C": {
+                "bpb": 2.7245500111003285,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 99.21875,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 2.5821408563930466,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 91.40625,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.764572045811378,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 91.40625,
+                "first_route_mean_bytes": 2.0
+              }
+            },
+            "novel_mean_answer_pct": 94.01041666666667,
+            "novel_min_answer_pct": 91.40625,
+            "novel_mean_routing_pct": 96.875,
+            "novel_min_routing_pct": 96.875,
+            "avg_active_skills_per_byte": 3.162388392857143,
+            "retention_drift_bpb": {
+              "base_python": 0.23184486987715136,
+              "rule_A": 0.13917649871327598,
+              "rule_B": 0.09786531809670418,
+              "markdown_prose": 0.10266122532113187
+            },
+            "max_original_bpb_drift": 0.23184486987715136,
+            "savings_vs_nominal_k7_pct": 54.823022959183675,
+            "savings_vs_measured_dense_pct": 54.10592808551993
+          },
+          "hierarchical_dense_k7": {
+            "original_bpb": 3.194941594763325,
+            "domains": {
+              "base_python": {
+                "bpb": 4.094794932257672,
+                "routing_accuracy_pct": 74.0234375
+              },
+              "rule_A": {
+                "bpb": 2.107602081911483,
+                "routing_accuracy_pct": 91.796875,
+                "answer_accuracy_pct": 25.78125
+              },
+              "rule_B": {
+                "bpb": 1.937544146323501,
+                "routing_accuracy_pct": 94.140625,
+                "answer_accuracy_pct": 37.5
+              },
+              "markdown_prose": {
+                "bpb": 4.6398252185606434,
+                "routing_accuracy_pct": 85.15625
+              },
+              "rule_C": {
+                "bpb": 2.701720681087197,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 99.21875,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 2.5917913997969433,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 91.40625,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.751599711342493,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 91.40625,
+                "first_route_mean_bytes": 2.0
+              }
+            },
+            "novel_mean_answer_pct": 94.01041666666667,
+            "novel_min_answer_pct": 91.40625,
+            "novel_mean_routing_pct": 96.875,
+            "novel_min_routing_pct": 96.875,
+            "avg_active_skills_per_byte": 6.890625,
+            "retention_drift_bpb": {
+              "base_python": 0.006406914451750012,
+              "rule_A": 0.0017202489494119177,
+              "rule_B": 0.001671258855753921,
+              "markdown_prose": 0.0034270646094061163
+            },
+            "max_original_bpb_drift": 0.006406914451750012
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.1916352230467444,
+            "domains": {
+              "base_python": {
+                "bpb": 4.088388017805922,
+                "routing_accuracy_pct": 73.828125
+              },
+              "rule_A": {
+                "bpb": 2.105881832962071,
+                "routing_accuracy_pct": 91.015625,
+                "answer_accuracy_pct": 25.0
+              },
+              "rule_B": {
+                "bpb": 1.935872887467747,
+                "routing_accuracy_pct": 94.140625,
+                "answer_accuracy_pct": 36.71875
+              },
+              "markdown_prose": {
+                "bpb": 4.636398153951237,
+                "routing_accuracy_pct": 84.765625
+              },
+              "rule_C": {
+                "bpb": 13.016479473790186,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_D": {
+                "bpb": 12.704141418782333,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_E": {
+                "bpb": 14.024270942275116,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              }
+            },
+            "novel_mean_answer_pct": 0.0,
+            "novel_min_answer_pct": 0.0,
+            "novel_mean_routing_pct": 0.0,
+            "novel_min_routing_pct": 0.0,
+            "avg_active_skills_per_byte": 3.9375,
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          }
+        },
+        "manifest": {
+          "rule_C": {
+            "alphabet": [
+              176,
+              177,
+              178,
+              179,
+              180,
+              181,
+              182,
+              183,
+              192,
+              193,
+              194,
+              195,
+              208,
+              224,
+              225,
+              226,
+              227,
+              228,
+              229,
+              230,
+              231
+            ],
+            "encounter_sha256": "27b432b56386e351693535f5c10c006b584616747139f4bac929b2141a76f731",
+            "check_sha256": "b10ab924c7f38a3f3aa90e176475f85863b668e9d4d1d182e3f617673f25bd53",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_D": {
+            "alphabet": [
+              160,
+              161,
+              162,
+              163,
+              164,
+              165,
+              166,
+              167,
+              168,
+              169,
+              170,
+              171,
+              172,
+              184,
+              185,
+              186,
+              187,
+              188,
+              189,
+              190,
+              191
+            ],
+            "encounter_sha256": "c4efd7c4a7a760a41b47a3c36778aa29263110ff4f2e10d41ce9671121ee446c",
+            "check_sha256": "42bfdaf5bc95a678aa0606ae83bab684718a47a26b5f1e2de58e935544a4eb57",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_E": {
+            "alphabet": [
+              200,
+              201,
+              202,
+              203,
+              204,
+              205,
+              206,
+              207,
+              209,
+              210,
+              211,
+              212,
+              213,
+              232,
+              233,
+              234,
+              235,
+              236,
+              237,
+              238,
+              239
+            ],
+            "encounter_sha256": "885c09a858a6ec64017d5f2b040750a39a7d39a4564e29517e6f6ffd82c838c7",
+            "check_sha256": "de082fc6e1f33079b45409284006093e9f99531afeab918411604c4799ac3523",
+            "encounter_check_32byte_overlap": 0
+          }
+        },
+        "stages": [
+          {
+            "domain": "rule_C",
+            "born": true,
+            "bank_size": 5,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 0.7956130909988133,
+            "encounter_prefix_sha256": "12d14e8da5d94947d2b6024662b1dd2f1a79b51ccf759c7e16d63a0117f1d092",
+            "born_state_sha256": "49dbd29e64bd020bb984bf142ddf3dc04f69fe14cd34a43953541f1d772cd1ea"
+          },
+          {
+            "domain": "rule_D",
+            "born": true,
+            "bank_size": 6,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 0.9710876009994536,
+            "encounter_prefix_sha256": "635ba59a87d854faa8ba30b467c407b33a1e8c32811e17c8977703009776a946",
+            "born_state_sha256": "3c93d2939c37fbf66d19e8ec76b072adaeb9ee998b8ad65a0f15746a8e0e3c62"
+          },
+          {
+            "domain": "rule_E",
+            "born": true,
+            "bank_size": 7,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 1.1307807739976852,
+            "encounter_prefix_sha256": "df58718f5286454de1d6f8bb8decb7f8cff3ebe2387276443f417ebd25b46d68",
+            "born_state_sha256": "9e3c5a4902ad806388be175d1d22a5972972a5e443bc829fb6f73cfd640b03be"
+          }
+        ],
+        "bank_size": 7,
+        "false_births_k4": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "false_births_cold": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "resident_exact": true,
+        "cold_restore_exact": true,
+        "snapshot": {
+          "identity": {
+            "state_sha256": "9080784f1328bd41cc396a09ce627673fa8fd790c442e85b3a52902901e7577d",
+            "skill_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose",
+              "rule_C",
+              "rule_D",
+              "rule_E"
+            ],
+            "gamma": "0x1.b333333333333p-1",
+            "surprise_threshold_bits": "0x1.c000000000000p+1",
+            "probe_interval": 16,
+            "resident_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose"
+            ]
+          },
+          "sha256": "38d6b6a87ee83160b3600e69a39a1f18b1fec9bd93a8c4e19dc2a736895f3b44",
+          "bytes": 1263059
+        },
+        "output_sha256": {
+          "hierarchical_sparse_k7": "8a42363ec60a94f60407e74df0b22eef6a988e5a3cd874ef03fc23ba4f870db6",
+          "hierarchical_dense_k7": "dfaed9212cb56214596ac3a1dd2a5e0a22b10cc61a73d1e56f8216fd0a2f1bff"
+        },
+        "cold_output_sha256": {
+          "hierarchical_sparse_k7": "8a42363ec60a94f60407e74df0b22eef6a988e5a3cd874ef03fc23ba4f870db6",
+          "hierarchical_dense_k7": "dfaed9212cb56214596ac3a1dd2a5e0a22b10cc61a73d1e56f8216fd0a2f1bff"
+        }
+      },
+      "suite_b": {
+        "calibration": {
+          "skill_names": [
+            "base_python",
+            "rule_A",
+            "rule_B",
+            "markdown_prose"
+          ],
+          "limits_bpb": [
+            12.538682370806088,
+            5.329011422598355,
+            13.208454358048623,
+            11.353349047974264
+          ],
+          "quantile": 0.9,
+          "window": 64
+        },
+        "calibration_margin_bpb": 0.5,
+        "continual_observed_bytes": 512,
+        "arms": {
+          "open_world_tail_novelty": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "686496e6cb606fa1f294bb66f74ea6c781daca7c8ec5f1fe814b0858673ba5a7",
+            "seconds": 4.916785855999478,
+            "output_sha256": "6de95e71c5ff24ae668cde57f79c0adf7dc3807fd84065a7bc1e8f61a8caeee6",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "37c2be430bfe9b741676c6c1ef80b3b31c7b3ae614c1c861d8e40a64ba8dae40",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "96766dacc9c8b2f43740a02ab4e510cc2bee8bf60a12c1a2be54933ea18c61e0",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 0
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.190590015764168,
+            "domains": {
+              "base_python": {
+                "bpb": 4.085000189698896,
+                "routing_accuracy_pct": 73.046875
+              },
+              "rule_A": {
+                "bpb": 2.105641889567536,
+                "routing_accuracy_pct": 91.015625,
+                "rule_accuracy_pct": 25.0
+              },
+              "rule_B": {
+                "bpb": 1.935738270472589,
+                "routing_accuracy_pct": 94.140625,
+                "rule_accuracy_pct": 36.71875
+              },
+              "markdown_prose": {
+                "bpb": 4.635979713317652,
+                "routing_accuracy_pct": 84.765625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.402163994653593,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 5.46875
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "mean_bpb_only_birth": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "686496e6cb606fa1f294bb66f74ea6c781daca7c8ec5f1fe814b0858673ba5a7",
+            "seconds": 4.904192374000559,
+            "output_sha256": "6de95e71c5ff24ae668cde57f79c0adf7dc3807fd84065a7bc1e8f61a8caeee6",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "37c2be430bfe9b741676c6c1ef80b3b31c7b3ae614c1c861d8e40a64ba8dae40",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "96766dacc9c8b2f43740a02ab4e510cc2bee8bf60a12c1a2be54933ea18c61e0",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 0
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.190590015764168,
+            "domains": {
+              "base_python": {
+                "bpb": 4.085000189698896,
+                "routing_accuracy_pct": 73.046875
+              },
+              "rule_A": {
+                "bpb": 2.105641889567536,
+                "routing_accuracy_pct": 91.015625,
+                "rule_accuracy_pct": 25.0
+              },
+              "rule_B": {
+                "bpb": 1.935738270472589,
+                "routing_accuracy_pct": 94.140625,
+                "rule_accuracy_pct": 36.71875
+              },
+              "markdown_prose": {
+                "bpb": 4.635979713317652,
+                "routing_accuracy_pct": 84.765625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.402163994653593,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 5.46875
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.190590015764168,
+            "domains": {
+              "base_python": {
+                "bpb": 4.085000189698896,
+                "routing_accuracy_pct": 73.046875
+              },
+              "rule_A": {
+                "bpb": 2.105641889567536,
+                "routing_accuracy_pct": 91.015625,
+                "rule_accuracy_pct": 25.0
+              },
+              "rule_B": {
+                "bpb": 1.935738270472589,
+                "routing_accuracy_pct": 94.140625,
+                "rule_accuracy_pct": 36.71875
+              },
+              "markdown_prose": {
+                "bpb": 4.635979713317652,
+                "routing_accuracy_pct": 84.765625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.402163994653593,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 5.46875
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "continual_finetune_base": {
+            "original_bpb": 3.7815337626990218,
+            "domains": {
+              "base_python": {
+                "bpb": 6.430955418696992,
+                "routing_accuracy_pct": 17.3828125
+              },
+              "rule_A": {
+                "bpb": 2.100029318777306,
+                "routing_accuracy_pct": 90.234375,
+                "rule_accuracy_pct": 25.0
+              },
+              "rule_B": {
+                "bpb": 1.9321536511858213,
+                "routing_accuracy_pct": 94.140625,
+                "rule_accuracy_pct": 36.71875
+              },
+              "markdown_prose": {
+                "bpb": 4.662996662135968,
+                "routing_accuracy_pct": 96.2890625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.369577025457025,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 7.03125
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 2.345955228998096,
+              "rule_A": -0.0056125707902299204,
+              "rule_B": -0.0035846192867676763,
+              "markdown_prose": 0.027016948818316067
+            },
+            "max_original_bpb_drift": 2.345955228998096
+          }
+        },
+        "manifest": {
+          "ascii_alphabet": [
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            80,
+            81,
+            82,
+            83,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            125
+          ],
+          "redirects": [
+            [
+              145,
+              97
+            ],
+            [
+              146,
+              98
+            ],
+            [
+              147,
+              99
+            ],
+            [
+              148,
+              100
+            ],
+            [
+              149,
+              101
+            ],
+            [
+              150,
+              102
+            ],
+            [
+              151,
+              103
+            ],
+            [
+              152,
+              104
+            ]
+          ],
+          "val_sha256": {
+            "base_python": "9347fa7b1cec1dd28eada2bbd58fb0f0b23ae286b758528f1bad8644425bf9cc",
+            "rule_A": "946fe498180b1f1efef9382d6f9d5558f2d5a02b83768299c5916cc253ea2d6d",
+            "rule_B": "ab657a48bcbe3314b4d04abef5a2535f36b40d06307118efa0b7551001e1bec3",
+            "markdown_prose": "43e0179878a7c0c8d1f3bd45754192bb4173afa214fe6564db5ee938e220baee"
+          },
+          "val_fit_check_32byte_overlap": 0,
+          "resident_check_sha256": "0f8ae0585670292cc80a97e6bcbebc3dd2906f5a1360d84e67a69e91c4eadd14",
+          "encounter_sha256": "686496e6cb606fa1f294bb66f74ea6c781daca7c8ec5f1fe814b0858673ba5a7",
+          "check_sha256": "6b05a594e810285e0c3b8db6b8b54dd771fa77d279a062fb78ffbbdbe2a1a652",
+          "encounter_check_32byte_overlap": 0
+        }
+      }
+    },
+    {
+      "seed": 2002,
+      "corpus_manifest": {
+        "fit": {
+          "base_python": "58d858f9cb8cf53b38a9d01dec72d9f425a756964f38348be61f4e355f6c8a65",
+          "rule_A": "635a3f317ad2bc8c9441187255cb7f4c003b83cd2834e41aff16f89d68e592ef",
+          "rule_B": "2e14123f91a51e82174f278664d164b9b9eeed0e8b4048a40ec17f63c77a27a6",
+          "markdown_prose": "9c8dd6925cbfa8fcffdf6d8e621044b03d0adc8a8a2504065720e7ab69b056cd"
+        },
+        "held_out": {
+          "single": "df5576d21f67ebc0c164e8b2d64b58c7e380183bc4d011ff9381bdf8df0c6ffe",
+          "switch": "8aa13f95a75519a90573ba5ecb939656c14b49f9b36df7666e877fb37e2a5803"
+        },
+        "fit_check_32byte_overlap": 0
+      },
+      "producer": {
+        "base_python": {
+          "source_sha256": "eafb242332d78516a68d6d2c83abeacbc3e34824ebc828351e9ee5a969e789ca",
+          "bytes": 152725,
+          "seconds": 1.6497580350005592,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_A": {
+          "source_sha256": "8bfbe39aa69e04345abbe67a033a0c5071127f2ad57521a0ed5036ea14cda529",
+          "bytes": 150901,
+          "seconds": 1.7048519920026592,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_B": {
+          "source_sha256": "dee16c6ff263a8ff4873a5f25c4ea2190c6ec02c7b7eaa5912f8f240bd5a8d43",
+          "bytes": 150901,
+          "seconds": 1.6174052319984185,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "markdown_prose": {
+          "source_sha256": "afe3bb1b1c07e6317a4d62dfec06b0de48144291caa1f5b3bbdd1f7d3230253a",
+          "bytes": 152821,
+          "seconds": 1.6368820300012885,
+          "steps": 192,
+          "producer_forward_calls": 192
+        }
+      },
+      "ascii_checkpoint_sha256": {
+        "rule_A": "7d9ee5c42cdc16d7436d9939d97f04888d5f7e270c70402f431bfa13160384a3",
+        "rule_B": "78d85815c02126d27b5b6ca1052dba687433467979ca7c09ca7d303440a41ba0"
+      },
+      "forbidden_calls": 0,
+      "seconds": 73.89452127600089,
+      "suite_a": {
+        "arms": {
+          "hierarchical_sparse_k7": {
+            "original_bpb": 3.6466412124154575,
+            "domains": {
+              "base_python": {
+                "bpb": 5.063451042112477,
+                "routing_accuracy_pct": 83.984375
+              },
+              "rule_A": {
+                "bpb": 2.1786687662394035,
+                "routing_accuracy_pct": 69.7265625,
+                "answer_accuracy_pct": 30.46875
+              },
+              "rule_B": {
+                "bpb": 2.298617919245241,
+                "routing_accuracy_pct": 76.953125,
+                "answer_accuracy_pct": 17.96875
+              },
+              "markdown_prose": {
+                "bpb": 5.045827122064709,
+                "routing_accuracy_pct": 70.1171875
+              },
+              "rule_C": {
+                "bpb": 2.9055376262340196,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 95.3125,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 2.99856134241867,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 86.71875,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.6973481800899517,
+                "routing_accuracy_pct": 96.6796875,
+                "answer_accuracy_pct": 100.0,
+                "first_route_mean_bytes": 2.125
+              }
+            },
+            "novel_mean_answer_pct": 94.01041666666667,
+            "novel_min_answer_pct": 86.71875,
+            "novel_mean_routing_pct": 96.80989583333333,
+            "novel_min_routing_pct": 96.6796875,
+            "avg_active_skills_per_byte": 3.43359375,
+            "retention_drift_bpb": {
+              "base_python": 0.2920511617243635,
+              "rule_A": 0.17444096081484606,
+              "rule_B": 0.13836386662001665,
+              "markdown_prose": 0.23684524414210184
+            },
+            "max_original_bpb_drift": 0.2920511617243635,
+            "savings_vs_nominal_k7_pct": 50.94866071428572,
+            "savings_vs_measured_dense_pct": 50.17006802721089
+          },
+          "hierarchical_dense_k7": {
+            "original_bpb": 3.440950336154579,
+            "domains": {
+              "base_python": {
+                "bpb": 4.77858261932682,
+                "routing_accuracy_pct": 83.984375
+              },
+              "rule_A": {
+                "bpb": 2.0065559735341063,
+                "routing_accuracy_pct": 86.1328125,
+                "answer_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.162919756326956,
+                "routing_accuracy_pct": 83.7890625,
+                "answer_accuracy_pct": 20.3125
+              },
+              "markdown_prose": {
+                "bpb": 4.815742995430434,
+                "routing_accuracy_pct": 72.265625
+              },
+              "rule_C": {
+                "bpb": 2.8837889004149604,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 95.3125,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 2.997619791868818,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 86.71875,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.694648625234306,
+                "routing_accuracy_pct": 96.6796875,
+                "answer_accuracy_pct": 100.0,
+                "first_route_mean_bytes": 2.125
+              }
+            },
+            "novel_mean_answer_pct": 94.01041666666667,
+            "novel_min_answer_pct": 86.71875,
+            "novel_mean_routing_pct": 96.80989583333333,
+            "novel_min_routing_pct": 96.6796875,
+            "avg_active_skills_per_byte": 6.890625,
+            "retention_drift_bpb": {
+              "base_python": 0.007182738938706912,
+              "rule_A": 0.002328168109548834,
+              "rule_B": 0.002665703701731914,
+              "markdown_prose": 0.0067611175078274854
+            },
+            "max_original_bpb_drift": 0.007182738938706912
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.4362159040901252,
+            "domains": {
+              "base_python": {
+                "bpb": 4.771399880388113,
+                "routing_accuracy_pct": 83.984375
+              },
+              "rule_A": {
+                "bpb": 2.0042278054245575,
+                "routing_accuracy_pct": 85.546875,
+                "answer_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.1602540526252243,
+                "routing_accuracy_pct": 83.203125,
+                "answer_accuracy_pct": 20.3125
+              },
+              "markdown_prose": {
+                "bpb": 4.808981877922607,
+                "routing_accuracy_pct": 71.875
+              },
+              "rule_C": {
+                "bpb": 12.978289909248506,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_D": {
+                "bpb": 12.523914080870897,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_E": {
+                "bpb": 13.766205010350888,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              }
+            },
+            "novel_mean_answer_pct": 0.0,
+            "novel_min_answer_pct": 0.0,
+            "novel_mean_routing_pct": 0.0,
+            "novel_min_routing_pct": 0.0,
+            "avg_active_skills_per_byte": 3.9375,
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          }
+        },
+        "manifest": {
+          "rule_C": {
+            "alphabet": [
+              176,
+              177,
+              178,
+              179,
+              180,
+              181,
+              182,
+              183,
+              192,
+              193,
+              194,
+              195,
+              208,
+              224,
+              225,
+              226,
+              227,
+              228,
+              229,
+              230,
+              231
+            ],
+            "encounter_sha256": "d97e49d9f71f2ddf04a143eee928eddcf8214a4dcc8c5792566989a679d56f5d",
+            "check_sha256": "1b0bacc2b20ecdd73e98b45225e94a1aa0f9cf9b60d19d50d78174cd4e60e749",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_D": {
+            "alphabet": [
+              160,
+              161,
+              162,
+              163,
+              164,
+              165,
+              166,
+              167,
+              168,
+              169,
+              170,
+              171,
+              172,
+              184,
+              185,
+              186,
+              187,
+              188,
+              189,
+              190,
+              191
+            ],
+            "encounter_sha256": "04bfbf973239b37a552ef36871d3144f130860e6fd019c550ed4fa6b60c254af",
+            "check_sha256": "3e6d8f0638b45c054fc02559e1852a9063ae31ea8d8f1620d7b43f2be5fb239f",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_E": {
+            "alphabet": [
+              200,
+              201,
+              202,
+              203,
+              204,
+              205,
+              206,
+              207,
+              209,
+              210,
+              211,
+              212,
+              213,
+              232,
+              233,
+              234,
+              235,
+              236,
+              237,
+              238,
+              239
+            ],
+            "encounter_sha256": "d7e09a319563b96f64aad12ce80130ef7a70a7caab4c1ad7e90b09080871e152",
+            "check_sha256": "227cc9008b75c301479455d859d5c3a0d48c2db69c747ebb85d0d2797d190de8",
+            "encounter_check_32byte_overlap": 0
+          }
+        },
+        "stages": [
+          {
+            "domain": "rule_C",
+            "born": true,
+            "bank_size": 5,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 0.8103842880009324,
+            "encounter_prefix_sha256": "80f11ee618a44f4db801b5a7415f162d797c9fd6b453d2d7ffc7be4aface79ee",
+            "born_state_sha256": "9f570117ee28c0b59530097c7c511a46af3f6ad193a25b51062423296a4347e9"
+          },
+          {
+            "domain": "rule_D",
+            "born": true,
+            "bank_size": 6,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 0.9969845510022424,
+            "encounter_prefix_sha256": "1269bfd51d32499058bf02878d130d81b11455eeaa9f97d767b88720a8da5070",
+            "born_state_sha256": "02b76e5a81e27fa868f012e2725c9aa2e7e832d451f9229f5fd8d8643e27d1e7"
+          },
+          {
+            "domain": "rule_E",
+            "born": true,
+            "bank_size": 7,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 1.170797072998539,
+            "encounter_prefix_sha256": "17775d5aef34825b4615be5ec3f930024df76b9d3e499657e1d8e20c619ba143",
+            "born_state_sha256": "2d7e8da0c6d829b768cc9f7d3bc23c82206a7eec1d04c74a783cce18353182e5"
+          }
+        ],
+        "bank_size": 7,
+        "false_births_k4": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "false_births_cold": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "resident_exact": true,
+        "cold_restore_exact": true,
+        "snapshot": {
+          "identity": {
+            "state_sha256": "f7175b150bc696474b7e6adcf85f72a4263578341d0bd21338afa219d34afbdc",
+            "skill_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose",
+              "rule_C",
+              "rule_D",
+              "rule_E"
+            ],
+            "gamma": "0x1.b333333333333p-1",
+            "surprise_threshold_bits": "0x1.c000000000000p+1",
+            "probe_interval": 16,
+            "resident_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose"
+            ]
+          },
+          "sha256": "bd4aae35ee5df95c4d6da6e93430f6190cfcbf080a3d6f10de90cdb8b88cd908",
+          "bytes": 1263123
+        },
+        "output_sha256": {
+          "hierarchical_sparse_k7": "731b7ca7f61fcc9a9968cae76af254d4afb6aad9b95cb73ce97ac9c2cf766d00",
+          "hierarchical_dense_k7": "243eb3adb217903de332c0616ec4e75be7c8d63cc3fb5d1bfe5969d40af0c962"
+        },
+        "cold_output_sha256": {
+          "hierarchical_sparse_k7": "731b7ca7f61fcc9a9968cae76af254d4afb6aad9b95cb73ce97ac9c2cf766d00",
+          "hierarchical_dense_k7": "243eb3adb217903de332c0616ec4e75be7c8d63cc3fb5d1bfe5969d40af0c962"
+        }
+      },
+      "suite_b": {
+        "calibration": {
+          "skill_names": [
+            "base_python",
+            "rule_A",
+            "rule_B",
+            "markdown_prose"
+          ],
+          "limits_bpb": [
+            12.437672144440135,
+            11.021074438923698,
+            4.5519184775991075,
+            10.619186756248693
+          ],
+          "quantile": 0.9,
+          "window": 64
+        },
+        "calibration_margin_bpb": 0.5,
+        "continual_observed_bytes": 512,
+        "arms": {
+          "open_world_tail_novelty": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "2a153383c5fc6bf94bc3edefca4ee538ed5fd985ee05d83fd755009464dff5a8",
+            "seconds": 5.126268487001653,
+            "output_sha256": "6e1100ef3fb9cbc499f117c8c25ebeab3c13829bd70f73c35cf40698572e7dd0",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "0786372754f8789d1740ebf2b7ca453e8271340459b94cf451a6402972587320",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "356ab31f598675f124922a658d96037060ab62d108cbc0a727de8a6af06210a8",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 1
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.435249083855096,
+            "domains": {
+              "base_python": {
+                "bpb": 4.769545729529854,
+                "routing_accuracy_pct": 83.0078125
+              },
+              "rule_A": {
+                "bpb": 2.0040177981380793,
+                "routing_accuracy_pct": 85.546875,
+                "rule_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.159966352354668,
+                "routing_accuracy_pct": 83.203125,
+                "rule_accuracy_pct": 20.3125
+              },
+              "markdown_prose": {
+                "bpb": 4.807466455397782,
+                "routing_accuracy_pct": 71.2890625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.2550807970851268,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 14.0625
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "mean_bpb_only_birth": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "2a153383c5fc6bf94bc3edefca4ee538ed5fd985ee05d83fd755009464dff5a8",
+            "seconds": 5.238580746001389,
+            "output_sha256": "6e1100ef3fb9cbc499f117c8c25ebeab3c13829bd70f73c35cf40698572e7dd0",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "0786372754f8789d1740ebf2b7ca453e8271340459b94cf451a6402972587320",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "356ab31f598675f124922a658d96037060ab62d108cbc0a727de8a6af06210a8",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 0
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.435249083855096,
+            "domains": {
+              "base_python": {
+                "bpb": 4.769545729529854,
+                "routing_accuracy_pct": 83.0078125
+              },
+              "rule_A": {
+                "bpb": 2.0040177981380793,
+                "routing_accuracy_pct": 85.546875,
+                "rule_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.159966352354668,
+                "routing_accuracy_pct": 83.203125,
+                "rule_accuracy_pct": 20.3125
+              },
+              "markdown_prose": {
+                "bpb": 4.807466455397782,
+                "routing_accuracy_pct": 71.2890625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.2550807970851268,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 14.0625
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.435249083855096,
+            "domains": {
+              "base_python": {
+                "bpb": 4.769545729529854,
+                "routing_accuracy_pct": 83.0078125
+              },
+              "rule_A": {
+                "bpb": 2.0040177981380793,
+                "routing_accuracy_pct": 85.546875,
+                "rule_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.159966352354668,
+                "routing_accuracy_pct": 83.203125,
+                "rule_accuracy_pct": 20.3125
+              },
+              "markdown_prose": {
+                "bpb": 4.807466455397782,
+                "routing_accuracy_pct": 71.2890625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.2550807970851268,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 14.0625
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "continual_finetune_base": {
+            "original_bpb": 3.9387246863913434,
+            "domains": {
+              "base_python": {
+                "bpb": 6.71143504245775,
+                "routing_accuracy_pct": 20.8984375
+              },
+              "rule_A": {
+                "bpb": 1.9981853244878325,
+                "routing_accuracy_pct": 84.1796875,
+                "rule_accuracy_pct": 36.71875
+              },
+              "rule_B": {
+                "bpb": 2.1538870434914426,
+                "routing_accuracy_pct": 82.2265625,
+                "rule_accuracy_pct": 19.53125
+              },
+              "markdown_prose": {
+                "bpb": 4.891391335128347,
+                "routing_accuracy_pct": 95.1171875
+              },
+              "rule_same_alpha": {
+                "bpb": 2.245453589131047,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 14.84375
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 1.9418893129278958,
+              "rule_A": -0.005832473650246861,
+              "rule_B": -0.0060793088632253856,
+              "markdown_prose": 0.0839248797305645
+            },
+            "max_original_bpb_drift": 1.9418893129278958
+          }
+        },
+        "manifest": {
+          "ascii_alphabet": [
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            80,
+            81,
+            82,
+            83,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            125
+          ],
+          "redirects": [
+            [
+              145,
+              97
+            ],
+            [
+              146,
+              98
+            ],
+            [
+              147,
+              99
+            ],
+            [
+              148,
+              100
+            ],
+            [
+              149,
+              101
+            ],
+            [
+              150,
+              102
+            ],
+            [
+              151,
+              103
+            ],
+            [
+              152,
+              104
+            ]
+          ],
+          "val_sha256": {
+            "base_python": "af0f1776e3893e917febc8f6454876c4a5141fe1afb03d014422df81aead14e5",
+            "rule_A": "212752026e76b7ba95b9008f6ff3c69c518901456859d9d38ef27fa70d2aea85",
+            "rule_B": "351a68df14c2cfa21eb97969a7881d60fb068e3f860f2e0ca3eab07518f4a299",
+            "markdown_prose": "159bcbaa762ebda4b2bfe08f08f16c70e379750c66cb0116c38c35fe46db5474"
+          },
+          "val_fit_check_32byte_overlap": 0,
+          "resident_check_sha256": "1f2851b6e4af7bba0371142ebc103a6410248dba708447204efe2028ed2c6c2a",
+          "encounter_sha256": "2a153383c5fc6bf94bc3edefca4ee538ed5fd985ee05d83fd755009464dff5a8",
+          "check_sha256": "85716c2d491357d9d72e58d71d6bd67ed128ea7f3298f6fb43f530b425d21945",
+          "encounter_check_32byte_overlap": 0
+        }
+      }
+    },
+    {
+      "seed": 2003,
+      "corpus_manifest": {
+        "fit": {
+          "base_python": "ef06ddca3ccad225c00ba74153984bc1560d87c010fcce8bcb43a89df48ed937",
+          "rule_A": "7f1756fdfb422e83def18084522e825314249bfdae006a589a4b5a91c4dcd9b0",
+          "rule_B": "47f62453c264a4598e97aa79785dd6a255e256c1e0a7b19db203880fee8caa47",
+          "markdown_prose": "0ea8a7aa5ac446007af1a9a677e9014536b933ee9806be19453a61fdad5b879a"
+        },
+        "held_out": {
+          "single": "3010314b909e6cae35c028371151a93d273fd2604969382387c032e9f4c25d94",
+          "switch": "79f1a4d43c9ddeffd837480d19a9015a9fda4ebee45316cf3b1c1bda16f701b1"
+        },
+        "fit_check_32byte_overlap": 0
+      },
+      "producer": {
+        "base_python": {
+          "source_sha256": "831978cddfc7eb093b6038d50ec81cc0df2e9253cce6ef88e3b8132ae940857b",
+          "bytes": 152725,
+          "seconds": 1.6721258149991627,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_A": {
+          "source_sha256": "1ebab108690d66c5adac5232f723bb7e6d6a1de06f9deb61fd0d6e16b57d0052",
+          "bytes": 150901,
+          "seconds": 1.6546670569987327,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_B": {
+          "source_sha256": "3bf0d0fde6a8212a62f8d9dce0eaf72af78479d1d0bbd1ee89e05017193b4dc3",
+          "bytes": 150901,
+          "seconds": 1.6767572600001586,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "markdown_prose": {
+          "source_sha256": "5823c459a79f8847c4a31383a455102162a9b1073fc88955195413b021d6ff1f",
+          "bytes": 152821,
+          "seconds": 1.6707520750023832,
+          "steps": 192,
+          "producer_forward_calls": 192
+        }
+      },
+      "ascii_checkpoint_sha256": {
+        "rule_A": "fe2db6f6b170b7c0d973f87faf3622e2399204ff2e4512854e585ac017ad4803",
+        "rule_B": "6ea48e3e79075b8930f4297af946577d92381bfbf72f772a99185ed91faa8c7a"
+      },
+      "forbidden_calls": 0,
+      "seconds": 71.40930330899937,
+      "suite_a": {
+        "arms": {
+          "hierarchical_sparse_k7": {
+            "original_bpb": 3.3685424434311013,
+            "domains": {
+              "base_python": {
+                "bpb": 4.459064506940808,
+                "routing_accuracy_pct": 76.3671875
+              },
+              "rule_A": {
+                "bpb": 2.3050139329673103,
+                "routing_accuracy_pct": 84.375,
+                "answer_accuracy_pct": 18.75
+              },
+              "rule_B": {
+                "bpb": 2.3098887340568277,
+                "routing_accuracy_pct": 84.9609375,
+                "answer_accuracy_pct": 17.96875
+              },
+              "markdown_prose": {
+                "bpb": 4.4002025997594565,
+                "routing_accuracy_pct": 79.296875
+              },
+              "rule_C": {
+                "bpb": 2.5351789367400253,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 97.65625,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 3.045071796105853,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 93.75,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.812473904437931,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 97.65625,
+                "first_route_mean_bytes": 2.0
+              }
+            },
+            "novel_mean_answer_pct": 96.35416666666667,
+            "novel_min_answer_pct": 93.75,
+            "novel_mean_routing_pct": 96.875,
+            "novel_min_routing_pct": 96.875,
+            "avg_active_skills_per_byte": 3.2645089285714284,
+            "retention_drift_bpb": {
+              "base_python": 0.16429137306052954,
+              "rule_A": 0.15423767467328897,
+              "rule_B": 0.16146711202751618,
+              "markdown_prose": 0.05570200754295218
+            },
+            "max_original_bpb_drift": 0.16429137306052954,
+            "savings_vs_nominal_k7_pct": 53.36415816326531,
+            "savings_vs_measured_dense_pct": 52.623906705539355
+          },
+          "hierarchical_dense_k7": {
+            "original_bpb": 3.2377080764966735,
+            "domains": {
+              "base_python": {
+                "bpb": 4.299152081083083,
+                "routing_accuracy_pct": 76.7578125
+              },
+              "rule_A": {
+                "bpb": 2.1529024629379787,
+                "routing_accuracy_pct": 89.453125,
+                "answer_accuracy_pct": 19.53125
+              },
+              "rule_B": {
+                "bpb": 2.150574662369966,
+                "routing_accuracy_pct": 89.453125,
+                "answer_accuracy_pct": 21.875
+              },
+              "markdown_prose": {
+                "bpb": 4.348203099595665,
+                "routing_accuracy_pct": 81.25
+              },
+              "rule_C": {
+                "bpb": 2.4796489550194227,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 97.65625,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 3.053634695371612,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 93.75,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.7678876108608743,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 97.65625,
+                "first_route_mean_bytes": 2.0
+              }
+            },
+            "novel_mean_answer_pct": 96.35416666666667,
+            "novel_min_answer_pct": 93.75,
+            "novel_mean_routing_pct": 96.875,
+            "novel_min_routing_pct": 96.875,
+            "avg_active_skills_per_byte": 6.890625,
+            "retention_drift_bpb": {
+              "base_python": 0.004378947202804184,
+              "rule_A": 0.002126204643957408,
+              "rule_B": 0.002153040340654666,
+              "markdown_prose": 0.003702507379160558
+            },
+            "max_original_bpb_drift": 0.004378947202804184
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.234617901605029,
+            "domains": {
+              "base_python": {
+                "bpb": 4.294773133880279,
+                "routing_accuracy_pct": 76.3671875
+              },
+              "rule_A": {
+                "bpb": 2.1507762582940213,
+                "routing_accuracy_pct": 89.0625,
+                "answer_accuracy_pct": 19.53125
+              },
+              "rule_B": {
+                "bpb": 2.1484216220293115,
+                "routing_accuracy_pct": 89.2578125,
+                "answer_accuracy_pct": 21.875
+              },
+              "markdown_prose": {
+                "bpb": 4.344500592216504,
+                "routing_accuracy_pct": 80.6640625
+              },
+              "rule_C": {
+                "bpb": 14.158671801848254,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_D": {
+                "bpb": 14.240184794447817,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_E": {
+                "bpb": 13.848596251167683,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              }
+            },
+            "novel_mean_answer_pct": 0.0,
+            "novel_min_answer_pct": 0.0,
+            "novel_mean_routing_pct": 0.0,
+            "novel_min_routing_pct": 0.0,
+            "avg_active_skills_per_byte": 3.9375,
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          }
+        },
+        "manifest": {
+          "rule_C": {
+            "alphabet": [
+              176,
+              177,
+              178,
+              179,
+              180,
+              181,
+              182,
+              183,
+              192,
+              193,
+              194,
+              195,
+              208,
+              224,
+              225,
+              226,
+              227,
+              228,
+              229,
+              230,
+              231
+            ],
+            "encounter_sha256": "cf7d75eff0cf152c5f13f5997b49ff01292efd5cbea6fdd0ac62d25462e3359d",
+            "check_sha256": "29c37e60d772c2ed236d06dd90dd8fd140e6b6ead328ee87c804754d741ddb7d",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_D": {
+            "alphabet": [
+              160,
+              161,
+              162,
+              163,
+              164,
+              165,
+              166,
+              167,
+              168,
+              169,
+              170,
+              171,
+              172,
+              184,
+              185,
+              186,
+              187,
+              188,
+              189,
+              190,
+              191
+            ],
+            "encounter_sha256": "9dc689357624f69a838a93aebcfb60f977fa73edfb1f9d703ebc78a4c6ee07d3",
+            "check_sha256": "b6fe05f29705c3a6887c1dc0f11f75d792d6d0971a573aba412f0a9ea297a637",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_E": {
+            "alphabet": [
+              200,
+              201,
+              202,
+              203,
+              204,
+              205,
+              206,
+              207,
+              209,
+              210,
+              211,
+              212,
+              213,
+              232,
+              233,
+              234,
+              235,
+              236,
+              237,
+              238,
+              239
+            ],
+            "encounter_sha256": "cb65d73c3778b9b30132d13534dd2c92d7fb64d908b9619eadbd73b7fb61326d",
+            "check_sha256": "c8ea8b43e8ac5418048c599e707c886cba3f9a65a5c9c2a0b15d1b51aff943e2",
+            "encounter_check_32byte_overlap": 0
+          }
+        },
+        "stages": [
+          {
+            "domain": "rule_C",
+            "born": true,
+            "bank_size": 5,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 0.8980166209985327,
+            "encounter_prefix_sha256": "f7a0b331d6a817f5b231d6f798b57b7fdef282803cf80f4ac7908b5e37c9b128",
+            "born_state_sha256": "6f13a24e509e579ed8db5bb0a3ea52d94045027e80396534ba7ba47c80569383"
+          },
+          {
+            "domain": "rule_D",
+            "born": true,
+            "bank_size": 6,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 1.0643946130003314,
+            "encounter_prefix_sha256": "596b934d7179c9ae204a61a9e2d138196db54da0bde8ee7c2c930c061efb8b84",
+            "born_state_sha256": "7e89d3f726f327f584b4e6cf329a284173995258da8e50e3fae9e18226a38d9f"
+          },
+          {
+            "domain": "rule_E",
+            "born": true,
+            "bank_size": 7,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 1.173374367001088,
+            "encounter_prefix_sha256": "4964b049f62ee0a6fa8054da7faf9c1a9880af0af1ccf2c1267346e3e41e7e25",
+            "born_state_sha256": "895733ea5b8fd5675e355621d260c81e8d1c13a7ea1e26d0bc3356dccea4444d"
+          }
+        ],
+        "bank_size": 7,
+        "false_births_k4": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "false_births_cold": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "resident_exact": true,
+        "cold_restore_exact": true,
+        "snapshot": {
+          "identity": {
+            "state_sha256": "7ae1db4135fabc551c6532baf5f1cf8d98840e97398698807a21f9cf8e7ec42f",
+            "skill_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose",
+              "rule_C",
+              "rule_D",
+              "rule_E"
+            ],
+            "gamma": "0x1.b333333333333p-1",
+            "surprise_threshold_bits": "0x1.c000000000000p+1",
+            "probe_interval": 16,
+            "resident_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose"
+            ]
+          },
+          "sha256": "bf0d5eaa9c661d29238df3cef4f909e647c12350ba935a06d792a87b4d3b53f1",
+          "bytes": 1263187
+        },
+        "output_sha256": {
+          "hierarchical_sparse_k7": "12e805c17144edb3c231757f53f3f0363816ddb47c5de214a1921c99f538e783",
+          "hierarchical_dense_k7": "629608c29edf714d5fbc753fe07e7dff1fce3e00f52fa1ca34a9fdb42bfd992d"
+        },
+        "cold_output_sha256": {
+          "hierarchical_sparse_k7": "12e805c17144edb3c231757f53f3f0363816ddb47c5de214a1921c99f538e783",
+          "hierarchical_dense_k7": "629608c29edf714d5fbc753fe07e7dff1fce3e00f52fa1ca34a9fdb42bfd992d"
+        }
+      },
+      "suite_b": {
+        "calibration": {
+          "skill_names": [
+            "base_python",
+            "rule_A",
+            "rule_B",
+            "markdown_prose"
+          ],
+          "limits_bpb": [
+            12.991575980143379,
+            8.939702561998798,
+            12.668618703185956,
+            11.245553762066473
+          ],
+          "quantile": 0.9,
+          "window": 64
+        },
+        "calibration_margin_bpb": 0.5,
+        "continual_observed_bytes": 512,
+        "arms": {
+          "open_world_tail_novelty": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "e006312888a043bd14de97c30ea82071060cbbbcfeea059bca8e886e1e0343f0",
+            "seconds": 4.7200576489995,
+            "output_sha256": "2efdea170d1382ec2d74f45df63d1680db2cb9edef601f7a31678b1b71f7214a",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "7ea48eee4e6b4f3917e388e66c30c6ff93dbac3824aae3251946719645eefe93",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "534ba73543022a746109baf22380b7804fb88efb6eda66ad16990280f8697a42",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 0
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.234246236835709,
+            "domains": {
+              "base_python": {
+                "bpb": 4.294714550022478,
+                "routing_accuracy_pct": 76.3671875
+              },
+              "rule_A": {
+                "bpb": 2.150049319266746,
+                "routing_accuracy_pct": 89.0625,
+                "rule_accuracy_pct": 19.53125
+              },
+              "rule_B": {
+                "bpb": 2.148242544002414,
+                "routing_accuracy_pct": 89.2578125,
+                "rule_accuracy_pct": 21.875
+              },
+              "markdown_prose": {
+                "bpb": 4.343978534051195,
+                "routing_accuracy_pct": 80.6640625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.289577977983714,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 9.375
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "mean_bpb_only_birth": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "e006312888a043bd14de97c30ea82071060cbbbcfeea059bca8e886e1e0343f0",
+            "seconds": 4.85596927000006,
+            "output_sha256": "2efdea170d1382ec2d74f45df63d1680db2cb9edef601f7a31678b1b71f7214a",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "7ea48eee4e6b4f3917e388e66c30c6ff93dbac3824aae3251946719645eefe93",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "534ba73543022a746109baf22380b7804fb88efb6eda66ad16990280f8697a42",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 0
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.234246236835709,
+            "domains": {
+              "base_python": {
+                "bpb": 4.294714550022478,
+                "routing_accuracy_pct": 76.3671875
+              },
+              "rule_A": {
+                "bpb": 2.150049319266746,
+                "routing_accuracy_pct": 89.0625,
+                "rule_accuracy_pct": 19.53125
+              },
+              "rule_B": {
+                "bpb": 2.148242544002414,
+                "routing_accuracy_pct": 89.2578125,
+                "rule_accuracy_pct": 21.875
+              },
+              "markdown_prose": {
+                "bpb": 4.343978534051195,
+                "routing_accuracy_pct": 80.6640625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.289577977983714,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 9.375
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.234246236835709,
+            "domains": {
+              "base_python": {
+                "bpb": 4.294714550022478,
+                "routing_accuracy_pct": 76.3671875
+              },
+              "rule_A": {
+                "bpb": 2.150049319266746,
+                "routing_accuracy_pct": 89.0625,
+                "rule_accuracy_pct": 19.53125
+              },
+              "rule_B": {
+                "bpb": 2.148242544002414,
+                "routing_accuracy_pct": 89.2578125,
+                "rule_accuracy_pct": 21.875
+              },
+              "markdown_prose": {
+                "bpb": 4.343978534051195,
+                "routing_accuracy_pct": 80.6640625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.289577977983714,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 9.375
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "continual_finetune_base": {
+            "original_bpb": 3.687392679538106,
+            "domains": {
+              "base_python": {
+                "bpb": 6.082023392963734,
+                "routing_accuracy_pct": 9.375
+              },
+              "rule_A": {
+                "bpb": 2.145452063433972,
+                "routing_accuracy_pct": 88.8671875,
+                "rule_accuracy_pct": 20.3125
+              },
+              "rule_B": {
+                "bpb": 2.143090328035306,
+                "routing_accuracy_pct": 87.3046875,
+                "rule_accuracy_pct": 21.09375
+              },
+              "markdown_prose": {
+                "bpb": 4.3790049337194095,
+                "routing_accuracy_pct": 96.6796875
+              },
+              "rule_same_alpha": {
+                "bpb": 2.2813844143840942,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 10.15625
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 1.7873088429412558,
+              "rule_A": -0.004597255832774039,
+              "rule_B": -0.00515221596710802,
+              "markdown_prose": 0.0350263996682143
+            },
+            "max_original_bpb_drift": 1.7873088429412558
+          }
+        },
+        "manifest": {
+          "ascii_alphabet": [
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            80,
+            81,
+            82,
+            83,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            125
+          ],
+          "redirects": [
+            [
+              145,
+              97
+            ],
+            [
+              146,
+              98
+            ],
+            [
+              147,
+              99
+            ],
+            [
+              148,
+              100
+            ],
+            [
+              149,
+              101
+            ],
+            [
+              150,
+              102
+            ],
+            [
+              151,
+              103
+            ],
+            [
+              152,
+              104
+            ]
+          ],
+          "val_sha256": {
+            "base_python": "1da71c3c5330cb62cb3147fe5f91805407696eaeaa8eb253cb4318ca0e89ad32",
+            "rule_A": "4eb8be983c9cd6e44773ef1fb60a6ef336eb7415acbdd8e205f42d731effb2a1",
+            "rule_B": "b2bf338550b3288e0ba3c60390be62e6c46ec3973c3f465e4baa0fb2b0b74c43",
+            "markdown_prose": "546d2987c26fc18466d6ce9085328ec3305663d8e0c14e7cdac6579013292c6e"
+          },
+          "val_fit_check_32byte_overlap": 0,
+          "resident_check_sha256": "f6012e5afcbbf65b630353ea83db72e07f367bad4dbdfc23aac9a991d11c8675",
+          "encounter_sha256": "e006312888a043bd14de97c30ea82071060cbbbcfeea059bca8e886e1e0343f0",
+          "check_sha256": "e2e051894212eac0bd72eebd2b313838cf6b5ceafde4dd86c2eccd6ce26efe43",
+          "encounter_check_32byte_overlap": 0
+        }
+      }
+    },
+    {
+      "seed": 2004,
+      "corpus_manifest": {
+        "fit": {
+          "base_python": "46cb2662f473929a7854ac618fa66dfaf3e7fbf4e78fdff35aa4291cbdb2546c",
+          "rule_A": "c0da3d4d565e879145509b777e44228e4240c12b2dbad3411bad410f649001fa",
+          "rule_B": "fa5c756429d8c544e6e66fe7e1d78bf2492f9ee6b7d1e8828672d36888767f0f",
+          "markdown_prose": "1473ab08b9b0edd52c89ee26bfdcdd1a8125aefc975bf7c00caaa5c946c6bf7d"
+        },
+        "held_out": {
+          "single": "9757db945cb9c7876f30c26a37d9944c567dc38bf527c386e146ed90a6d6e57e",
+          "switch": "a2bb20bae7f951cd1368e366d976406fb7d7c7d3990c86d92c76c04ffb35027c"
+        },
+        "fit_check_32byte_overlap": 0
+      },
+      "producer": {
+        "base_python": {
+          "source_sha256": "f56785446b0f6da30d29b11afc79ee65434e423a8d0d0ac80db48a2ef7f8b176",
+          "bytes": 152725,
+          "seconds": 1.615946622001502,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_A": {
+          "source_sha256": "01178f42b0e4ea1ed8b762990849f4b5f12634bd7716f64ceafb9d1b60e1b1cb",
+          "bytes": 150901,
+          "seconds": 1.5833519320003688,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_B": {
+          "source_sha256": "3e20b82b10b96d416577be43ed9ca1bc4275f3c4f5db9519c477ea0a82510752",
+          "bytes": 150901,
+          "seconds": 1.604196479998791,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "markdown_prose": {
+          "source_sha256": "aa35917875996412577254fec95e48c6774586f133b9893d618aaba93227c8d1",
+          "bytes": 152821,
+          "seconds": 1.7621270599993295,
+          "steps": 192,
+          "producer_forward_calls": 192
+        }
+      },
+      "ascii_checkpoint_sha256": {
+        "rule_A": "04283175915f1005b9b9d15c3c87e12285d5bcb9db49b1dd697c3f586e96bcb8",
+        "rule_B": "851b84b5e06d4e6ca8575fa31296e80bc4a57998a9987f0ae4adcde51c99ead1"
+      },
+      "forbidden_calls": 0,
+      "seconds": 70.52320059599879,
+      "suite_a": {
+        "arms": {
+          "hierarchical_sparse_k7": {
+            "original_bpb": 3.490052795729602,
+            "domains": {
+              "base_python": {
+                "bpb": 4.563026416528805,
+                "routing_accuracy_pct": 75.390625
+              },
+              "rule_A": {
+                "bpb": 2.185187092409642,
+                "routing_accuracy_pct": 87.890625,
+                "answer_accuracy_pct": 35.9375
+              },
+              "rule_B": {
+                "bpb": 2.256342326506993,
+                "routing_accuracy_pct": 88.671875,
+                "answer_accuracy_pct": 25.78125
+              },
+              "markdown_prose": {
+                "bpb": 4.955655347472968,
+                "routing_accuracy_pct": 83.984375
+              },
+              "rule_C": {
+                "bpb": 2.740897190224745,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 100.0,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 2.7639407812634005,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 91.40625,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.8219815264196875,
+                "routing_accuracy_pct": 96.484375,
+                "answer_accuracy_pct": 92.1875,
+                "first_route_mean_bytes": 2.25
+              }
+            },
+            "novel_mean_answer_pct": 94.53125,
+            "novel_min_answer_pct": 91.40625,
+            "novel_mean_routing_pct": 96.74479166666667,
+            "novel_min_routing_pct": 96.484375,
+            "avg_active_skills_per_byte": 3.318080357142857,
+            "retention_drift_bpb": {
+              "base_python": 0.1999638401580217,
+              "rule_A": 0.19327999913675198,
+              "rule_B": 0.17901297845012643,
+              "markdown_prose": 0.19053495830574807
+            },
+            "max_original_bpb_drift": 0.1999638401580217,
+            "savings_vs_nominal_k7_pct": 52.598852040816325,
+            "savings_vs_measured_dense_pct": 51.84645286686103
+          },
+          "hierarchical_dense_k7": {
+            "original_bpb": 3.302792251579347,
+            "domains": {
+              "base_python": {
+                "bpb": 4.369191938641057,
+                "routing_accuracy_pct": 75.1953125
+              },
+              "rule_A": {
+                "bpb": 1.9935802206974715,
+                "routing_accuracy_pct": 92.1875,
+                "answer_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.078880077316187,
+                "routing_accuracy_pct": 91.015625,
+                "answer_accuracy_pct": 21.09375
+              },
+              "markdown_prose": {
+                "bpb": 4.769516769662672,
+                "routing_accuracy_pct": 85.3515625
+              },
+              "rule_C": {
+                "bpb": 2.725462209287497,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 100.0,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 2.7772191443920216,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 91.40625,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.7482845564234375,
+                "routing_accuracy_pct": 96.484375,
+                "answer_accuracy_pct": 92.1875,
+                "first_route_mean_bytes": 2.25
+              }
+            },
+            "novel_mean_answer_pct": 94.53125,
+            "novel_min_answer_pct": 91.40625,
+            "novel_mean_routing_pct": 96.74479166666667,
+            "novel_min_routing_pct": 96.484375,
+            "avg_active_skills_per_byte": 6.890625,
+            "retention_drift_bpb": {
+              "base_python": 0.00612936227027383,
+              "rule_A": 0.0016731274245813665,
+              "rule_B": 0.001550729259320427,
+              "markdown_prose": 0.004396380495451879
+            },
+            "max_original_bpb_drift": 0.00612936227027383
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.2993548517169398,
+            "domains": {
+              "base_python": {
+                "bpb": 4.363062576370783,
+                "routing_accuracy_pct": 75.1953125
+              },
+              "rule_A": {
+                "bpb": 1.9919070932728902,
+                "routing_accuracy_pct": 92.1875,
+                "answer_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.0773293480568666,
+                "routing_accuracy_pct": 91.015625,
+                "answer_accuracy_pct": 21.09375
+              },
+              "markdown_prose": {
+                "bpb": 4.76512038916722,
+                "routing_accuracy_pct": 85.3515625
+              },
+              "rule_C": {
+                "bpb": 13.382815964334252,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_D": {
+                "bpb": 13.021507604253703,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_E": {
+                "bpb": 14.311162905121067,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              }
+            },
+            "novel_mean_answer_pct": 0.0,
+            "novel_min_answer_pct": 0.0,
+            "novel_mean_routing_pct": 0.0,
+            "novel_min_routing_pct": 0.0,
+            "avg_active_skills_per_byte": 3.9375,
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          }
+        },
+        "manifest": {
+          "rule_C": {
+            "alphabet": [
+              176,
+              177,
+              178,
+              179,
+              180,
+              181,
+              182,
+              183,
+              192,
+              193,
+              194,
+              195,
+              208,
+              224,
+              225,
+              226,
+              227,
+              228,
+              229,
+              230,
+              231
+            ],
+            "encounter_sha256": "45cef2c277015ec82ab458a53932dfcf2ae70044f9c70a943440459f8983ae65",
+            "check_sha256": "55004f0b7cf8ffd2497fc83c74669834a823082354d90ec4c4e4e3e7d3826b46",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_D": {
+            "alphabet": [
+              160,
+              161,
+              162,
+              163,
+              164,
+              165,
+              166,
+              167,
+              168,
+              169,
+              170,
+              171,
+              172,
+              184,
+              185,
+              186,
+              187,
+              188,
+              189,
+              190,
+              191
+            ],
+            "encounter_sha256": "b4bad1a80d40ccbb557364df02b836176d2e40e22ebaa8e2a1c85bcd1861dbab",
+            "check_sha256": "8c38c01fe9b17666a47b3afa9dd405c49d65bf87746594953cacdfacdcefc509",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_E": {
+            "alphabet": [
+              200,
+              201,
+              202,
+              203,
+              204,
+              205,
+              206,
+              207,
+              209,
+              210,
+              211,
+              212,
+              213,
+              232,
+              233,
+              234,
+              235,
+              236,
+              237,
+              238,
+              239
+            ],
+            "encounter_sha256": "807199358eb01ef2f42ffc39a5ef0548e7d0ce4228d356dd81904c0ccfb129be",
+            "check_sha256": "bf5a24dbe3067f8c4df647ee8b86917216c115e1a854b63a2c5d5857848adfa0",
+            "encounter_check_32byte_overlap": 0
+          }
+        },
+        "stages": [
+          {
+            "domain": "rule_C",
+            "born": true,
+            "bank_size": 5,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 0.8000592659991526,
+            "encounter_prefix_sha256": "f5b20944f59f4f0d525c475598825d50e404d7f3a1ab19831478d3f11b218c88",
+            "born_state_sha256": "e1e11ed71d2881a2e10ed3a92c75eed348159cf9b7e255fde6fbe15cc263f618"
+          },
+          {
+            "domain": "rule_D",
+            "born": true,
+            "bank_size": 6,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 1.0122014750013477,
+            "encounter_prefix_sha256": "2d4600afb61404366c0f9096b64947bed3e3d7fd1519aaad5d39f53968e4e434",
+            "born_state_sha256": "2e2ac948f7d6cf5bfb21a1f38bb95a4ca94ba25daac809717af608aaf72c16c7"
+          },
+          {
+            "domain": "rule_E",
+            "born": true,
+            "bank_size": 7,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 1.157178876997932,
+            "encounter_prefix_sha256": "440c2f76ef95c6820431447ad2534fa805dcb5dd45d0f29c53d9579b0c503696",
+            "born_state_sha256": "bbe3f2b8255a5534a98f64398e18d006fcbc6c5eb066df7451dd17ed990009cb"
+          }
+        ],
+        "bank_size": 7,
+        "false_births_k4": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "false_births_cold": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "resident_exact": true,
+        "cold_restore_exact": true,
+        "snapshot": {
+          "identity": {
+            "state_sha256": "a09a3af4d03e1eb2195eb71dc3de9dcc85ebc98332b818a5f6dd65df502a84fb",
+            "skill_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose",
+              "rule_C",
+              "rule_D",
+              "rule_E"
+            ],
+            "gamma": "0x1.b333333333333p-1",
+            "surprise_threshold_bits": "0x1.c000000000000p+1",
+            "probe_interval": 16,
+            "resident_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose"
+            ]
+          },
+          "sha256": "92fc37e2a0f60c6695a538378768431e7e13ef75ea1a6ac40e85eca575b1c21e",
+          "bytes": 1263187
+        },
+        "output_sha256": {
+          "hierarchical_sparse_k7": "e98b30b509c1cc3530c083f687ed3b67b4f0571028d49e00c6e94f27614e519b",
+          "hierarchical_dense_k7": "b8d608b57b7044a865ceea5b01924921153e89d0c66c49b03e3263a7c1744ae1"
+        },
+        "cold_output_sha256": {
+          "hierarchical_sparse_k7": "e98b30b509c1cc3530c083f687ed3b67b4f0571028d49e00c6e94f27614e519b",
+          "hierarchical_dense_k7": "b8d608b57b7044a865ceea5b01924921153e89d0c66c49b03e3263a7c1744ae1"
+        }
+      },
+      "suite_b": {
+        "calibration": {
+          "skill_names": [
+            "base_python",
+            "rule_A",
+            "rule_B",
+            "markdown_prose"
+          ],
+          "limits_bpb": [
+            11.744022085951807,
+            11.542586374232837,
+            4.924864231856315,
+            8.108631486165052
+          ],
+          "quantile": 0.9,
+          "window": 64
+        },
+        "calibration_margin_bpb": 0.5,
+        "continual_observed_bytes": 512,
+        "arms": {
+          "open_world_tail_novelty": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "ee141a39e98478f3f51f0200fa963553aef9d809406e9bc36ed207950ca25d71",
+            "seconds": 4.7900939359969925,
+            "output_sha256": "49e82901e7618229a0bf40a1a0dbca244c2e73690e617ebb3000c14a1d9141f2",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "b1629017e2196217ab61b987a52ebce243acd0d92e96119c94d9252dbf73a6ec",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "cea7a0d0569342180986ec94fbe35668abc13be8ce64b45560ae2ed795c04423",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 0
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.2988771740452307,
+            "domains": {
+              "base_python": {
+                "bpb": 4.361764429257402,
+                "routing_accuracy_pct": 75.390625
+              },
+              "rule_A": {
+                "bpb": 1.9915118091207256,
+                "routing_accuracy_pct": 92.1875,
+                "rule_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.076604184427154,
+                "routing_accuracy_pct": 91.015625,
+                "rule_accuracy_pct": 21.09375
+              },
+              "markdown_prose": {
+                "bpb": 4.76562827337564,
+                "routing_accuracy_pct": 85.3515625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.3572223951019327,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 5.46875
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "mean_bpb_only_birth": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "ee141a39e98478f3f51f0200fa963553aef9d809406e9bc36ed207950ca25d71",
+            "seconds": 4.788397748001444,
+            "output_sha256": "49e82901e7618229a0bf40a1a0dbca244c2e73690e617ebb3000c14a1d9141f2",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "b1629017e2196217ab61b987a52ebce243acd0d92e96119c94d9252dbf73a6ec",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "cea7a0d0569342180986ec94fbe35668abc13be8ce64b45560ae2ed795c04423",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 0
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.2988771740452307,
+            "domains": {
+              "base_python": {
+                "bpb": 4.361764429257402,
+                "routing_accuracy_pct": 75.390625
+              },
+              "rule_A": {
+                "bpb": 1.9915118091207256,
+                "routing_accuracy_pct": 92.1875,
+                "rule_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.076604184427154,
+                "routing_accuracy_pct": 91.015625,
+                "rule_accuracy_pct": 21.09375
+              },
+              "markdown_prose": {
+                "bpb": 4.76562827337564,
+                "routing_accuracy_pct": 85.3515625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.3572223951019327,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 5.46875
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.2988771740452307,
+            "domains": {
+              "base_python": {
+                "bpb": 4.361764429257402,
+                "routing_accuracy_pct": 75.390625
+              },
+              "rule_A": {
+                "bpb": 1.9915118091207256,
+                "routing_accuracy_pct": 92.1875,
+                "rule_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.076604184427154,
+                "routing_accuracy_pct": 91.015625,
+                "rule_accuracy_pct": 21.09375
+              },
+              "markdown_prose": {
+                "bpb": 4.76562827337564,
+                "routing_accuracy_pct": 85.3515625
+              },
+              "rule_same_alpha": {
+                "bpb": 2.3572223951019327,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 5.46875
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "continual_finetune_base": {
+            "original_bpb": 3.7782977132177518,
+            "domains": {
+              "base_python": {
+                "bpb": 6.2584194415350325,
+                "routing_accuracy_pct": 9.1796875
+              },
+              "rule_A": {
+                "bpb": 1.9879074542894244,
+                "routing_accuracy_pct": 91.2109375,
+                "rule_accuracy_pct": 37.5
+              },
+              "rule_B": {
+                "bpb": 2.072346454919337,
+                "routing_accuracy_pct": 90.8203125,
+                "rule_accuracy_pct": 20.3125
+              },
+              "markdown_prose": {
+                "bpb": 4.794517502127213,
+                "routing_accuracy_pct": 94.53125
+              },
+              "rule_same_alpha": {
+                "bpb": 2.3381754702997504,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 4.6875
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 1.8966550122776304,
+              "rule_A": -0.003604354831301171,
+              "rule_B": -0.004257729507817221,
+              "markdown_prose": 0.028889228751572738
+            },
+            "max_original_bpb_drift": 1.8966550122776304
+          }
+        },
+        "manifest": {
+          "ascii_alphabet": [
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            80,
+            81,
+            82,
+            83,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            125
+          ],
+          "redirects": [
+            [
+              145,
+              97
+            ],
+            [
+              146,
+              98
+            ],
+            [
+              147,
+              99
+            ],
+            [
+              148,
+              100
+            ],
+            [
+              149,
+              101
+            ],
+            [
+              150,
+              102
+            ],
+            [
+              151,
+              103
+            ],
+            [
+              152,
+              104
+            ]
+          ],
+          "val_sha256": {
+            "base_python": "f4523c417966215cbe936290b769b0d89c4dd1b8165ad0dd0e93969b2e541309",
+            "rule_A": "ed7cf8b3a25411e1b3c6e4e2d3e2e9edbd4745fd9e264a48c27d01816a335292",
+            "rule_B": "3262af4c815aafac3dd496d89e92e6a0510cd98d6f779e7c3c50fa9b09952980",
+            "markdown_prose": "f2121c1ba60886cddb5cec4975e183a7fd264359d7829866be87c0895368973a"
+          },
+          "val_fit_check_32byte_overlap": 0,
+          "resident_check_sha256": "49969c20b6e38a8c28503035cff0956e8eae16ae828636f7dc2ddd81eca6a08e",
+          "encounter_sha256": "ee141a39e98478f3f51f0200fa963553aef9d809406e9bc36ed207950ca25d71",
+          "check_sha256": "ff0cdcd4f945e83fba7f2a037814ee42bc536c85622fb9ac4866feddb9685ee1",
+          "encounter_check_32byte_overlap": 0
+        }
+      }
+    },
+    {
+      "seed": 2005,
+      "corpus_manifest": {
+        "fit": {
+          "base_python": "1ec8fdb631d29f0656960ab84e0b7bca2b7593b5873d3a5241a27d36cdf9f357",
+          "rule_A": "65bdc0b3f86ba0930729858e0c02eeddff72ab3efc677a5003cfe08bd5480b2f",
+          "rule_B": "5c591fb3dce7645457d80d4cac5c43fda8c10fb6fdc79fcf08696b402bc31ab6",
+          "markdown_prose": "198ca98f9e291074f5e5b04fa66af900afeaaa8b56735787102cf7f01597381a"
+        },
+        "held_out": {
+          "single": "67acf5912595e51119e628ddb33506e3d2934f2cbd041dbbd4146e7048028475",
+          "switch": "dac4b718213e91e1c0ce1a959ab869ea92ce4c2996a214f45f1bfe3f2c471e44"
+        },
+        "fit_check_32byte_overlap": 0
+      },
+      "producer": {
+        "base_python": {
+          "source_sha256": "5c94d18680e0edc1b7a4a4a4db4570904ec8f86e92aa91f541380df14fcd6f2c",
+          "bytes": 152725,
+          "seconds": 1.665896322003391,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_A": {
+          "source_sha256": "5312ec70e1f8e9458bf32030a924fcc34b9469ec2484e0192440e6345dcc43eb",
+          "bytes": 150901,
+          "seconds": 1.6817139410013624,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "rule_B": {
+          "source_sha256": "c45dfa858776c1b0a5854aa95b3bd557ef2780e3e92155e3c0be8927aa4250d3",
+          "bytes": 150901,
+          "seconds": 1.6509790009986318,
+          "steps": 192,
+          "producer_forward_calls": 192
+        },
+        "markdown_prose": {
+          "source_sha256": "ba50b89c1e64f519f7b27394a3a8a446ee01d1f19156c02c2771c7dbf27d3312",
+          "bytes": 152821,
+          "seconds": 1.5818853529999615,
+          "steps": 192,
+          "producer_forward_calls": 192
+        }
+      },
+      "ascii_checkpoint_sha256": {
+        "rule_A": "2b16ccc4b7027b7bf062c5374253fa42bec7f76539f966d6315b4125db512737",
+        "rule_B": "b6cfd31932693d67456301e87639967d7b8059dc412b42d7ca51a2a0ff62604f"
+      },
+      "forbidden_calls": 0,
+      "seconds": 70.313423667998,
+      "suite_a": {
+        "arms": {
+          "hierarchical_sparse_k7": {
+            "original_bpb": 3.374025970592913,
+            "domains": {
+              "base_python": {
+                "bpb": 4.3687526275810855,
+                "routing_accuracy_pct": 81.4453125
+              },
+              "rule_A": {
+                "bpb": 2.3168710928418106,
+                "routing_accuracy_pct": 83.7890625,
+                "answer_accuracy_pct": 25.0
+              },
+              "rule_B": {
+                "bpb": 2.10381975222505,
+                "routing_accuracy_pct": 91.6015625,
+                "answer_accuracy_pct": 31.25
+              },
+              "markdown_prose": {
+                "bpb": 4.706660409723707,
+                "routing_accuracy_pct": 79.8828125
+              },
+              "rule_C": {
+                "bpb": 2.5160564034508837,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 92.96875,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 2.977012934200471,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 96.875,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.7549190966238033,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 85.9375,
+                "first_route_mean_bytes": 2.0
+              }
+            },
+            "novel_mean_answer_pct": 91.92708333333333,
+            "novel_min_answer_pct": 85.9375,
+            "novel_mean_routing_pct": 96.875,
+            "novel_min_routing_pct": 96.875,
+            "avg_active_skills_per_byte": 3.3097098214285716,
+            "retention_drift_bpb": {
+              "base_python": 0.18234413940605698,
+              "rule_A": 0.13440671456865072,
+              "rule_B": 0.09740810489611729,
+              "markdown_prose": 0.16528715477140743
+            },
+            "max_original_bpb_drift": 0.18234413940605698,
+            "savings_vs_nominal_k7_pct": 52.71843112244898,
+            "savings_vs_measured_dense_pct": 51.967930029154516
+          },
+          "hierarchical_dense_k7": {
+            "original_bpb": 3.2325729975788415,
+            "domains": {
+              "base_python": {
+                "bpb": 4.1910663773815084,
+                "routing_accuracy_pct": 81.4453125
+              },
+              "rule_A": {
+                "bpb": 2.185129633218159,
+                "routing_accuracy_pct": 82.2265625,
+                "answer_accuracy_pct": 19.53125
+              },
+              "rule_B": {
+                "bpb": 2.0081493736583407,
+                "routing_accuracy_pct": 93.1640625,
+                "answer_accuracy_pct": 30.46875
+              },
+              "markdown_prose": {
+                "bpb": 4.545946606057357,
+                "routing_accuracy_pct": 81.8359375
+              },
+              "rule_C": {
+                "bpb": 2.4983765352471456,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 92.96875,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_D": {
+                "bpb": 2.936262348339983,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 96.875,
+                "first_route_mean_bytes": 2.0
+              },
+              "rule_E": {
+                "bpb": 2.7548601941168127,
+                "routing_accuracy_pct": 96.875,
+                "answer_accuracy_pct": 85.9375,
+                "first_route_mean_bytes": 2.0
+              }
+            },
+            "novel_mean_answer_pct": 91.92708333333333,
+            "novel_min_answer_pct": 85.9375,
+            "novel_mean_routing_pct": 96.875,
+            "novel_min_routing_pct": 96.875,
+            "avg_active_skills_per_byte": 6.890625,
+            "retention_drift_bpb": {
+              "base_python": 0.004657889206479915,
+              "rule_A": 0.0026652549449992513,
+              "rule_B": 0.0017377263294080514,
+              "markdown_prose": 0.0045733511050576325
+            },
+            "max_original_bpb_drift": 0.004657889206479915
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.229164442182355,
+            "domains": {
+              "base_python": {
+                "bpb": 4.1864084881750285,
+                "routing_accuracy_pct": 81.4453125
+              },
+              "rule_A": {
+                "bpb": 2.18246437827316,
+                "routing_accuracy_pct": 81.4453125,
+                "answer_accuracy_pct": 20.3125
+              },
+              "rule_B": {
+                "bpb": 2.0064116473289326,
+                "routing_accuracy_pct": 93.1640625,
+                "answer_accuracy_pct": 30.46875
+              },
+              "markdown_prose": {
+                "bpb": 4.541373254952299,
+                "routing_accuracy_pct": 81.25
+              },
+              "rule_C": {
+                "bpb": 14.89242879092839,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_D": {
+                "bpb": 15.126908438984621,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              },
+              "rule_E": {
+                "bpb": 13.826785294490804,
+                "routing_accuracy_pct": 0.0,
+                "answer_accuracy_pct": 0.0,
+                "first_route_mean_bytes": 64.0
+              }
+            },
+            "novel_mean_answer_pct": 0.0,
+            "novel_min_answer_pct": 0.0,
+            "novel_mean_routing_pct": 0.0,
+            "novel_min_routing_pct": 0.0,
+            "avg_active_skills_per_byte": 3.9375,
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          }
+        },
+        "manifest": {
+          "rule_C": {
+            "alphabet": [
+              176,
+              177,
+              178,
+              179,
+              180,
+              181,
+              182,
+              183,
+              192,
+              193,
+              194,
+              195,
+              208,
+              224,
+              225,
+              226,
+              227,
+              228,
+              229,
+              230,
+              231
+            ],
+            "encounter_sha256": "5429fd019a06ed8455d889e630156d252897c3fc3811fe2c892b0d0bde284ed4",
+            "check_sha256": "349900bdcbf3e346cc22a1e2034c650c989a4a31f23ccbca52e769a1589619da",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_D": {
+            "alphabet": [
+              160,
+              161,
+              162,
+              163,
+              164,
+              165,
+              166,
+              167,
+              168,
+              169,
+              170,
+              171,
+              172,
+              184,
+              185,
+              186,
+              187,
+              188,
+              189,
+              190,
+              191
+            ],
+            "encounter_sha256": "bcfe6dfbacbed4ce793622d1e6150df0e6190301e693d7fc1e9d305bf17c0d81",
+            "check_sha256": "0ba34969461d75c5c9dfa22af2b3f1bce028d21c6ce6a10122d01efa0ad84ad5",
+            "encounter_check_32byte_overlap": 0
+          },
+          "rule_E": {
+            "alphabet": [
+              200,
+              201,
+              202,
+              203,
+              204,
+              205,
+              206,
+              207,
+              209,
+              210,
+              211,
+              212,
+              213,
+              232,
+              233,
+              234,
+              235,
+              236,
+              237,
+              238,
+              239
+            ],
+            "encounter_sha256": "8ac3ad54e1d997a1c75e116994399d53f51c1135b6b5bd1f48275591ef0479a9",
+            "check_sha256": "6f36f4402817b97ffee8345ea21c7ed5abaacf2770589f6b4ffa8c13b19ed9e2",
+            "encounter_check_32byte_overlap": 0
+          }
+        },
+        "stages": [
+          {
+            "domain": "rule_C",
+            "born": true,
+            "bank_size": 5,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 0.823773871998128,
+            "encounter_prefix_sha256": "12c93083071fe97fddde0eabfb9d75cb8ca7863bdbc18406541032173293e550",
+            "born_state_sha256": "c553e99b3c9b0a01294347914c248ef1bcf3b4b309fe3ac780b604f4eb757cef"
+          },
+          {
+            "domain": "rule_D",
+            "born": true,
+            "bank_size": 6,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 0.9958704020027653,
+            "encounter_prefix_sha256": "cf103d652a7a9460d855cb56ac22a5c25b2287fb82c42a018fd51efae93b1c2d",
+            "born_state_sha256": "487998d690c2029077b7ad1e93ee1c63481ab1ca4cb6bb4558f9484a57b500c9"
+          },
+          {
+            "domain": "rule_E",
+            "born": true,
+            "bank_size": 7,
+            "observed_bytes": 256,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": true
+              }
+            ],
+            "seconds": 1.1412807519991475,
+            "encounter_prefix_sha256": "bd6b9bfe08b84c7e1db0ba86c17d2990b5605f17f42d6bb339ed5ceee95c7b5d",
+            "born_state_sha256": "7dd69f781be1ccb52d77d3d846310d204d718fb7b6bf12be3a267670176affb6"
+          }
+        ],
+        "bank_size": 7,
+        "false_births_k4": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "false_births_cold": {
+          "base_python": 0,
+          "rule_A": 0,
+          "rule_B": 0,
+          "markdown_prose": 0
+        },
+        "resident_exact": true,
+        "cold_restore_exact": true,
+        "snapshot": {
+          "identity": {
+            "state_sha256": "ab05972fb6ab6075d76d83debb26e074657ab393bf84864931d18a807c4480e3",
+            "skill_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose",
+              "rule_C",
+              "rule_D",
+              "rule_E"
+            ],
+            "gamma": "0x1.b333333333333p-1",
+            "surprise_threshold_bits": "0x1.c000000000000p+1",
+            "probe_interval": 16,
+            "resident_names": [
+              "base_python",
+              "rule_A",
+              "rule_B",
+              "markdown_prose"
+            ]
+          },
+          "sha256": "5677720a66fc8834eb0b0820629ed03eb89c08594af95861f8686dc271019c2e",
+          "bytes": 1263315
+        },
+        "output_sha256": {
+          "hierarchical_sparse_k7": "88634b4a361f1a4908b5fb36439c86d3ed0658e90acc4371cb4bad937171ec00",
+          "hierarchical_dense_k7": "dda8c9be3298ad3477962128f3d64f0927afb0f31f771cc2c1ccae8b11fbbb02"
+        },
+        "cold_output_sha256": {
+          "hierarchical_sparse_k7": "88634b4a361f1a4908b5fb36439c86d3ed0658e90acc4371cb4bad937171ec00",
+          "hierarchical_dense_k7": "dda8c9be3298ad3477962128f3d64f0927afb0f31f771cc2c1ccae8b11fbbb02"
+        }
+      },
+      "suite_b": {
+        "calibration": {
+          "skill_names": [
+            "base_python",
+            "rule_A",
+            "rule_B",
+            "markdown_prose"
+          ],
+          "limits_bpb": [
+            11.485924282148973,
+            4.95584897020106,
+            8.053462203490676,
+            12.741978246876789
+          ],
+          "quantile": 0.9,
+          "window": 64
+        },
+        "calibration_margin_bpb": 0.5,
+        "continual_observed_bytes": 512,
+        "arms": {
+          "open_world_tail_novelty": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "4230e628f6dbb36e041cf3c27afce6d37218c20dd1451a9232d2633339db038a",
+            "seconds": 4.7430278370011365,
+            "output_sha256": "fc77e669c26302e2b769eb2a4c34abe17437327864884e16b35134e6e3538e87",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "b397bf0df4bfe674d03ecc78d52d20e3dfe12495f88543bdf046047d6a08bf81",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "fcd4ba926317512666ddbcfd78dea2343da3c124ad2d088fcee352ed849047aa",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 0
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.2287284985902382,
+            "domains": {
+              "base_python": {
+                "bpb": 4.184761466465607,
+                "routing_accuracy_pct": 81.0546875
+              },
+              "rule_A": {
+                "bpb": 2.1821929024726137,
+                "routing_accuracy_pct": 81.4453125,
+                "rule_accuracy_pct": 19.53125
+              },
+              "rule_B": {
+                "bpb": 2.006285404736302,
+                "routing_accuracy_pct": 93.1640625,
+                "rule_accuracy_pct": 30.46875
+              },
+              "markdown_prose": {
+                "bpb": 4.5416742206864305,
+                "routing_accuracy_pct": 81.4453125
+              },
+              "rule_same_alpha": {
+                "bpb": 2.315028144677459,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 8.59375
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "mean_bpb_only_birth": {
+            "born": false,
+            "birth_at_byte": null,
+            "probes": [
+              {
+                "observed_bytes": 256,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 320,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 384,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 448,
+                "triggered": false
+              },
+              {
+                "observed_bytes": 512,
+                "triggered": false
+              }
+            ],
+            "adaptation_prefix_sha256": "4230e628f6dbb36e041cf3c27afce6d37218c20dd1451a9232d2633339db038a",
+            "seconds": 4.7184082429994305,
+            "output_sha256": "fc77e669c26302e2b769eb2a4c34abe17437327864884e16b35134e6e3538e87",
+            "snapshot": {
+              "identity": {
+                "state_sha256": "b397bf0df4bfe674d03ecc78d52d20e3dfe12495f88543bdf046047d6a08bf81",
+                "skill_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ],
+                "gamma": "0x1.b333333333333p-1",
+                "surprise_threshold_bits": "0x1.c000000000000p+1",
+                "probe_interval": 16,
+                "resident_names": [
+                  "base_python",
+                  "rule_A",
+                  "rule_B",
+                  "markdown_prose"
+                ]
+              },
+              "sha256": "fcd4ba926317512666ddbcfd78dea2343da3c124ad2d088fcee352ed849047aa",
+              "bytes": 719935
+            },
+            "resident_weights_exact": true,
+            "false_births": {
+              "base_python": 0,
+              "rule_A": 0,
+              "rule_B": 0,
+              "markdown_prose": 0
+            },
+            "cold_restore_exact": true,
+            "original_bpb": 3.2287284985902382,
+            "domains": {
+              "base_python": {
+                "bpb": 4.184761466465607,
+                "routing_accuracy_pct": 81.0546875
+              },
+              "rule_A": {
+                "bpb": 2.1821929024726137,
+                "routing_accuracy_pct": 81.4453125,
+                "rule_accuracy_pct": 19.53125
+              },
+              "rule_B": {
+                "bpb": 2.006285404736302,
+                "routing_accuracy_pct": 93.1640625,
+                "rule_accuracy_pct": 30.46875
+              },
+              "markdown_prose": {
+                "bpb": 4.5416742206864305,
+                "routing_accuracy_pct": 81.4453125
+              },
+              "rule_same_alpha": {
+                "bpb": 2.315028144677459,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 8.59375
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "fixed_k4_bank": {
+            "original_bpb": 3.2287284985902382,
+            "domains": {
+              "base_python": {
+                "bpb": 4.184761466465607,
+                "routing_accuracy_pct": 81.0546875
+              },
+              "rule_A": {
+                "bpb": 2.1821929024726137,
+                "routing_accuracy_pct": 81.4453125,
+                "rule_accuracy_pct": 19.53125
+              },
+              "rule_B": {
+                "bpb": 2.006285404736302,
+                "routing_accuracy_pct": 93.1640625,
+                "rule_accuracy_pct": 30.46875
+              },
+              "markdown_prose": {
+                "bpb": 4.5416742206864305,
+                "routing_accuracy_pct": 81.4453125
+              },
+              "rule_same_alpha": {
+                "bpb": 2.315028144677459,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 8.59375
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 0.0,
+              "rule_A": 0.0,
+              "rule_B": 0.0,
+              "markdown_prose": 0.0
+            },
+            "max_original_bpb_drift": 0.0
+          },
+          "continual_finetune_base": {
+            "original_bpb": 3.8618697711856353,
+            "domains": {
+              "base_python": {
+                "bpb": 6.674535959855918,
+                "routing_accuracy_pct": 19.53125
+              },
+              "rule_A": {
+                "bpb": 2.1777648439044484,
+                "routing_accuracy_pct": 79.8828125,
+                "rule_accuracy_pct": 20.3125
+              },
+              "rule_B": {
+                "bpb": 2.003366159883809,
+                "routing_accuracy_pct": 92.96875,
+                "rule_accuracy_pct": 31.25
+              },
+              "markdown_prose": {
+                "bpb": 4.591812121098368,
+                "routing_accuracy_pct": 95.5078125
+              },
+              "rule_same_alpha": {
+                "bpb": 2.3081463786843135,
+                "routing_accuracy_pct": 0.0,
+                "rule_accuracy_pct": 8.59375
+              }
+            },
+            "retention_drift_bpb": {
+              "base_python": 2.4897744933903105,
+              "rule_A": -0.004428058568165305,
+              "rule_B": -0.0029192448524928416,
+              "markdown_prose": 0.05013790041193733
+            },
+            "max_original_bpb_drift": 2.4897744933903105
+          }
+        },
+        "manifest": {
+          "ascii_alphabet": [
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            80,
+            81,
+            82,
+            83,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            125
+          ],
+          "redirects": [
+            [
+              145,
+              97
+            ],
+            [
+              146,
+              98
+            ],
+            [
+              147,
+              99
+            ],
+            [
+              148,
+              100
+            ],
+            [
+              149,
+              101
+            ],
+            [
+              150,
+              102
+            ],
+            [
+              151,
+              103
+            ],
+            [
+              152,
+              104
+            ]
+          ],
+          "val_sha256": {
+            "base_python": "970f7a518bffc08ba6dfcd4b3ef199ce2e985d09c80ce45c1e4af483ea7bece6",
+            "rule_A": "606825f3679bbc2755c49f0f96127904ded6a5e3e0baab2e209c58881126bc96",
+            "rule_B": "9bdb7bb04ef5041208b3c3689101142a70400a92738486eb299cfe256c58350d",
+            "markdown_prose": "869ac65308895101cf375b76d0e8a2966f7af22c1242e4e3172ec4f1f093577c"
+          },
+          "val_fit_check_32byte_overlap": 0,
+          "resident_check_sha256": "db36084649a7555df3b5047d72a6f0c729c1cffcbe91390c1dfe42737f957572",
+          "encounter_sha256": "4230e628f6dbb36e041cf3c27afce6d37218c20dd1451a9232d2633339db038a",
+          "check_sha256": "6d6baa3f1dab62c6c81df147e34584a0d077d5e58a325280ec4c3a79f45e7d6c",
+          "encounter_check_32byte_overlap": 0
+        }
+      }
+    }
+  ]
+}
