@@ -1,0 +1,1106 @@
+{
+  "method": "residual8",
+  "source": "bbca42cd4de5d1849db2d83ffb8a33b82e9ac12a",
+  "runs": [
+    {
+      "seed": 801,
+      "source": "A",
+      "replaced_from": "B",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.0333081489019932,
+            "accuracy": 0.9921875,
+            "kl_bits": 5.187154147606464e-07,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 15.36293250161418,
+            "accuracy": 0.0,
+            "kl_bits": 15.314180521614636,
+            "agreement": 0.0078125
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.2686875078486321,
+            "accuracy": 0.921875,
+            "kl_bits": 0.19619275139609388,
+            "agreement": 0.9296875
+          },
+          "opposite": {
+            "bpb": 14.486484852174058,
+            "accuracy": 0.0078125,
+            "kl_bits": 14.334800136720016,
+            "agreement": 0.015625
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 9.312465445986247,
+            "accuracy": 0.109375,
+            "kl_bits": 9.3384970154749,
+            "agreement": 0.109375
+          },
+          "opposite": {
+            "bpb": 2.2421925480690956,
+            "accuracy": 0.5703125,
+            "kl_bits": 1.9653353658596988,
+            "agreement": 0.59375
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.011862861230508179,
+            "accuracy": 1.0,
+            "kl_bits": 0.01792670500350898,
+            "agreement": 0.9921875
+          },
+          "opposite": {
+            "bpb": 14.910241150030918,
+            "accuracy": 0.0,
+            "kl_bits": 14.861043803959042,
+            "agreement": 0.0078125
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 0.6804332547685915,
+            "accuracy": 0.796875,
+            "kl_bits": 0.7026700990817276,
+            "agreement": 0.7890625
+          },
+          "opposite": {
+            "bpb": 11.496811646932422,
+            "accuracy": 0.0625,
+            "kl_bits": 11.421993300708136,
+            "agreement": 0.0703125
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 0.15385631171966818,
+            "accuracy": 0.9921875,
+            "kl_bits": 0.09658458284962274,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 11.794223403488207,
+            "accuracy": 0.0,
+            "kl_bits": 11.743283435013954,
+            "agreement": 0.0078125
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 14.077205490291263,
+            "accuracy": 0.0078125,
+            "kl_bits": 14.0391536793191,
+            "agreement": 0.0078125
+          },
+          "opposite": {
+            "bpb": 0.25411815638828733,
+            "accuracy": 0.9765625,
+            "kl_bits": 1.0364322393385005e-06,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.032961378763191836,
+        "accuracy": 0.9921875
+      },
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 801,
+      "source": "B",
+      "replaced_from": "A",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.25411815638828733,
+            "accuracy": 0.9765625,
+            "kl_bits": 1.0364322393385005e-06,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 14.077205490291263,
+            "accuracy": 0.0078125,
+            "kl_bits": 14.0391536793191,
+            "agreement": 0.0078125
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.46522112226503376,
+            "accuracy": 0.9375,
+            "kl_bits": 0.3159037532277664,
+            "agreement": 0.9453125
+          },
+          "opposite": {
+            "bpb": 13.68138235293343,
+            "accuracy": 0.0,
+            "kl_bits": 13.65142022730899,
+            "agreement": 0.0
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 7.972947940681209,
+            "accuracy": 0.1171875,
+            "kl_bits": 7.906206303353755,
+            "agreement": 0.125
+          },
+          "opposite": {
+            "bpb": 2.120750901329792,
+            "accuracy": 0.5,
+            "kl_bits": 2.102918980182555,
+            "agreement": 0.5
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.2279413200002089,
+            "accuracy": 0.9765625,
+            "kl_bits": 0.006246877433246052,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 13.947566640200298,
+            "accuracy": 0.0078125,
+            "kl_bits": 13.908976730938766,
+            "agreement": 0.0078125
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 1.1115585237087118,
+            "accuracy": 0.8046875,
+            "kl_bits": 0.8997394291802988,
+            "agreement": 0.828125
+          },
+          "opposite": {
+            "bpb": 11.004418540709697,
+            "accuracy": 0.078125,
+            "kl_bits": 10.968079489133599,
+            "agreement": 0.078125
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 0.36126050350382005,
+            "accuracy": 0.9609375,
+            "kl_bits": 0.09356540790589471,
+            "agreement": 0.96875
+          },
+          "opposite": {
+            "bpb": 11.632661258013167,
+            "accuracy": 0.0078125,
+            "kl_bits": 11.609215507809985,
+            "agreement": 0.0078125
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 15.36293250161418,
+            "accuracy": 0.0,
+            "kl_bits": 15.314180521614636,
+            "agreement": 0.0078125
+          },
+          "opposite": {
+            "bpb": 0.0333081489019932,
+            "accuracy": 0.9921875,
+            "kl_bits": 5.187154147606464e-07,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.254182719226082,
+        "accuracy": 0.9765625
+      },
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 802,
+      "source": "A",
+      "replaced_from": "B",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.0795251192289923,
+            "accuracy": 0.9921875,
+            "kl_bits": 1.7309735813963431e-07,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 13.798489301846823,
+            "accuracy": 0.0,
+            "kl_bits": 13.671001921288774,
+            "agreement": 0.0
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.4505551163872259,
+            "accuracy": 0.890625,
+            "kl_bits": 0.43024200463570456,
+            "agreement": 0.8984375
+          },
+          "opposite": {
+            "bpb": 12.071887688442036,
+            "accuracy": 0.0,
+            "kl_bits": 11.970324548492119,
+            "agreement": 0.0
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 8.959795214039408,
+            "accuracy": 0.1015625,
+            "kl_bits": 8.963431723954253,
+            "agreement": 0.1015625
+          },
+          "opposite": {
+            "bpb": 3.6608843145044583,
+            "accuracy": 0.4609375,
+            "kl_bits": 3.5738884104450857,
+            "agreement": 0.4609375
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.10490325401334269,
+            "accuracy": 0.984375,
+            "kl_bits": 0.022231309081295704,
+            "agreement": 0.9921875
+          },
+          "opposite": {
+            "bpb": 13.235355525250771,
+            "accuracy": 0.0,
+            "kl_bits": 13.102038270384915,
+            "agreement": 0.0
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 0.6772965374290373,
+            "accuracy": 0.859375,
+            "kl_bits": 0.6684527223608528,
+            "agreement": 0.8515625
+          },
+          "opposite": {
+            "bpb": 10.822644512816288,
+            "accuracy": 0.015625,
+            "kl_bits": 10.686418993974288,
+            "agreement": 0.015625
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 0.08965449518422532,
+            "accuracy": 0.984375,
+            "kl_bits": 0.03947623711141092,
+            "agreement": 0.9921875
+          },
+          "opposite": {
+            "bpb": 10.67278072308077,
+            "accuracy": 0.0,
+            "kl_bits": 10.51641812649122,
+            "agreement": 0.0
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 11.708217956793842,
+            "accuracy": 0.0,
+            "kl_bits": 11.63703206834964,
+            "agreement": 0.0
+          },
+          "opposite": {
+            "bpb": 0.13335640887373032,
+            "accuracy": 0.984375,
+            "kl_bits": 9.546446494986722e-07,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.07951421396416276,
+        "accuracy": 0.9921875
+      },
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 802,
+      "source": "B",
+      "replaced_from": "A",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.13335640887373032,
+            "accuracy": 0.984375,
+            "kl_bits": 9.546446494986722e-07,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 11.708217956793842,
+            "accuracy": 0.0,
+            "kl_bits": 11.63703206834964,
+            "agreement": 0.0
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.47356027857241806,
+            "accuracy": 0.890625,
+            "kl_bits": 0.30336178856191615,
+            "agreement": 0.90625
+          },
+          "opposite": {
+            "bpb": 11.445846598155892,
+            "accuracy": 0.0,
+            "kl_bits": 11.383907154656537,
+            "agreement": 0.0
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 7.488369672284951,
+            "accuracy": 0.0703125,
+            "kl_bits": 7.343007660704092,
+            "agreement": 0.0703125
+          },
+          "opposite": {
+            "bpb": 1.9665188668819356,
+            "accuracy": 0.6015625,
+            "kl_bits": 1.9973809599150887,
+            "agreement": 0.59375
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.14603395898428792,
+            "accuracy": 0.984375,
+            "kl_bits": 0.023461868207001215,
+            "agreement": 0.984375
+          },
+          "opposite": {
+            "bpb": 11.814308609256596,
+            "accuracy": 0.0,
+            "kl_bits": 11.739129900389527,
+            "agreement": 0.0
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 1.6382940438004123,
+            "accuracy": 0.6796875,
+            "kl_bits": 1.5243597843272103,
+            "agreement": 0.6875
+          },
+          "opposite": {
+            "bpb": 9.159108488609608,
+            "accuracy": 0.078125,
+            "kl_bits": 9.07723350355214,
+            "agreement": 0.078125
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 0.17060407350627219,
+            "accuracy": 0.9921875,
+            "kl_bits": 0.05361320109450658,
+            "agreement": 0.9921875
+          },
+          "opposite": {
+            "bpb": 10.854498285707397,
+            "accuracy": 0.0,
+            "kl_bits": 10.817997372831702,
+            "agreement": 0.0
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 13.798489301846823,
+            "accuracy": 0.0,
+            "kl_bits": 13.671001921288774,
+            "agreement": 0.0
+          },
+          "opposite": {
+            "bpb": 0.0795251192289923,
+            "accuracy": 0.9921875,
+            "kl_bits": 1.7309735813963431e-07,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.13326122285684505,
+        "accuracy": 0.984375
+      },
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 803,
+      "source": "A",
+      "replaced_from": "B",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.10692362218069891,
+            "accuracy": 0.984375,
+            "kl_bits": 6.673578133238391e-07,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 12.680003491137903,
+            "accuracy": 0.0,
+            "kl_bits": 12.526109536321659,
+            "agreement": 0.0
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.240635199219491,
+            "accuracy": 0.953125,
+            "kl_bits": 0.12372611084397259,
+            "agreement": 0.96875
+          },
+          "opposite": {
+            "bpb": 11.820796486557956,
+            "accuracy": 0.015625,
+            "kl_bits": 11.706789238443013,
+            "agreement": 0.015625
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 6.482519526833082,
+            "accuracy": 0.1328125,
+            "kl_bits": 6.400997363632942,
+            "agreement": 0.1328125
+          },
+          "opposite": {
+            "bpb": 3.4686137509572412,
+            "accuracy": 0.4296875,
+            "kl_bits": 3.2647839803142387,
+            "agreement": 0.4453125
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.08490388325573671,
+            "accuracy": 0.984375,
+            "kl_bits": 0.002248669007563159,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 12.645864925561803,
+            "accuracy": 0.0,
+            "kl_bits": 12.503596328371772,
+            "agreement": 0.0
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 0.7653548804699005,
+            "accuracy": 0.8046875,
+            "kl_bits": 0.567862153319275,
+            "agreement": 0.8203125
+          },
+          "opposite": {
+            "bpb": 10.393997885248393,
+            "accuracy": 0.0,
+            "kl_bits": 10.355339174591286,
+            "agreement": 0.0
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 0.14867148634437793,
+            "accuracy": 0.984375,
+            "kl_bits": 0.022829840157795045,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 11.201325949678244,
+            "accuracy": 0.0,
+            "kl_bits": 11.040053357884704,
+            "agreement": 0.0
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 12.083163097957943,
+            "accuracy": 0.0,
+            "kl_bits": 12.11611160480401,
+            "agreement": 0.0
+          },
+          "opposite": {
+            "bpb": 0.23842001501866403,
+            "accuracy": 0.96875,
+            "kl_bits": 3.134151793378806e-06,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.10748671753645106,
+        "accuracy": 0.984375
+      },
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 803,
+      "source": "B",
+      "replaced_from": "A",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.23842001501866403,
+            "accuracy": 0.96875,
+            "kl_bits": 3.134151793378806e-06,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 12.083163097957943,
+            "accuracy": 0.0,
+            "kl_bits": 12.11611160480401,
+            "agreement": 0.0
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.2832585588046997,
+            "accuracy": 0.96875,
+            "kl_bits": 0.03671721831203473,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 11.561907596862717,
+            "accuracy": 0.0,
+            "kl_bits": 11.552743615004779,
+            "agreement": 0.0
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 8.611219126443746,
+            "accuracy": 0.03125,
+            "kl_bits": 8.51150292164746,
+            "agreement": 0.03125
+          },
+          "opposite": {
+            "bpb": 2.0104098029641566,
+            "accuracy": 0.6171875,
+            "kl_bits": 1.7686484309381427,
+            "agreement": 0.6328125
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.3241383778141797,
+            "accuracy": 0.9609375,
+            "kl_bits": 0.04024977866074966,
+            "agreement": 0.9921875
+          },
+          "opposite": {
+            "bpb": 11.597572570929318,
+            "accuracy": 0.0,
+            "kl_bits": 11.619228296814136,
+            "agreement": 0.0
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 2.892749701049676,
+            "accuracy": 0.5078125,
+            "kl_bits": 2.5686707731983027,
+            "agreement": 0.53125
+          },
+          "opposite": {
+            "bpb": 8.1707428023616,
+            "accuracy": 0.1171875,
+            "kl_bits": 8.039923037455402,
+            "agreement": 0.1171875
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 0.23624724588197382,
+            "accuracy": 0.9765625,
+            "kl_bits": 0.08003803012448868,
+            "agreement": 0.9921875
+          },
+          "opposite": {
+            "bpb": 10.285820156347794,
+            "accuracy": 0.0,
+            "kl_bits": 10.361694856348265,
+            "agreement": 0.0
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 12.680003491137903,
+            "accuracy": 0.0,
+            "kl_bits": 12.526109536321659,
+            "agreement": 0.0
+          },
+          "opposite": {
+            "bpb": 0.10692362218069891,
+            "accuracy": 0.984375,
+            "kl_bits": 6.673578133238391e-07,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.23766142336765578,
+        "accuracy": 0.96875
+      },
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 804,
+      "source": "A",
+      "replaced_from": "B",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.32797762207550907,
+            "accuracy": 0.953125,
+            "kl_bits": 5.937998447161659e-06,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 12.309707596770306,
+            "accuracy": 0.015625,
+            "kl_bits": 12.08805916844065,
+            "agreement": 0.0234375
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.40036445389452957,
+            "accuracy": 0.9296875,
+            "kl_bits": 0.17943179211642424,
+            "agreement": 0.9375
+          },
+          "opposite": {
+            "bpb": 11.706078524614936,
+            "accuracy": 0.015625,
+            "kl_bits": 11.470029117478397,
+            "agreement": 0.0234375
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 7.36886340586244,
+            "accuracy": 0.1015625,
+            "kl_bits": 7.008019239762813,
+            "agreement": 0.1171875
+          },
+          "opposite": {
+            "bpb": 3.545072997285729,
+            "accuracy": 0.34375,
+            "kl_bits": 3.401433584964545,
+            "agreement": 0.3515625
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.3438341999576227,
+            "accuracy": 0.9375,
+            "kl_bits": 0.028341593543305156,
+            "agreement": 0.984375
+          },
+          "opposite": {
+            "bpb": 11.87689519813479,
+            "accuracy": 0.015625,
+            "kl_bits": 11.679105806988405,
+            "agreement": 0.0234375
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 2.344714422510069,
+            "accuracy": 0.5546875,
+            "kl_bits": 2.102726430473267,
+            "agreement": 0.5546875
+          },
+          "opposite": {
+            "bpb": 8.925061503923194,
+            "accuracy": 0.015625,
+            "kl_bits": 8.740909539869762,
+            "agreement": 0.0234375
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 1.2081615810604158,
+            "accuracy": 0.6796875,
+            "kl_bits": 0.8875874512420879,
+            "agreement": 0.703125
+          },
+          "opposite": {
+            "bpb": 7.879432344144162,
+            "accuracy": 0.0546875,
+            "kl_bits": 7.7043387349232715,
+            "agreement": 0.0703125
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 12.102155093690076,
+            "accuracy": 0.0,
+            "kl_bits": 11.750389244522548,
+            "agreement": 0.0234375
+          },
+          "opposite": {
+            "bpb": 0.10556808157320988,
+            "accuracy": 0.96875,
+            "kl_bits": 3.6545631757641346e-07,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.3266902513575406,
+        "accuracy": 0.953125
+      },
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 804,
+      "source": "B",
+      "replaced_from": "A",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.10556808157320988,
+            "accuracy": 0.96875,
+            "kl_bits": 3.6545631757641346e-07,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 12.102155093690076,
+            "accuracy": 0.0,
+            "kl_bits": 11.750389244522548,
+            "agreement": 0.0234375
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.3271173897697148,
+            "accuracy": 0.921875,
+            "kl_bits": 0.15546416117718267,
+            "agreement": 0.9453125
+          },
+          "opposite": {
+            "bpb": 11.523603625370754,
+            "accuracy": 0.0,
+            "kl_bits": 11.168667355968685,
+            "agreement": 0.015625
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 6.315387953247181,
+            "accuracy": 0.125,
+            "kl_bits": 6.097184426441684,
+            "agreement": 0.125
+          },
+          "opposite": {
+            "bpb": 4.385749979745937,
+            "accuracy": 0.34375,
+            "kl_bits": 4.248227842070684,
+            "agreement": 0.3515625
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.09508086627613038,
+            "accuracy": 0.9765625,
+            "kl_bits": 0.006857397150140333,
+            "agreement": 0.9921875
+          },
+          "opposite": {
+            "bpb": 12.073791172707304,
+            "accuracy": 0.0,
+            "kl_bits": 11.760704366477379,
+            "agreement": 0.0234375
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 0.8361248118153286,
+            "accuracy": 0.796875,
+            "kl_bits": 0.7610159995304414,
+            "agreement": 0.7890625
+          },
+          "opposite": {
+            "bpb": 9.951152740643865,
+            "accuracy": 0.03125,
+            "kl_bits": 9.573498870640645,
+            "agreement": 0.046875
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 0.9073610206801629,
+            "accuracy": 0.8125,
+            "kl_bits": 0.8015592546723989,
+            "agreement": 0.8359375
+          },
+          "opposite": {
+            "bpb": 8.595208720250369,
+            "accuracy": 0.0703125,
+            "kl_bits": 8.322782632561882,
+            "agreement": 0.078125
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 12.309707596770306,
+            "accuracy": 0.015625,
+            "kl_bits": 12.08805916844065,
+            "agreement": 0.0234375
+          },
+          "opposite": {
+            "bpb": 0.32797762207550907,
+            "accuracy": 0.953125,
+            "kl_bits": 5.937998447161659e-06,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.10563921713152101,
+        "accuracy": 0.96875
+      },
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 805,
+      "source": "A",
+      "replaced_from": "B",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.03593061749186499,
+            "accuracy": 1.0,
+            "kl_bits": 5.875580703511055e-07,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 13.10964205766274,
+            "accuracy": 0.0,
+            "kl_bits": 12.892157257067053,
+            "agreement": 0.0
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.0986135988539149,
+            "accuracy": 0.984375,
+            "kl_bits": 0.0705403661349795,
+            "agreement": 0.984375
+          },
+          "opposite": {
+            "bpb": 12.408431522182214,
+            "accuracy": 0.0,
+            "kl_bits": 12.179698884397485,
+            "agreement": 0.0
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 9.837632409556884,
+            "accuracy": 0.078125,
+            "kl_bits": 9.64023460594089,
+            "agreement": 0.078125
+          },
+          "opposite": {
+            "bpb": 3.3553241046510545,
+            "accuracy": 0.46875,
+            "kl_bits": 3.3824989491838218,
+            "agreement": 0.46875
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.04610653600141512,
+            "accuracy": 0.9921875,
+            "kl_bits": 0.004489618248518148,
+            "agreement": 0.9921875
+          },
+          "opposite": {
+            "bpb": 12.622095657350377,
+            "accuracy": 0.0,
+            "kl_bits": 12.409662300743557,
+            "agreement": 0.0
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 1.957555864708723,
+            "accuracy": 0.6015625,
+            "kl_bits": 1.840171507407307,
+            "agreement": 0.6015625
+          },
+          "opposite": {
+            "bpb": 9.59423983255167,
+            "accuracy": 0.0,
+            "kl_bits": 9.366625936796806,
+            "agreement": 0.0
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 0.2198874581426597,
+            "accuracy": 0.96875,
+            "kl_bits": 0.15851519697786717,
+            "agreement": 0.96875
+          },
+          "opposite": {
+            "bpb": 10.087720495935596,
+            "accuracy": 0.0,
+            "kl_bits": 9.95679041708179,
+            "agreement": 0.0
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 13.513812408345604,
+            "accuracy": 0.0,
+            "kl_bits": 13.258268450378537,
+            "agreement": 0.0
+          },
+          "opposite": {
+            "bpb": 0.03519132663324916,
+            "accuracy": 1.0,
+            "kl_bits": 8.155263187876553e-07,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.0359790226093331,
+        "accuracy": 1.0
+      },
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 805,
+      "source": "B",
+      "replaced_from": "A",
+      "scores": {
+        "none": {
+          "own": {
+            "bpb": 0.03519132663324916,
+            "accuracy": 1.0,
+            "kl_bits": 8.155263187876553e-07,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 13.513812408345604,
+            "accuracy": 0.0,
+            "kl_bits": 13.258268450378537,
+            "agreement": 0.0
+          }
+        },
+        "embeddings": {
+          "own": {
+            "bpb": 0.15771894403673062,
+            "accuracy": 0.96875,
+            "kl_bits": 0.18396638048119293,
+            "agreement": 0.96875
+          },
+          "opposite": {
+            "bpb": 12.705348440580222,
+            "accuracy": 0.0,
+            "kl_bits": 12.450991140102996,
+            "agreement": 0.0
+          }
+        },
+        "attention": {
+          "own": {
+            "bpb": 7.506191703533989,
+            "accuracy": 0.0625,
+            "kl_bits": 7.32239145881856,
+            "agreement": 0.0625
+          },
+          "opposite": {
+            "bpb": 3.493540248851926,
+            "accuracy": 0.4453125,
+            "kl_bits": 3.370691073077988,
+            "agreement": 0.4453125
+          }
+        },
+        "norms": {
+          "own": {
+            "bpb": 0.1194289161904036,
+            "accuracy": 0.9765625,
+            "kl_bits": 0.05052217917904395,
+            "agreement": 0.9765625
+          },
+          "opposite": {
+            "bpb": 13.428430026264792,
+            "accuracy": 0.0,
+            "kl_bits": 13.176720857730638,
+            "agreement": 0.0
+          }
+        },
+        "ffn": {
+          "own": {
+            "bpb": 1.0476455465112264,
+            "accuracy": 0.8125,
+            "kl_bits": 1.0803758532741732,
+            "agreement": 0.8125
+          },
+          "opposite": {
+            "bpb": 11.442863950185517,
+            "accuracy": 0.0234375,
+            "kl_bits": 11.20556578144039,
+            "agreement": 0.0234375
+          }
+        },
+        "readout": {
+          "own": {
+            "bpb": 0.08984463136642831,
+            "accuracy": 1.0,
+            "kl_bits": 0.07948709335915156,
+            "agreement": 1.0
+          },
+          "opposite": {
+            "bpb": 10.752116860658735,
+            "accuracy": 0.0,
+            "kl_bits": 10.535819834324888,
+            "agreement": 0.0
+          }
+        },
+        "all": {
+          "own": {
+            "bpb": 13.10964205766274,
+            "accuracy": 0.0,
+            "kl_bits": 12.892157257067053,
+            "agreement": 0.0
+          },
+          "opposite": {
+            "bpb": 0.03593061749186499,
+            "accuracy": 1.0,
+            "kl_bits": 5.875580703511055e-07,
+            "agreement": 1.0
+          }
+        }
+      },
+      "donor_test": {
+        "bpb": 0.03537645696757557,
+        "accuracy": 1.0
+      },
+      "forbidden_calls": 0
+    }
+  ]
+}

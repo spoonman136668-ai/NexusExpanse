@@ -83,3 +83,17 @@ Winner: position_lift; near-lossless on 0/5 independent seeds.
 | 705 | 1.1143 | 27.3% | 13.5% | 1.2950 | 4.7856 / 5.5839 | -0.0340 |
 
 All rates concern the canonical-prefix-boundary reference. No oracle distributions entered conversion or gradients. Retain both the compatible positive control and this harder challenge. For an independent next experiment, change one interface mismatch at a time and use fresh files and seeds.
+
+### Independent tensor-group swaps
+
+| Group replaced by opposite donor | Own-rule accuracy | Opposite-rule accuracy | Opposite-donor KL bits |
+|---|---:|---:|---:|
+| none | 98.2% | 0.2% | 12.9292 |
+| embeddings | 93.7% | 0.4% | 12.1869 |
+| attention | 9.3% | 47.8% | 2.9076 |
+| norms | 97.7% | 0.2% | 12.6760 |
+| ffn | 72.2% | 4.2% | 9.9436 |
+| readout | 93.5% | 1.3% | 10.2608 |
+| all | 0.2% | 98.2% | 0.0000 |
+
+See evidence/checkpoint-transfer-components.json for all five fresh donor pairs and both swap directions.
