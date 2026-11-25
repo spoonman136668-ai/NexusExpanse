@@ -1,0 +1,110 @@
+{
+  "schema": "nexus-gate11-recovery-custody-addendum-v1",
+  "source_sha": "08dae90bc478c3bb7cd87541adee3b16fe508590",
+  "source_tree": "0eff5a6ac1cfd540860296727bdd97e90e71abd9",
+  "previous_interrupted_evidence": "b7edb20ef7d3b7cd173b893fe56b14f853127f3c",
+  "completion_summary": "39406ea4d95c85345d2a722b801870d6143c5f69",
+  "disposition": "FAIL",
+  "note": "Supplement to existing completion summary, not a duplicate scientific trial. Exact raw merge hash and scientific metrics agree with summary. The initial/final regression wall times and supplemental RSS measurements below are the outputs observed in this qualification invocation; summary records other timing/RSS values. No prior evidence changed.",
+  "recovery": {
+    "epoch_limits": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "verified_epoch_chains": 330,
+    "final_checkpoint_hashes_verified": 24,
+    "cold_receipts": 24,
+    "partial_files": 0,
+    "optimizer_steps": 31500,
+    "optimizer_seconds": 1213.0094998549991,
+    "incident": "Seed 42 InfoNCE invocation timed out after all ten epoch checkpoints and final checkpoint were written; all ten hashes and parent links verified. Frozen deterministic post-training evaluation resumed with no optimizer replay. Seed 43/44 final InfoNCE epoch used limit 1 and 90-second tool timeout."
+  },
+  "regression": {
+    "initial_stdout": "........................................................................ [ 64%]\n........................................                                 [100%]\n112 passed in 23.73s\n",
+    "final_stdout": "........................................................................ [ 64%]\n........................................                                 [100%]\n112 passed in 22.74s\n",
+    "prefix_stdout": "{\"source_sha\": \"08dae90bc478c3bb7cd87541adee3b16fe508590\", \"torch\": \"2.10.0+cpu\", \"seeds\": 100, \"fails\": []}\n",
+    "fsck_exit": 0,
+    "diff_check_exit": 0,
+    "base_diff_check_exit": 0,
+    "clean_source": true
+  },
+  "supplemental_rss": {
+    "columns": [
+      "seed",
+      "dim",
+      "selective_peak_rss_bytes",
+      "attention_peak_rss_bytes",
+      "selective_fresh_process_median_ms_byte",
+      "attention_fresh_process_median_ms_byte"
+    ],
+    "rows": [
+      [
+        42,
+        64,
+        326746112,
+        331767808,
+        0.5645239687499526,
+        4.276883246093988
+      ],
+      [
+        42,
+        128,
+        326774784,
+        332058624,
+        0.5136978906250533,
+        5.49919848437419
+      ],
+      [
+        43,
+        64,
+        326995968,
+        331866112,
+        0.41702824999845234,
+        3.987153031250301
+      ],
+      [
+        43,
+        128,
+        326692864,
+        332087296,
+        0.5153924843739333,
+        5.906746945312236
+      ],
+      [
+        44,
+        64,
+        326938624,
+        331845632,
+        0.4283385742187562,
+        4.101010898438062
+      ],
+      [
+        44,
+        128,
+        326598656,
+        332066816,
+        0.5534480312494594,
+        5.755752949218262
+      ]
+    ],
+    "method": "Separate fresh CPU processes, same 256-byte seed stream, one warmup and five timed passes; Linux ru_maxrss*1024 includes runtime/model startup. Dim64 trained selective context restored by checkpoint SHA; dim128 initialized. Supplemental; not substituted for frozen speed comparisons."
+  },
+  "full_merged_file": {
+    "path": "evidence/gate11-selective-kuramoto-complete-dev-001.json",
+    "bytes": 1933232,
+    "sha256": "3701e49cab364bcd69bdf85688d12cf1d142e9d86e043d066d4559e8bfedea19",
+    "remote_status": "PENDING_FULL_BYTES"
+  },
+  "checkpoint_archive": {
+    "name": "nexus-gate11-completed-custody.tar.gz",
+    "sha256": "a2260c16a60c270d1269a2627a6128ddfaa3110ce05951af293343e3743c8518",
+    "inventory_files": 1050,
+    "inventory_verified": true,
+    "remote_status": "NOT_PUBLISHED_BINARY_CUSTODY_OUTSIDE_SOURCE"
+  },
+  "transport_blocker": "Direct Git transport cannot resolve github.com; exact full file bytes not accessible through repository connector.",
+  "promotion": false,
+  "deployment": false
+}
