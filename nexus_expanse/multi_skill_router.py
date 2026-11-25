@@ -12,6 +12,11 @@ import torch
 from torch import nn
 
 from nexus_expanse.checkpoint_transport import CONFIG, CorrectedLinear, ImportedSkill
+from nexus_expanse.episodic_born_skill import EpisodicAssistedBornSkill
+
+
+BANK_V1 = "nexus-multi-skill-bank-v1"
+BANK_V2 = "nexus-multi-skill-bank-v2"
 
 
 def _sticky_transition(reference, k, switch_prob):
@@ -40,7 +45,7 @@ class MultiSkillBank(nn.Module):
     """
 
     def __init__(
-        self, base: ImportedSkill, skills: Mapping[str, ImportedSkill], *,
+        self, base: ImportedSkill, skills: Mapping[str, ImportedSkill | EpisodicAssistedBornSkill], *,
         base_name: str = "base_python", gamma: float = 0.85,
         surprise_threshold_bits: float = 3.5, probe_interval: int = 16,
     ):
@@ -48,9 +53,13 @@ class MultiSkillBank(nn.Module):
         if base_name in skills:
             raise ValueError("the base skill name must be unique")
         modules = {base_name: base, **skills}
-        if any(type(skill) is not ImportedSkill for skill in modules.values()):
-            raise ValueError("a bank requires checkpoint-transport ImportedSkill receivers")
-        if len({id(skill) for skill in modules.values()}) != len(modules):
+        if type(base) is not ImportedSkill or any(
+            type(skill) not in (ImportedSkill, EpisodicAssistedBornSkill) for skill in skills.values()
+        ):
+            raise ValueError("a bank requires an ImportedSkill base and recognized receivers")
+        neural = [skill.neural if isinstance(skill, EpisodicAssistedBornSkill) else skill
+                  for skill in modules.values()]
+        if len({id(skill) for skill in neural}) != len(modules):
             raise ValueError("each bank entry requires an independent receiver")
         self.skills = nn.ModuleDict(modules)
         self.base_name = base_name
@@ -297,14 +306,21 @@ class MultiSkillBank(nn.Module):
 def save_bank(bank: MultiSkillBank, path):
     """Atomically save tensor-only receiver data and every routing default."""
     entries = {}
+    schema = BANK_V1
     for name, skill in bank.skills.items():
+        episodic = isinstance(skill, EpisodicAssistedBornSkill)
+        model = skill.neural if episodic else skill
         methods = []
-        for layer in skill.core.layers:
+        for layer in model.core.layers:
             for linear in (layer.ffn.fc1, layer.ffn.fc2):
                 methods.append(linear.method if isinstance(linear, CorrectedLinear) else "monarch")
-        entries[name] = dict(width=skill.core.dim, methods=methods, state=skill.state_dict())
+        entry = dict(width=model.core.dim, methods=methods, state=model.state_dict())
+        if episodic:
+            entry["episodic"] = dict(keys=skill.keys, successors=skill.successors)
+            schema = BANK_V2
+        entries[name] = entry
     package = dict(
-        schema="nexus-multi-skill-bank-v1", base_name=bank.base_name, entries=entries,
+        schema=schema, base_name=bank.base_name, entries=entries,
         gamma=bank.gamma, surprise_threshold_bits=bank.surprise_threshold_bits,
         probe_interval=bank.probe_interval,
     )
@@ -324,7 +340,7 @@ def save_bank(bank: MultiSkillBank, path):
 def load_bank(path):
     """Rebuild only recognized receiver classes from a weights-only snapshot."""
     package = torch.load(path, weights_only=True, map_location="cpu")
-    if not isinstance(package, dict) or package.get("schema") != "nexus-multi-skill-bank-v1":
+    if not isinstance(package, dict) or package.get("schema") not in (BANK_V1, BANK_V2):
         raise ValueError("unsupported multi-skill bank snapshot")
     entries = package.get("entries")
     base_name = package.get("base_name")
@@ -351,6 +367,12 @@ def load_bank(path):
                         weight = torch.zeros(base.out_dim, base.in_dim)
                         setattr(layer.ffn, slot, CorrectedLinear(base, weight, method))
             model.load_state_dict(entry["state"], strict=True, assign=True)
+            if "episodic" in entry:
+                episode = entry["episodic"]
+                if (package["schema"] != BANK_V2 or name == base_name
+                        or not isinstance(episode, dict) or set(episode) != {"keys", "successors"}):
+                    raise ValueError("invalid episodic receiver in bank snapshot")
+                model = EpisodicAssistedBornSkill(model, episode["keys"], episode["successors"])
             skills[name] = model
     return MultiSkillBank(
         skills.pop(base_name), skills, base_name=base_name,

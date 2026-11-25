@@ -9,6 +9,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+from nexus_expanse.episodic_born_skill import EpisodicAssistedBornSkill
 from nexus_expanse.jepa import state_hash
 from nexus_expanse.multi_skill_router import MultiSkillBank, load_bank, save_bank
 
@@ -16,6 +17,10 @@ from nexus_expanse.multi_skill_router import MultiSkillBank, load_bank, save_ban
 NOVELTY_WINDOW = 64
 NOVELTY_THRESHOLD_BPB = 8.0
 ADAPT_STEPS = 32
+PHASE4_BIRTH = "phase4_baseline_birth"
+EPISODIC_BIRTH = "episodic_assisted_birth"
+CONSOLIDATED_BIRTH = "consolidated_neural_birth"
+BIRTH_STEPS = {PHASE4_BIRTH: ADAPT_STEPS, EPISODIC_BIRTH: ADAPT_STEPS, CONSOLIDATED_BIRTH: 192}
 
 
 def adapt_skill(skill, raw, steps):
@@ -76,17 +81,20 @@ class OpenWorldSkillBank(nn.Module):
         return expert_bpb.min(-1).values > min_bpb_threshold
 
     def observe(self, name, raw_stream, *, min_bpb_threshold=NOVELTY_THRESHOLD_BPB,
-                window=NOVELTY_WINDOW, steps=ADAPT_STEPS):
+                window=NOVELTY_WINDOW, steps=None, mode=PHASE4_BIRTH):
         """Register a skill only when one ordered, already observed stream is novel."""
         if raw_stream.ndim != 2 or raw_stream.size(0) != 1:
             raise ValueError("online birth requires one observed byte stream")
         with self._birth_lock:
             if name in self.bank.skills or not bool(self.detect_novelty(raw_stream, min_bpb_threshold, window=window)):
                 return None
-            return self.spawn_and_adapt_skill(name, raw_stream, steps=steps)
+            return self.spawn_and_adapt_skill(name, raw_stream, steps=steps, mode=mode)
 
-    def spawn_and_adapt_skill(self, name, raw_stream, steps=ADAPT_STEPS):
-        """Adapt a clone and register it after validating every resident state."""
+    def spawn_and_adapt_skill(self, name, raw_stream, steps=None, *, mode=PHASE4_BIRTH):
+        """Consolidate a clone and register it after validating every resident state."""
+        if mode not in BIRTH_STEPS:
+            raise ValueError("unknown birth consolidation mode")
+        steps = BIRTH_STEPS[mode] if steps is None else steps
         with self._birth_lock, torch.inference_mode(False):
             if not isinstance(name, str) or not name or "." in name or hasattr(self.bank.skills, name):
                 raise ValueError("expected a unique, valid skill name")
@@ -94,6 +102,8 @@ class OpenWorldSkillBank(nn.Module):
             before = {key: state_hash(skill) for key, skill in self.bank.skills.items()}
             candidate = copy.deepcopy(self.bank.base)
             adapt_skill(candidate, raw, steps)
+            if mode == EPISODIC_BIRTH:
+                candidate = EpisodicAssistedBornSkill.from_encounter(candidate, raw)
             after = {key: state_hash(skill) for key, skill in self.bank.skills.items()}
             if before != after:
                 raise RuntimeError("resident skill state changed during birth")
