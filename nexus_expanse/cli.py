@@ -22,6 +22,8 @@ from nexus_expanse.jepa import state_hash
 from nexus_expanse.patching import CompactBigram
 from nexus_expanse.unified import NexusExpanseUnified
 from nexus_expanse.verifier_agent import VerifierGatedNexusAgent
+from nexus_expanse.checkpoint_transport import CONFIG as SKILL_CONFIG, CorrectedLinear, ImportedSkill, METHODS as SKILL_METHODS, load_skill
+from nexus_expanse.donor_assimilation import forbid_donor_forward
 
 VERSION = "1.0-rc1"
 TRAIN_OPTIONS = ("device", "dtype", "epoch_limit", "seed", "dim", "context",
@@ -238,6 +240,51 @@ def solve_command(args):
     return 0 if result.passed else 1
 
 
+
+def import_skill_command(args):
+    with forbid_donor_forward() as guard, torch.inference_mode():
+        skill = load_skill(args.donor, args.method, width_factor=args.width_factor).eval()
+        probe = torch.arange(24, dtype=torch.long).unsqueeze(0)
+        alt = probe.clone()
+        alt[:, 12:] = (alt[:, 12:] + 17) % 256
+        y1 = skill(probe)
+        y2 = skill(alt)
+        prefix_diff = float((y1[:, :12] - y2[:, :12]).abs().max().item())
+        payload = dict(
+            state=skill.state_dict(),
+            method=args.method,
+            width_factor=args.width_factor,
+            width=SKILL_CONFIG["dim"] * args.width_factor,
+        )
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        torch.save(payload, args.out)
+        reloaded_pkg = torch.load(args.out, weights_only=True, map_location="cpu")
+        rebuilt = ImportedSkill(width=reloaded_pkg["width"])
+        for layer in rebuilt.core.layers:
+            for name in ("fc1", "fc2"):
+                base = getattr(layer.ffn, name)
+                if args.method != "monarch":
+                    setattr(layer.ffn, name, CorrectedLinear(base, torch.zeros(base.out_dim, base.in_dim), args.method))
+        rebuilt.load_state_dict(reloaded_pkg["state"])
+        y_rt = rebuilt.eval()(probe)
+        rt_diff = float((y1 - y_rt).abs().max().item())
+        if guard.donor_forward_calls != 0 or prefix_diff != 0.0 or rt_diff != 0.0:
+            raise ValueError(f"import-skill verification failed: calls={guard.donor_forward_calls} prefix={prefix_diff} rt={rt_diff}")
+        raw_bytes = args.out.read_bytes()
+        emit(dict(
+            command="import-skill",
+            status="PASS",
+            method=args.method,
+            width_factor=args.width_factor,
+            donor_forward_calls=guard.donor_forward_calls,
+            prefix_max_abs_diff=prefix_diff,
+            round_trip_max_abs_diff=rt_diff,
+            skill_bytes=len(raw_bytes),
+            skill_sha256=hashlib.sha256(raw_bytes).hexdigest(),
+        ))
+    return 0
+
+
 def parser():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--version", action="version", version=f"Nexus Expanse {VERSION}")
@@ -276,6 +323,13 @@ def parser():
     verify.add_argument("--snapshot-sha256")
     verify.add_argument("--save-snapshot", type=Path)
     verify.set_defaults(handler=verify_command)
+
+    imp = sub.add_parser("import-skill", help="convert a static donor checkpoint into a verified Nexus skill")
+    imp.add_argument("--donor", type=Path, required=True)
+    imp.add_argument("--method", choices=SKILL_METHODS + ("residual16",), default="residual8")
+    imp.add_argument("--width-factor", type=int, choices=(1, 2), default=1)
+    imp.add_argument("--out", type=Path, required=True)
+    imp.set_defaults(handler=import_skill_command)
     return p
 
 
