@@ -51,8 +51,11 @@ class GatedDeltaNetLayer(nn.Module):
         write = (beta.unsqueeze(-1) * error).unsqueeze(-1) * key.unsqueeze(-2)
         return alpha[..., None, None] * state + write
 
+    def _readout(self, read):
+        return self.output_proj(read)
+
     def _finish(self, x, read):
-        x = x + self.dropout(self.output_proj(read.reshape(x.shape).to(x.dtype)))
+        x = x + self.dropout(self._readout(read.reshape(x.shape).to(x.dtype)))
         hidden = self.ffn_norm(x)
         delta = self.ffn.fc2(F.silu(self.ffn.fc1(hidden)))
         return x + self.dropout(delta)

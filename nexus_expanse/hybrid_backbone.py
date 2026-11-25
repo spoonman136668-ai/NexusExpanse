@@ -24,11 +24,21 @@ def _causal_mha(layer, hidden, keys, values, position):
     return hidden + layer.ffn.fc2(F.silu(layer.ffn.fc1(layer.ffn_norm(hidden))))
 
 
+class _StabilizedDeltaNetLayer(GatedDeltaNetLayer):
+    def __init__(self, dim, n_heads, ffn_mult):
+        super().__init__(dim, n_heads, ffn_mult)
+        self.readout_norm = nn.LayerNorm(dim)
+        self.layer_scale = nn.Parameter(torch.full((dim,), .5))
+
+    def _readout(self, read):
+        return self.layer_scale * super()._readout(self.readout_norm(read))
+
+
 class HybridDeltaAttentionCore(nn.Module):
     """Always-on DirectMonarch with exact shared batch/stream eval steps."""
 
     def __init__(self, dim=64, n_heads=4, ffn_mult=2, max_seq_len=256,
-                 schedule=("delta", "attention")):
+                 schedule=("delta", "attention"), *, stabilized=False):
         super().__init__()
         schedule = tuple(schedule)
         if set(schedule) != {"delta", "attention"}:
@@ -40,11 +50,13 @@ class HybridDeltaAttentionCore(nn.Module):
         self.ffn_mult = ffn_mult
         self.max_seq_len = max_seq_len
         self.schedule = schedule
+        self.stabilized = stabilized
+        delta_type = _StabilizedDeltaNetLayer if stabilized else GatedDeltaNetLayer
         blocks = rank_safe_blocks(dim, dim * ffn_mult)
         self.emb = nn.Embedding(256, dim)
         self.pos_emb = nn.Embedding(max_seq_len, dim)
         self.layers = nn.ModuleList(
-            GatedDeltaNetLayer(dim, n_heads, ffn_mult) if tag == "delta"
+            delta_type(dim, n_heads, ffn_mult) if tag == "delta"
             else NexusLayer(dim, n_heads, ffn_mult, blocks, .5, False, 0.0)
             for tag in schedule
         )

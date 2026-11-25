@@ -37,12 +37,12 @@ def model_for(seed):
 
 
 @torch.inference_mode()
-def parity(seeds=50):
+def parity(seeds=50, *, stabilized=False):
     runs = []
     for dim in DIMS:
         for seed in range(seeds):
             torch.manual_seed(seed)
-            model = HybridDeltaAttentionCore(dim=dim).eval()
+            model = HybridDeltaAttentionCore(dim=dim, stabilized=stabilized).eval()
             tokens = torch.randint(256, (1, 32))
             logits, hidden, _ = model.forward_neural(tokens)
             result = dict(seed=seed, dim=dim, prefix_logits=0.0, prefix_hidden=0.0,
