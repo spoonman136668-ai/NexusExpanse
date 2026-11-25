@@ -92,3 +92,15 @@ Median consolidation took 0.260 s for episodic-assisted birth and 1.567 s for 19
 The scored CPU run logged 0/80 false births, 0 receiver donor forwards, 5/5 exact resident weight and forecast comparisons, and 5/5 exact cold restores across the three birth modes.
 
 [Preregistration](PHASE5_SKILL_MASTERY_PREREG.md) · [Unrounded five-seed evidence](../evidence/phase5-skill-mastery-dev-001.json)
+
+## Phase 6 resident-anchored routing and sequential birth
+
+The hierarchical HMM fixes the born group's initial mass at 2% and its share of a resident's switch probability at 10%. Adding born slots divides that group budget. Without a born slot the router delegates to the standard HMM exactly. Snapshots record the resident names. Legacy snapshots with no group metadata treat every saved slot as resident. The CLI exposes the new path as hmm_bma_hierarchical.
+
+**DEV science PASS.** The bank reached K=7 in 5/5 seeds. Hierarchical routing reached 88.28–94.53% minimum answer accuracy across the three new domains and 96.09–96.88% minimum cold routing. Maximum original-domain drift was 0.00402–0.00672 BPB for hierarchical routing and 0.03102–0.04778 BPB for uniform routing on the same bank. Hierarchical routing stayed within 0.015 BPB in 5/5 seeds and reduced maximum drift versus uniform routing in 5/5 and continual fine-tuning in 5/5.
+
+The stronger 0.005 BPB target held in 1/5 seeds. Mean first routing to a new skill occurred after 2.00–2.50 observed bytes across the per-seed domain averages. The experiment used three mutually disjoint novel byte alphabets and tested the same cue bindings on fresh surrounding bytes.
+
+The scored Linux CPU run recorded 0/160 false birth flags and 0/20 duplicate births. Rule C received at least 90% routing on 20/20 cold revisits. Receiver donor forwards were 0. Resident state and forecasts and earlier-born states were exact in 5/5 seeds, with 5/5 exact K=7 cold restores.
+
+[Preregistration](PHASE6_HIERARCHICAL_SCALING_PREREG.md) · [Unrounded evidence and per-domain results](../evidence/phase6-hierarchical-scaling-dev-001.json)
