@@ -42,6 +42,28 @@ On rule, median net seconds saved when building a new donor for one receiver: -1
 Exact cold restores of imported and old-mode predictions: 70.
 The text and rule evidence includes individual time traces, producer costs, checkpoint sizes, fingerprints and uncensored matched times. A missed target at the tuning ceiling establishes no exact time-to-target.
 
+## Precision fallback
+
+Source commit `637d9b25805ee5b1240ca8de192dcc9b3b99f9ea`.
+
+| Challenge | Method | Near at zero | Near after tuning | Qualified | Matched time pairs | Median time saved | Range |
+|---|---|---:|---:|---:|---:|---:|---:|
+| Rule | residual16 | 10/10 | 8/10 | 10/10 | 5 | 0.6405 s (97.8%) | 97.6% to 98.6% |
+| Markdown | residual16 | 5/5 | 5/5 | 5/5 | 0 | censored | — |
+
+### Charging donor creation
+
+On rule, median net seconds saved when building a new donor for one receiver: -0.4070. The above table assumes an existing checkpoint. Donor cost includes qualification and reference export. Base receiver preparation is common.
+
+### Donor attribution at zero receiver updates
+
+| Method | Correct rule | Opposite rule | Own FFNs + opposite remainder, accuracy on own rule | Opposite FFNs + own remainder, accuracy on own rule |
+|---|---:|---:|---:|---:|
+| residual16 | 98.3% | 0.4% | 5.0% | 66.2% |
+
+Exact cold restores of imported and old-mode predictions: 60.
+The text and rule evidence includes individual time traces, producer costs, checkpoint sizes, fingerprints and uncensored matched times. A missed target at the tuning ceiling establishes no exact time-to-target.
+
 ## Disposition
 
-The locked precision fallback is next. Preserve the confirmation result.
+The frozen ladder is exhausted. Preserve the failed criteria. Before tuning another method, identify the failed seed, comparator and criterion in the raw receipts. Distinguish static fidelity from measured time savings; an uncrossed scratch target leaves the savings censored.
