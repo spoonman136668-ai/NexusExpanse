@@ -58,7 +58,7 @@ def data_with_transfer():
                     held.add(raw[i : i + 32])
         windows = []
         for path in TRANSFER_FILES:
-            raw = study.git("show", f"{study.BASE}:{path}")
+            raw = study.git("show", f"{study.SOURCE}:{path}")
             for i in range(0, len(raw) - 64, 32):
                 win = raw[i : i + 65]
                 if not any(win[j : j + 32] in held for j in range(0, len(win) - 31)):
