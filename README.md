@@ -1,6 +1,33 @@
-# Nexus Expanse
+# Nexus Expanse v1.0-rc1
 
-Independent research prototype: raw-byte causal attention, DirectMonarch FFNs, uncertainty-gated computation, episodic suffix memory and local fast weights. This is a byte-level attention architecture, not a non-transformer model. Do not integrate into other projects without separate authorization and qualification.
+Nexus Expanse is an independent raw-byte research prototype. The developer release candidate includes a CPU unified runtime, a finite expression solver, and a resumable consumer-GPU training launcher. The [architecture scorecard](docs/ARCHITECTURE_V1.md) links the kept components, failed experiments and remaining qualification work.
+
+## Quick start
+
+Use Python 3.12, NumPy, and PyTorch 2.10. Run from the repository root.
+
+```sh
+python -m nexus_expanse.cli verify --save-snapshot ../nexus-demo.pt
+python -m nexus_expanse.cli stream --snapshot ../nexus-demo.pt --input-hex 48656c6c6f --continuation 8 --save-snapshot ../nexus-adapted.pt
+python -m nexus_expanse.cli solve --source-hex 010203 --target-hex 040302 --depth 2
+```
+
+Omit `--input-hex` to submit hex byte chunks on stdin, one line at a time. The stream reports five next-byte candidates and optional greedy continuation. It learns from supplied observations. It generates continuations on a separate copy of the stream state. The snapshot is created at the end of the session, when requested. Supply `--snapshot-sha256` to check the digest from a previous verification or export. Use checkpoints from a trusted local source.
+
+The solver searches one- to three-step pipelines over six fixed, pure AST expressions on raw bytes `00` through `07`. It reports grammar calibration separately from the six-call search budget and returns the checked byte residual. Use `--save-agent-snapshot` and `--agent-snapshot` to carry verified skills between sessions.
+
+## Windows consumer-GPU launch
+
+With CUDA-enabled PyTorch, place `math-train.bin`, `math-eval.bin`, `code-train.bin`, `code-eval.bin`, `prose-train.bin`, and `prose-eval.bin` in `data`. Use separate train and evaluation files. The example covers roughly one pass over up to 4 MiB per training domain. Use a local NTFS run directory outside the clean source checkout.
+
+```powershell
+python -m nexus_expanse.cli train --device cuda --dtype bf16 --corpus-dir .\data --directory ..\nexus-gpu-run --dim 64 --context 256 --batch-per-domain 4 --steps-per-epoch 64 --epochs 64 --epoch-limit 1 --until-complete --save-snapshot ..\nexus-gpu-run\unified.pt
+```
+
+Use `--dtype fp32` if the device lacks native BF16. Repeat an interrupted run with identical source, bytes, device and training settings to resume from the last fully committed epoch. The exact training receipt and unified CPU snapshot are written when training completes. Gate 24 exercises Linux CPU only. Windows CUDA throughput and multi-MB learning are unverified. See the [scaling protocol](docs/GATE17_PREREG.md) and [CLI smoke protocol](docs/GATE24_PREREG.md).
+
+<details>
+<summary>Historical research and API notes</summary>
 
 ## Baseline custody
 
@@ -54,4 +81,6 @@ Optional `ContextBankFastWeightAdapter` uses disjoint hidden-feature slices and 
 
 Optional `ProjectedFastWeightAdapter(dim, lr=..., rank=8)` can replace `model.fast_weights`. It freezes confident observed directions and projects later no-decay Hebbian updates orthogonally, with bounded scalar updates. Checkpoint stores basis and weights; prior source-bound checkpoints are not migrated. `python benchmarks/plasticity_dev.py --output /path/to/new-output.json` reuses the common comparison harness. Both ranks fail acquisition/retention and predict worse than decay-free shared weights; no default changes. See `evidence/plasticity-dev-001.json` and `docs/RESEARCH.md`.
 
-**Engineering acceptance blocked:** existing gated prefix invariant failed final regression; deterministic 100-seed diagnostic reproduces 16 identical failures on v0.8 and v0.9. Run `python benchmarks/prefix_causality_dev.py` (expected nonzero until repair). No scientific or deployment acceptance. See `evidence/prefix-causality-dev-001.json`.
+**Historical engineering blocker before the Gate 1 repair:** existing gated prefix invariant failed final regression; deterministic 100-seed diagnostic reproduces 16 identical failures on v0.8 and v0.9. Run `python benchmarks/prefix_causality_dev.py` (expected nonzero until repair). No scientific or deployment acceptance. See `evidence/prefix-causality-dev-001.json`.
+
+</details>

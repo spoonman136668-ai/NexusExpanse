@@ -34,3 +34,15 @@ def save_pt(path, value):
         os.fsync(out.fileno())
     os.link(partial, path)
     partial.unlink()
+
+
+def atomic_bytes(path, payload):
+    if path.exists():
+        raise FileExistsError(path)
+    partial = path.with_suffix(path.suffix + ".partial")
+    with partial.open("xb") as out:
+        out.write(payload)
+        out.flush()
+        os.fsync(out.fileno())
+    os.link(partial, path)
+    partial.unlink()

@@ -57,6 +57,10 @@ class VerifierGatedNexusAgent:
         self.episodic = ConsolidatingMemory(self.EPISODIC_BUDGET, "sparse_support", 5)
         self.relations = _SynthesisVSA(None)
 
+    @property
+    def structured(self):
+        return self._orders is not None
+
     @staticmethod
     def _key(symbol, program):
         return b"\x00" + program + bytes((symbol,))

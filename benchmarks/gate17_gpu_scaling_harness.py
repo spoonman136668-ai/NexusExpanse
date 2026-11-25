@@ -162,6 +162,21 @@ def vram(device):
                 peak_cuda_reserved_bytes=torch.cuda.max_memory_reserved(device))
 
 
+def build_unified(model, train):
+    """Build the CPU runtime with the Gate 17 fitted compact and episodic inputs."""
+    counts = np.zeros((256, 256), dtype="<u4")
+    examples = [train[d][:512] for d in DOMAINS]
+    for raw in examples:
+        b = np.frombuffer(raw, dtype=np.uint8)
+        np.add.at(counts, (b[:-1], b[1:]), 1)
+    # Transfer the same trained neural state into the CPU FP32 runtime.
+    unified = NexusExpanseUnified(model.cpu(), CompactBigram.from_dense(counts))
+    for raw in examples:
+        for i in range(1, len(raw)):
+            unified.episodic.observe_transition(raw[max(0, i - 8):i], raw[i])
+    return unified
+
+
 @torch.inference_mode()
 def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
     start = time.perf_counter()
@@ -191,16 +206,7 @@ def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
     gpu = vram(device)
     torch.backends.mha.set_fastpath_enabled(True)
 
-    counts = np.zeros((256, 256), dtype="<u4")
-    examples = [train[d][:512] for d in DOMAINS]
-    for raw in examples:
-        b = np.frombuffer(raw, dtype=np.uint8)
-        np.add.at(counts, (b[:-1], b[1:]), 1)
-    # Transfer the same trained neural state into the CPU FP32 runtime.
-    unified = NexusExpanseUnified(model.cpu(), CompactBigram.from_dense(counts))
-    for raw in examples:
-        for i in range(1, len(raw)):
-            unified.episodic.observe_transition(raw[max(0, i - 8):i], raw[i])
+    unified = build_unified(model, train)
     raw = evaluation["prose"][:min(32, geometry.context)]
     checkpoint = unified.snapshot()
     parity = exactness(unified, NexusExpanseUnified.restore(checkpoint), raw)
