@@ -1,0 +1,340 @@
+{
+  "schema": "nexus-gate11-complete-summary-dev-v1",
+  "qualification": "REUSED_AUTHORED_RELATIONAL_DEV",
+  "status": "FAIL",
+  "identity": {
+    "source_sha": "08dae90bc478c3bb7cd87541adee3b16fe508590",
+    "tree": "0eff5a6ac1cfd540860296727bdd97e90e71abd9",
+    "manifest_sha256": "99e7a7f9222cc997ac71635ef507d87608a03df44de550036fae12d2db288645",
+    "torch": "2.10.0+cpu",
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "threads": 1
+  },
+  "recovery": {
+    "previous_interrupted_commit": "b7edb20ef7d3b7cd173b893fe56b14f853127f3c",
+    "completed_arms": 24,
+    "verified_epoch_checkpoints": 330,
+    "steps": 31500,
+    "optimizer_seconds": 1213.0094998549991,
+    "cold_restore_receipts": 24,
+    "partial_files": 0,
+    "merge_reproduced_byte_identical": true,
+    "full_merged_file": {
+      "path": "evidence/gate11-selective-kuramoto-complete-dev-001.json",
+      "bytes": 1933232,
+      "sha256": "3701e49cab364bcd69bdf85688d12cf1d142e9d86e043d066d4559e8bfedea19",
+      "remote_publication": "PENDING_FULL_BYTES",
+      "detail": "Local frozen merger completed; direct GitHub git transport DNS unavailable. This summary is not the full merged file; predictions, losses, per-epoch metadata and checkpoint binaries are not included."
+    }
+  },
+  "engineering": {
+    "pytest_final": "112 passed in 27.94s",
+    "failed": 0,
+    "skipped": 0,
+    "prefix_final": {
+      "source_sha": "08dae90bc478c3bb7cd87541adee3b16fe508590",
+      "torch": "2.10.0+cpu",
+      "seeds": 100,
+      "fails": []
+    },
+    "fsck_full_strict_exit": 0,
+    "git_diff_check_exit": 0,
+    "candidate_diff_check_exit": 0,
+    "parity": {
+      "seeds": 50,
+      "dimensions": [
+        64,
+        128
+      ],
+      "prefix_logits": 0,
+      "prefix_hidden": 0,
+      "streaming_probabilities": 0,
+      "streaming_hidden": 0,
+      "phase_norm_error": 1.000310945187266e-12,
+      "recurrent_state_bytes": {
+        "64": 1024,
+        "128": 2048
+      },
+      "zero_kv_cache": true
+    }
+  },
+  "checks": {
+    "parity": true,
+    "beats_ungated": false,
+    "capacity_thresholds": false,
+    "beats_histogram": false,
+    "beats_ce": false,
+    "speed": true
+  },
+  "capacity": {
+    "columns": [
+      "train_math",
+      "heldout_math",
+      "train_science",
+      "heldout_science"
+    ],
+    "original": {
+      "42": {
+        "ungated_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "selective_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "causal_attention_monarch": [
+          1,
+          1,
+          0.5,
+          0.5
+        ]
+      },
+      "43": {
+        "ungated_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "selective_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "causal_attention_monarch": [
+          0.975,
+          1,
+          0.5,
+          0.5
+        ]
+      },
+      "44": {
+        "ungated_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "selective_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "causal_attention_monarch": [
+          1,
+          1,
+          0.5,
+          0.5
+        ]
+      }
+    },
+    "expansion_triggered": true,
+    "decisive": {
+      "42": {
+        "ungated_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "selective_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "causal_attention_monarch": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "43": {
+        "ungated_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "selective_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "causal_attention_monarch": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "44": {
+        "ungated_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "selective_kuramoto": [
+          0.25,
+          0.25,
+          0.5,
+          0.5
+        ],
+        "causal_attention_monarch": [
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  },
+  "objectives": {
+    "42": {
+      "next_byte_ce": [
+        0.09166666666666666,
+        0.2490284830909831,
+        0.25,
+        0.5
+      ],
+      "infonce_jepa": [
+        0.06666666666666667,
+        0.2309084087209087,
+        0.225,
+        0.5
+      ]
+    },
+    "43": {
+      "next_byte_ce": [
+        0.041666666666666664,
+        0.1971476555851556,
+        0.25,
+        0.525
+      ],
+      "infonce_jepa": [
+        0.06666666666666667,
+        0.20707619926369927,
+        0.3,
+        0.475
+      ]
+    },
+    "44": {
+      "next_byte_ce": [
+        0.058333333333333334,
+        0.21298985736485734,
+        0.2,
+        0.5
+      ],
+      "infonce_jepa": [
+        0.09166666666666666,
+        0.26423858548858553,
+        0.225,
+        0.5
+      ]
+    },
+    "columns": [
+      "retrieval_top1",
+      "retrieval_mrr",
+      "math",
+      "science"
+    ],
+    "histogram": [
+      0.2,
+      0.38796182983682986,
+      0.25,
+      0.5
+    ]
+  },
+  "speed": {
+    "columns": [
+      "seed",
+      "dim",
+      "selective_ms_byte",
+      "attention_ms_byte",
+      "speedup",
+      "selective_peak_rss_bytes",
+      "attention_peak_rss_bytes"
+    ],
+    "rows": [
+      [
+        42,
+        64,
+        0.4893953867188827,
+        4.241766707030692,
+        8.667361446680815,
+        327032832,
+        333295616
+      ],
+      [
+        42,
+        128,
+        0.5818643554693637,
+        5.277077808594655,
+        9.069257738494523,
+        326529024,
+        333963264
+      ],
+      [
+        43,
+        64,
+        0.4697536171871519,
+        3.1003451796873804,
+        6.599938917452102,
+        327024640,
+        333242368
+      ],
+      [
+        43,
+        128,
+        0.5535462617185516,
+        4.364694796874957,
+        7.884968427614762,
+        326516736,
+        333672448
+      ],
+      [
+        44,
+        64,
+        0.46830475390535753,
+        3.0730860664061055,
+        6.562150054592791,
+        327032832,
+        333250560
+      ],
+      [
+        44,
+        128,
+        0.5468392421885682,
+        4.40934760156253,
+        8.063334269712199,
+        326533120,
+        333672448
+      ]
+    ],
+    "cache_tensor_bytes": {
+      "64": 327680,
+      "128": 589824
+    },
+    "attention_cache_max_logit_diff": 0,
+    "rss_method": "Supplemental postscore fresh-process inference only: same seed/dim/256-byte stream, six passes, ru_maxrss * 1024 including runtime and model startup; not part of frozen disposition. Dim64 restored trained InfoNCE context, dim128 initialized; attention uses frozen always-on KV control."
+  },
+  "limitations": [
+    "Reused synthetic DEV eval, not protected independent science.",
+    "Speed not quality matched, not optimized attention benchmark.",
+    "Full raw merged evidence and checkpoint binaries not yet remotely preserved."
+  ],
+  "promotion": false,
+  "deployment": false
+}
