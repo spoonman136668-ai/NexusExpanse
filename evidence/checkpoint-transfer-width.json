@@ -1,0 +1,2970 @@
+{
+  "source": "0c1a4814864ca34d9bb24d66e3be2092e694f2e0",
+  "method": "residual8",
+  "donor_width": 32,
+  "receiver_width": 64,
+  "manifest": {
+    "nexus_expanse/core.py": {
+      "file_sha256": "bdc9c4c9a30f8eaa3db17e356ed026a0e424cbbd4f396127d26c1dc7a811eda2",
+      "spans": [
+        [
+          0,
+          "432085976c89329dcf6492ae1c8b94f0ecdf4e0020c0fa8aa6090ac04415e312"
+        ],
+        [
+          64,
+          "4019ad715e1fbdda3b7124b408caf93de7cd08346cb14b77fe723ea61a105b66"
+        ],
+        [
+          128,
+          "9e7636d9a24aaa74981a08cd8918bd49e1cd4e5c30577d6d95d795fd095f73cd"
+        ],
+        [
+          192,
+          "6e8eebb08338a1e08792d28bb07d64acf30d505de38f3069cf0b2777a5177bf6"
+        ],
+        [
+          256,
+          "69139eccecf7b9c107c71a5e6ef9c4f0bad0ca22a695212c2084e2c3380e2566"
+        ],
+        [
+          320,
+          "f857ca2cd40369bb866d91bfc2e2a738340930035134ecfce36d8ddf9d7d4afa"
+        ],
+        [
+          384,
+          "4617a38626a5a45656feee961530a9bd754bbe10a147a808fcc86e865e3bbdd8"
+        ],
+        [
+          448,
+          "0195e25d0bf2436af1b1f353781deb76e4c4c21cde015794f97e3b859a494f05"
+        ],
+        [
+          512,
+          "cb713d0eaa1052b5236d95801df3138369164633fce753eab1d2e789ec52b8ad"
+        ],
+        [
+          576,
+          "5693bf901785fa9055527139ba3a8c5d75c0c2146c7583c912318c7aaed286b6"
+        ],
+        [
+          640,
+          "0b0e7622f757acbe34d7d0846ecfff2a1c8f6070d86d5979e989f8730834478a"
+        ],
+        [
+          704,
+          "e9bb56e2b69329d33d8836c6640b4668c42f04420e1e19bf0abc13c2ffe6db3c"
+        ],
+        [
+          768,
+          "c1da3f298ecbd0181598d488d9aeee1d8a58a307f5f790b1718142f22ea1552d"
+        ],
+        [
+          832,
+          "e8df1586658f83333f3da814e9cd9e72ccb7d38175c78f074836be3dc73a47af"
+        ],
+        [
+          896,
+          "3c269a42eec4d9768d613ba0b66efcc9156c1d8548dbfd24bd93722acb5f642a"
+        ],
+        [
+          960,
+          "636ff3af675a8068221968d731d3adce5fbc2bcbee86015d1828a09cdfda6b9f"
+        ]
+      ],
+      "split": "python"
+    },
+    "nexus_expanse/memory.py": {
+      "file_sha256": "c35d029790ffbf8669eda332d51444ac5e02a4c50a3bddbd685beb8d6e73c91f",
+      "spans": [
+        [
+          0,
+          "8492dd16496a8d3655aa45216fcb766eb3a70a313b5a376fa2cb7986d477c483"
+        ],
+        [
+          128,
+          "426be4aae107f44327ef6ae29a6486dc01b5a05816db4d9eb685358ba92392ac"
+        ],
+        [
+          192,
+          "8691acad488e3ae87c6c420607c42214599a4c48243bee9f7b1adba280f61580"
+        ],
+        [
+          256,
+          "1a609d6da1e9a42b2ea7415a64460c78f7814396f5cfb516c4cf408311f0912f"
+        ],
+        [
+          384,
+          "8e425fd0793cd1b7222789544ad31e73100ba18c4d1a42767bec745f6ff9afe2"
+        ],
+        [
+          448,
+          "efa31831494ee0570de8794831525c60d8e6a2db4f9d5dabc761d2713fee4d9b"
+        ],
+        [
+          512,
+          "91d5f83e9cc34ec11bf201f5cb7fd522a8ad023c4be45ba4a0697dccbb1e714b"
+        ],
+        [
+          576,
+          "87565ff2e74de3b4ddb3213a865d5db127d6488d5dbeb4a7952b7d1000d51cfd"
+        ],
+        [
+          640,
+          "3a0a244d78e331550e9a85dc9909bf524df7e60f1f26087e35bcfe3cd51d7142"
+        ],
+        [
+          704,
+          "c3c4a43262ad64b1e822d9107fb6e7d63c17de7024310c111d93f35045792a7d"
+        ],
+        [
+          768,
+          "47afe2c72b20ff5108505071996dd0f863c82222b89e1fea9d9bbf978b47e1b5"
+        ],
+        [
+          832,
+          "2fac98515c6eb52cd1e82b1bef5f5d52270445f0236e1690d46c7baf7b06263f"
+        ],
+        [
+          896,
+          "4e310b5f3fa9ba114bf5479fe70b94183bda0918a8a9a2ad6f9430b020d19a51"
+        ],
+        [
+          960,
+          "62670e2ffeb49d8f1d755a284c0eb9d36bcd12d735806ffa860798b20432c040"
+        ],
+        [
+          1024,
+          "72b82ae7042dbc22817b0ec43f73da42ef26a2875dbf8514773b49ab11eef66d"
+        ],
+        [
+          1088,
+          "e62c3896cc6ce54099665a107c2145a74a6b42b28c454e06bacbeb9bcbfed567"
+        ]
+      ],
+      "split": "python"
+    },
+    "README.md": {
+      "file_sha256": "e376ee0e041f5db01315e643a97c85590ac93393c6ca26effd4e7475795d8132",
+      "spans": [
+        [
+          0,
+          "6436d034f0a49ae4fde500fcc387711c1b189ae97c15f39c353bb69d166eeca4"
+        ],
+        [
+          64,
+          "2b72604dbcba8c48b310d98a3e51a6a9926ffc17d29ee746dd3d3a2367b1d43d"
+        ],
+        [
+          128,
+          "24aef65a22028740efc901632cd44d56fc7ffa80000b099879049ac714c547d0"
+        ],
+        [
+          192,
+          "9a153c094ca6f32739b8b341c5e8988581e749f7b324bfeb6835e1bc122f6267"
+        ],
+        [
+          256,
+          "665ed5515d2ec783556d74f9ba7c6aaf8d9b5d50d1ae5558f943065bf55a7737"
+        ],
+        [
+          320,
+          "28b38186ea9a4277b1156b90c9a63e25cb4896007d68a7d82ecbaf8029446474"
+        ],
+        [
+          384,
+          "68dd2efe07fef162a23e72336f4fd1305cd5e8a2121ce727bab87e3aa5970cc3"
+        ],
+        [
+          448,
+          "b0a537b2cc6c4519f5e55c7d90fd6069e14baa6e7fc1dccfe2a860ed1acc6086"
+        ],
+        [
+          512,
+          "66613e5f0c31d18fd5cc08a28d6b804aff45787db201563de3310217a0df7407"
+        ],
+        [
+          576,
+          "5ac6345316ba851874698e877f2cdf50aab76c5fc53b8c229f17db797febed27"
+        ],
+        [
+          704,
+          "5c36d47f716c5aac4bcb12ec95707180f444904ce17dee8f50478aa0a88febe0"
+        ],
+        [
+          768,
+          "d68fdd6cb18b843732dff66f63a9150386d63b9c1d27382340eded0da20306a5"
+        ],
+        [
+          832,
+          "fb7c5bd73bc8a8dbb9258b13d621844103977ad55c393cf28e2c829782d1f6eb"
+        ],
+        [
+          896,
+          "ad45f036e592696da52546fa1bc6dcc93c8cc14d097a0746b387b32d55962754"
+        ],
+        [
+          960,
+          "ec9cb5e8e3e3d5a30e01bc3ced285c5c11797fe42b4a3f99cdcee9d9e9bfd754"
+        ],
+        [
+          1024,
+          "d54ba03ff4f42279b49f3d7ae5bda6dbe0168d98e51c41cbd8f6084c72581c56"
+        ]
+      ],
+      "split": "fit"
+    },
+    "docs/ARCHITECTURE_V1.md": {
+      "file_sha256": "a02250cac778b57ba87edb793b23508aa6cbe84a5e0324d7221da9265408c7d7",
+      "spans": [
+        [
+          0,
+          "1f6c060e87321279ad2b88acbb22a0b8b827d1057280afe1603fe04d1fc49854"
+        ],
+        [
+          64,
+          "00f36de6c4f7983bff9b291f902a5854c437d49079567bb04930220aff16a905"
+        ],
+        [
+          128,
+          "9f06f6816da9d0042afb8bc8660af576b6cd6c5cfee8c89bf137e92e420119b7"
+        ],
+        [
+          192,
+          "47cbceeefc103d24fd551e66eb842644ab3b8e0fc08f39b205d6b6763d11a607"
+        ],
+        [
+          256,
+          "29f8d27a742ef3ae16510cb0b558dd7d12cf249074a951236cf033c3b2f727d9"
+        ],
+        [
+          320,
+          "efa19a086ffa2a5f76d21d56192daa0403661b8d93356683b5f689c0bc2395d7"
+        ],
+        [
+          384,
+          "e0cdfa3d7dee50622df3f299c7472177ef31dddef663e7f1e737ffaeb12a0ab5"
+        ],
+        [
+          448,
+          "ae6b39c401f56d97db9f5fbff0900cae1b99abc641d95352887ec58ed7547fa1"
+        ],
+        [
+          512,
+          "e99cf64d12aaada3508571e75f20f065049e2ae43cea357916a8b26c34e935c3"
+        ],
+        [
+          576,
+          "92ce8fb1ec3b1c1aae71d826ebbaa4f0b3b1ecd9417fb4a36d4b82475c25d780"
+        ],
+        [
+          640,
+          "9dc8e51bec2d088738f31e95e2d6fda966133fe5f35ec6cb91f3f1990ecfe1d7"
+        ],
+        [
+          704,
+          "b45a714c046bfa9e06576354ca1dc6cab3dfa968a71738954112ed6a1854eb1b"
+        ],
+        [
+          768,
+          "995f1578a1109547f781d6843f561fdcee72eb454d32c12c14bf87ff2fd46267"
+        ],
+        [
+          832,
+          "bce7424799859959ebca1e2a068bcdb508afa0182eb8959f07ec9f0be26a6ac3"
+        ],
+        [
+          896,
+          "86003445bebcde66d14cb7c439f2469ae73bc6c40b06d00f2f94cfc3579e8b13"
+        ],
+        [
+          960,
+          "f71dfd5ccc12b6c5fa8201d5b8a10d232a63127a136689d51e9c89da4a94feb7"
+        ]
+      ],
+      "split": "fit"
+    },
+    "docs/GATE25_PREREG.md": {
+      "file_sha256": "bb387a85b811184f07c8df5835f4eb9812b066877b40748ea6b38a67a856c162",
+      "spans": [
+        [
+          0,
+          "12746f4401531a3224f1826c613987315bc5bc4e511302abd5acb416197e892d"
+        ],
+        [
+          64,
+          "3901ef3fd1feee9818bfaf68a5dc4ccce0acc44866d24f8a3c72ef555bf0d1ba"
+        ],
+        [
+          128,
+          "5aa02b2f2badde2f00e6763b747b90a74bd7c393b66d2a111a99c5ea39d23ffd"
+        ],
+        [
+          192,
+          "da545d326e825851633469ac0e27da3dd6859cba5f9dd30cf01f2a440e991925"
+        ],
+        [
+          256,
+          "41ecca18cd4f7985e61cc852a6705bffc28fa18696bc2678dda9d0cca41fda71"
+        ],
+        [
+          320,
+          "f72f1745655d343d9879cb28f512cf9d101198d90cdb4fa766ac71404cfa7e0e"
+        ],
+        [
+          384,
+          "a59c8dd5871bcbb06270fd010304411bfd6cc76651ea8899a42f3783333ba8d4"
+        ],
+        [
+          448,
+          "c0f136cca535a0df90f471bf696e15a81c6b85b331d61e2350f49c222d4d8e35"
+        ],
+        [
+          512,
+          "486f632956ab907b99868bc32d6905b6bb06b4af44fc6872f4d93a967e8ec5d7"
+        ],
+        [
+          576,
+          "08c4cba5bd1066cf172f2c705433f2156b061bf5214083158aada4db05fee1d7"
+        ],
+        [
+          640,
+          "d10c1e1cc3f629b6fd1234dea7fca31c964077ed57ae743196853474c64aa047"
+        ],
+        [
+          704,
+          "e774c8a715b85aaa3a522b2e6fa73995ca6731716e92fb467a043c34170984cf"
+        ],
+        [
+          768,
+          "90616e219c9a88a305f02b7a0bfa0085a7e2379a1d4a83ca81369c7512786beb"
+        ],
+        [
+          832,
+          "a349188d8ac3c6474ff0c28b4671d561eb531ea31ee28d40da1033b8497e670e"
+        ],
+        [
+          896,
+          "6277d0cd43171b612141314a80f657b79852728445ec132f2d8897574c8e02c9"
+        ],
+        [
+          960,
+          "42e37f794984f74aea3d36d887a3d71d211a34cc029efde368a18bb439ba8f17"
+        ]
+      ],
+      "split": "val"
+    },
+    "docs/GATE26_PREREG.md": {
+      "file_sha256": "d22e0a1d8a05f888a953ff2be048808902ae4e055afe9892ae1b970bbbbbc041",
+      "spans": [
+        [
+          64,
+          "b1ccef5a1764cb38f6939596cf99dc996e87f1f980c998d9ce8045de74a0d2ab"
+        ],
+        [
+          128,
+          "d8ddcadf34c39651296c95ebbe39bd69814af08cd347505ef806b782acc30aac"
+        ],
+        [
+          384,
+          "e29fc25fe55cf657f64a2e505b497a544c693b93a5da60cf0b23036c0b0c4a0e"
+        ],
+        [
+          448,
+          "f159b28dd3fbb7f75b4524f47526ead000700c521afb1fc95289ed0d293e23e2"
+        ],
+        [
+          512,
+          "1edd81c2e96b2c8410ef71207bb373f693830ece64b7aebec5a3d8bcbd1a9fcf"
+        ],
+        [
+          576,
+          "4d5156887fe10a146aeb93a5f2438e0b4f580d89e273efd2ab3e8525a6db612f"
+        ],
+        [
+          640,
+          "bf0a2274573259a50e90fea82903b3d9edeb626ad19540e946f07eafb25086db"
+        ],
+        [
+          704,
+          "1ffd315bc3933c58a1c85f6b0401ab7d02885f44ef025b56cb86d0d2afd052ea"
+        ],
+        [
+          768,
+          "6fa5c4193bb7b1cf5005de8c6f22684c4f7c8f5d2f4e42090ddfa7adeb0624d5"
+        ],
+        [
+          832,
+          "949e8f5bc8b2fef68462ea61b458dae0c4a4d276d01c84e49fbe77fd05145e35"
+        ],
+        [
+          896,
+          "fbe90075507acab8fdf684d161bfafa2e2ce296a78df41e28ef7d10b11c09adf"
+        ],
+        [
+          960,
+          "6c8bfeada3abf47f20feb79d0d7bf913a3a19800518df53639218d8c251ef9fd"
+        ],
+        [
+          1024,
+          "be55bdb6a54258efaabeab7efbde195bddf7bacf082a330d1b6b44ddb880f3eb"
+        ],
+        [
+          1088,
+          "d63ad5dbbdaaec93ef15404b227384303f85226fbfb7622702f98e6942941f9d"
+        ],
+        [
+          1152,
+          "9eb703e3bef587913b79fa4723c023451be5aaf9450c3aef61407ed29b0015fa"
+        ],
+        [
+          1216,
+          "df94ff18fafc27aa3f35cd61e2d7554d06229d21f0929ce38fa27f6bf6ddb072"
+        ]
+      ],
+      "split": "test"
+    },
+    "nexus_expanse/arbitration.py": {
+      "file_sha256": "607b6499ca86e3a73bfad27bd4815771a63f80d4d432a7a669a5683869867e17",
+      "spans": [
+        [
+          0,
+          "cce4bdba79bcaa711e22a76d67f63d33470a4bb70e8a63a648e1499750361a95"
+        ],
+        [
+          128,
+          "4b9666d9d8e9de8e5e8a6eb25e21631856c887cd90a97ce564c948d6a6f4d731"
+        ],
+        [
+          192,
+          "e92ece9e955dceb16e3716dd2db412265c7d0b038dc400aac59c074367a41e83"
+        ],
+        [
+          256,
+          "17950d80327115dafe1bbe5492766e67e5cea1fe414d637a37cda8104ae66ddc"
+        ],
+        [
+          320,
+          "5d8ec67f1e991e4e44a052647c0969eb88660369d771ba315a214061f4bd0141"
+        ],
+        [
+          384,
+          "984490420ecd37fa1fedc1bc6e4b4141d43bfdbbdc6648123707c61d6b9bc8a1"
+        ],
+        [
+          448,
+          "b317b8734102906afa024d5c8633c474aa13e49ddea50222460277d9fa70a802"
+        ],
+        [
+          512,
+          "1b187c9a08898e67fb6a0b80d7092448c5205b42db5474da004e2a643db2dd7f"
+        ],
+        [
+          576,
+          "6f0948f9df86f132832cc103107175ef0c7f862e72a44f78691d3d4077c2e693"
+        ],
+        [
+          640,
+          "f710361edff60a0a0f217ee95d933809942223796765b9aa7cf84c9df9f5de64"
+        ],
+        [
+          704,
+          "79c8fdc9831b9c291e8401d9e9ee12639ad500563cd644dac167a65a038f7b94"
+        ],
+        [
+          768,
+          "15039ee79326e68c9f2d4ddf4dc6a17801d1389060b0504970b32b486b236794"
+        ],
+        [
+          832,
+          "b1e5f7ec495224f9b30eec699c23c564235bc78acea457afd0fd2d6ce43aaa10"
+        ],
+        [
+          896,
+          "3d9ba5186cbf35f82dff13a70f0a15ea052be66141762f43b51db9d918ba0db9"
+        ],
+        [
+          960,
+          "633022fdbf84510ae155f956afc6beacb108813ac1db158163eff41530e3c4f4"
+        ],
+        [
+          1024,
+          "93a5889411919a8b0a5c3cfa00f2257af207d51da979bbbc1626870c763a3931"
+        ]
+      ],
+      "split": "retention"
+    },
+    "nexus_expanse/fast_checkpoint.py": {
+      "file_sha256": "a3dcd6d66eaeccc57e31dd3ee0ed9b57e6fb7e58c67f5ec57fa8dc969fda7fff",
+      "spans": [
+        [
+          0,
+          "ef7a66b32cb0a639d4c8c56b85c257e56089eecfad91a1761240e55f5ca632af"
+        ],
+        [
+          64,
+          "7bbad3c165a7a3d3ef8d395c3af6e42ca4974f050bf66cc8b0949e9d3826c845"
+        ],
+        [
+          128,
+          "c83577bbbdaebfda628e63fa559427595d500391e27741880b97d9aba8922270"
+        ],
+        [
+          192,
+          "318ca494d1d6bcaa54aad67e7244c4298394c5c20a773dd869dd7b5c992d3186"
+        ],
+        [
+          256,
+          "30944e02f2afc66727d1e4d96a0f491f0f5ae8789be45bc58e9a56b396314408"
+        ],
+        [
+          320,
+          "d2d7f502208a2952f31a3967316fc0363a783931121bacf2d8b0478588dd96ab"
+        ],
+        [
+          384,
+          "83949dcb7fd1553af7b55931977a9fee9ee6dc724402bd003555fe3412185904"
+        ],
+        [
+          448,
+          "258b57125c5376b90ca4ef54137a329ced5a0a1aaef3179d9279f2e1c26173c6"
+        ],
+        [
+          512,
+          "93c3a189d3bd2ab916afaf6589aea1f5a3bdd570fdc2a15dfae78ecfc245f6fc"
+        ],
+        [
+          576,
+          "2ad59ff296e886442aad8f45a78a51d2a24a7482fa659ca251d17946c7d4e602"
+        ],
+        [
+          640,
+          "54c360b71f97650487d5ca46dff9472d8ca8541d82199985b38d34ff57794a13"
+        ],
+        [
+          704,
+          "9317e1f8c87d0b4e98fb20739c76a495e68c5e743cff3b491d988de5348f2f06"
+        ],
+        [
+          768,
+          "3ed5b3188c2a2b345b09419ad37cbdb6816fb6eecefb718083106c0e7ab2230e"
+        ],
+        [
+          832,
+          "b28700a87780f3e55ca6bf4c5696693eb5fdb31397ecfb0c888d217fee43117c"
+        ],
+        [
+          896,
+          "d36b213a915ba378735f846e598bfac7eb5af87e29fafc627fc72b62c2cb5368"
+        ],
+        [
+          960,
+          "c5242dba19d25c773a3048a1fe1dea828c9c7cfb6e4fd3e697eb2f38fd402ed4"
+        ]
+      ],
+      "split": "retention"
+    }
+  },
+  "runs": [
+    {
+      "seed": 901,
+      "domain": "rule",
+      "donors": {
+        "A": {
+          "training_steps": 320,
+          "producer_forward_calls": 362,
+          "creation_and_reference_seconds": 1.4017769960000024,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "41cf310d118336e1c35a952c45b157e7edfa6590f6bccf8447d2f30b87250c43",
+          "validation": {
+            "bpb": 0.09651570696542507,
+            "accuracy": 0.96875
+          },
+          "test": {
+            "bpb": 0.25467494438892074,
+            "accuracy": 0.9453125
+          }
+        },
+        "B": {
+          "training_steps": 320,
+          "producer_forward_calls": 362,
+          "creation_and_reference_seconds": 1.4026323020000007,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "cfe7aa4f3cfe85091b9c29177586862d6a5249252bcfc9bdc3ac881ce90efbae",
+          "validation": {
+            "bpb": 0.02984942250367469,
+            "accuracy": 0.9921875
+          },
+          "test": {
+            "bpb": 0.0026512051932653232,
+            "accuracy": 1.0
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 18.480673859370267,
+              "accuracy": 0.0,
+              "kl_bits": 18.428240721518,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.24111914926371494,
+              "accuracy": 0.9765625,
+              "kl_bits": 1.913841398663871,
+              "agreement": 0.921875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.004924248000001796,
+            "total_seconds": 1.6464708769999987,
+            "skill_bytes": 388587,
+            "hash": "d5d285ba39c5528f75cc6ed4f0bddac43f8ec9030b1754cb1d4a481396449caf",
+            "times": [
+              1.6527438780000026,
+              1.640197875999995
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.25748888497448474,
+              "accuracy": 0.9453125,
+              "kl_bits": 0.0002128773691857638,
+              "agreement": 1.0,
+              "near": false,
+              "opposite_accuracy": 0.0234375
+            },
+            "selected": {
+              "bpb": 0.25748888497448474,
+              "accuracy": 0.9453125,
+              "kl_bits": 0.0002128773691857638,
+              "agreement": 1.0,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.009126240999997037,
+            "total_seconds": 0.013348704999998517,
+            "skill_bytes": 425619,
+            "hash": "e19935b83360bb50f82fdd2f61276e1afd6502e760324d99767ca00c0f6d0e15",
+            "times": [
+              0.013348704999998517
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 12.740698186617921,
+              "accuracy": 0.0,
+              "kl_bits": 12.657471563606915,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.04272385894722384,
+              "accuracy": 1.0,
+              "kl_bits": 0.2505494263755919,
+              "agreement": 0.9453125,
+              "near": false
+            },
+            "matched": true,
+            "steps": 64,
+            "conversion_seconds": 0.008635493999996413,
+            "total_seconds": 0.5021498864999963,
+            "skill_bytes": 425619,
+            "hash": "add1fb00caf78538da19e38900a8b08338cfe55beb4308e1a43ee1ee391e99dd",
+            "times": [
+              0.497814470999991,
+              0.5064853020000015
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.35358243987015625,
+              "accuracy": 0.921875,
+              "kl_bits": 0.08860127703510427,
+              "agreement": 0.9765625,
+              "near": false,
+              "opposite_accuracy": 0.0234375
+            },
+            "selected": {
+              "bpb": 0.35358243987015625,
+              "accuracy": 0.921875,
+              "kl_bits": 0.08860127703510427,
+              "agreement": 0.9765625,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.007879973000001428,
+            "total_seconds": 0.011523940000003563,
+            "skill_bytes": 388587,
+            "hash": "c9ab0168d5d34014d6466ac9e34a33dc3c4706b7fc4385b98736ce1cc542880a",
+            "times": [
+              0.011523940000003563
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.25468542810180006,
+              "accuracy": 0.9453125,
+              "kl_bits": 5.4938430228621554e-08,
+              "agreement": 1.0,
+              "near": false,
+              "opposite_accuracy": 0.0234375
+            },
+            "selected": {
+              "bpb": 0.25468542810180006,
+              "accuracy": 0.9453125,
+              "kl_bits": 5.4938430228621554e-08,
+              "agreement": 1.0,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.009252426999999841,
+            "total_seconds": 0.01326478250000207,
+            "skill_bytes": 425619,
+            "hash": "a7fb03f258d0f72c7d19392a1847b7cd77ce4200e7bc3da4dba915faed44bccd",
+            "times": [
+              0.013453338000005033,
+              0.013076226999999108
+            ]
+          }
+        },
+        "B": {
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.14034667084105387,
+              "accuracy": 0.96875,
+              "kl_bits": 0.13405296392315272,
+              "agreement": 0.96875,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.14034667084105387,
+              "accuracy": 0.96875,
+              "kl_bits": 0.13405296392315272,
+              "agreement": 0.96875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.007710684000002743,
+            "total_seconds": 0.011311828000003743,
+            "skill_bytes": 388587,
+            "hash": "d455901c50fc40abfaf24a3e5b3aa6c89d7f1a57d3349dd7f5dfe2c1b83e90d9",
+            "times": [
+              0.011311828000003743
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.0024036265260026263,
+              "accuracy": 1.0,
+              "kl_bits": 0.00047151238755688236,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.0024036265260026263,
+              "accuracy": 1.0,
+              "kl_bits": 0.00047151238755688236,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008433662000001618,
+            "total_seconds": 0.012560329000002923,
+            "skill_bytes": 425619,
+            "hash": "93384fa423282133c3fd74a708ae90e4cd1b3d74e486a9c2b14a43922a6d59dc",
+            "times": [
+              0.012560329000002923
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 12.73741613420235,
+              "accuracy": 0.0,
+              "kl_bits": 12.71182237757358,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.0006196998703769388,
+              "accuracy": 1.0,
+              "kl_bits": 0.008155883333106006,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.008466536000000247,
+            "total_seconds": 1.8880171079999997,
+            "skill_bytes": 425619,
+            "hash": "386425bc2fda15ef259afbaa2b4db30999a0ada05f02bf67308c2661eedd5591",
+            "times": [
+              1.8902036080000002,
+              1.8858306079999991
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.002653448533108053,
+              "accuracy": 1.0,
+              "kl_bits": 8.497227185063521e-08,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.002653448533108053,
+              "accuracy": 1.0,
+              "kl_bits": 8.497227185063521e-08,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008689988999996956,
+            "total_seconds": 0.013039421999998524,
+            "skill_bytes": 425619,
+            "hash": "2c791e28608cc2074dface3603800914f47e81fe0aecbfeb7d154caeeae81966",
+            "times": [
+              0.012894230999997092,
+              0.013184612999999956
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 18.532861738144224,
+              "accuracy": 0.0,
+              "kl_bits": 18.50639899894691,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.06342145165917691,
+              "accuracy": 0.9921875,
+              "kl_bits": 0.08315031110818236,
+              "agreement": 0.9921875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 72,
+            "conversion_seconds": 0.004923107999999843,
+            "total_seconds": 0.5012261094999957,
+            "skill_bytes": 388587,
+            "hash": "7ebe9be0d97356f176e1eae6a811f78d90ca4262a80c1aa18e4c0228bbd0b4cf",
+            "times": [
+              0.5004901060000009,
+              0.5019621129999905
+            ]
+          }
+        }
+      },
+      "cold_exact": 2,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 902,
+      "domain": "rule",
+      "donors": {
+        "A": {
+          "training_steps": 120,
+          "producer_forward_calls": 137,
+          "creation_and_reference_seconds": 0.5649959829999887,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "d8809a463cb36a5c2857fd1ef44c77ec21aa6361207cd1b908f55e24320bd122",
+          "validation": {
+            "bpb": 0.05974633389313407,
+            "accuracy": 1.0
+          },
+          "test": {
+            "bpb": 0.13907043060336877,
+            "accuracy": 0.9765625
+          }
+        },
+        "B": {
+          "training_steps": 136,
+          "producer_forward_calls": 155,
+          "creation_and_reference_seconds": 0.6131872600000037,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "9487140c7a2286e01003dd69fc4794b086c34ff57561638b749f1354e6f8d066",
+          "validation": {
+            "bpb": 0.05051980310083926,
+            "accuracy": 1.0
+          },
+          "test": {
+            "bpb": 0.44878886103004695,
+            "accuracy": 0.9375
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.2900914877244723,
+              "accuracy": 0.9609375,
+              "kl_bits": 0.12763321317053813,
+              "agreement": 0.96875,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.2900914877244723,
+              "accuracy": 0.9609375,
+              "kl_bits": 0.12763321317053813,
+              "agreement": 0.96875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.007865949999995792,
+            "total_seconds": 0.01169398799999044,
+            "skill_bytes": 388587,
+            "hash": "f12514a11471fd364d0d7ab611fdf721a2d8195d20a7461a06b8ed2facd3f4b0",
+            "times": [
+              0.01169398799999044
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.17757982000565342,
+              "accuracy": 0.9765625,
+              "kl_bits": 0.005304591597235249,
+              "agreement": 1.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.17757982000565342,
+              "accuracy": 0.9765625,
+              "kl_bits": 0.005304591597235249,
+              "agreement": 1.0,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.008742135999995071,
+            "total_seconds": 0.013072471000000974,
+            "skill_bytes": 425619,
+            "hash": "e76fbe3380ba7d0b634d4d3b037b27b25da1d59307d25514a40d8129ebc5352b",
+            "times": [
+              0.013072471000000974
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 13.205341330335308,
+              "accuracy": 0.0,
+              "kl_bits": 12.829767538422173,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.4083123682453163,
+              "accuracy": 0.953125,
+              "kl_bits": 0.9833484100813804,
+              "agreement": 0.9296875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.008634875000012698,
+            "total_seconds": 1.8957385360000032,
+            "skill_bytes": 425619,
+            "hash": "4c3d9491058b83bc3d9ec57bacae13e6d7d23406f84f25be16efa034bc2b1093",
+            "times": [
+              1.8981032780000078,
+              1.8933737939999986
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.13924759551121016,
+              "accuracy": 0.9765625,
+              "kl_bits": 1.6054165202368138e-06,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.13924759551121016,
+              "accuracy": 0.9765625,
+              "kl_bits": 1.6054165202368138e-06,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008662664000013365,
+            "total_seconds": 0.013248548000007077,
+            "skill_bytes": 425619,
+            "hash": "dca6c6be374c967e2d78f169180251efd8836799b0b7c2b83c74af8e31ba5c7d",
+            "times": [
+              0.012903366000003302,
+              0.01359373000001085
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 21.538422906226742,
+              "accuracy": 0.0,
+              "kl_bits": 20.920934154607153,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.21736902433206282,
+              "accuracy": 0.9609375,
+              "kl_bits": 1.6577195358633343,
+              "agreement": 0.9375,
+              "near": false
+            },
+            "matched": false,
+            "steps": 184,
+            "conversion_seconds": 0.005069093999992447,
+            "total_seconds": 1.3266501510000026,
+            "skill_bytes": 388587,
+            "hash": "5de6932bd3ef03867dd549585a1be15798d890282687c77cffb94ddef021b5ab",
+            "times": [
+              1.317620336999994,
+              1.3356799650000113
+            ]
+          }
+        },
+        "B": {
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.5128936639673413,
+              "accuracy": 0.921875,
+              "kl_bits": 0.02285676791075636,
+              "agreement": 0.984375,
+              "near": false,
+              "opposite_accuracy": 0.0390625
+            },
+            "selected": {
+              "bpb": 0.5128936639673413,
+              "accuracy": 0.921875,
+              "kl_bits": 0.02285676791075636,
+              "agreement": 0.984375,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.008665859000004161,
+            "total_seconds": 0.012955790999995997,
+            "skill_bytes": 425619,
+            "hash": "aa9d8f891ed69182ebf124cf89efab21c2a871875ca5747e003522f0bc36b438",
+            "times": [
+              0.012955790999995997
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 21.502064321974945,
+              "accuracy": 0.0,
+              "kl_bits": 21.10302386577975,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.050442197445904696,
+              "accuracy": 0.984375,
+              "kl_bits": 2.2955813316843083,
+              "agreement": 0.921875,
+              "near": false
+            },
+            "matched": true,
+            "steps": 152,
+            "conversion_seconds": 0.004629520999998249,
+            "total_seconds": 1.0828412690000064,
+            "skill_bytes": 388587,
+            "hash": "be3f005533e962f7dcf1899be0e991fed317600e08cd98d5e92246269a597033",
+            "times": [
+              1.059147179000007,
+              1.1065353590000058
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 13.208343338563468,
+              "accuracy": 0.0,
+              "kl_bits": 12.904264874895183,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.187439683975757,
+              "accuracy": 0.96875,
+              "kl_bits": 0.8079490476758173,
+              "agreement": 0.921875,
+              "near": false
+            },
+            "matched": true,
+            "steps": 64,
+            "conversion_seconds": 0.009477749000012636,
+            "total_seconds": 0.5039898265000105,
+            "skill_bytes": 425619,
+            "hash": "16efef0ef7ce65025d486ec89f0657af40d82ddd539cb6172b7dcfe248dde408",
+            "times": [
+              0.5036815400000165,
+              0.5042981130000044
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.8702029280063152,
+              "accuracy": 0.7578125,
+              "kl_bits": 0.7505546040865623,
+              "agreement": 0.7578125,
+              "near": false,
+              "opposite_accuracy": 0.0234375
+            },
+            "selected": {
+              "bpb": 0.8702029280063152,
+              "accuracy": 0.7578125,
+              "kl_bits": 0.7505546040865623,
+              "agreement": 0.7578125,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.0076659819999918,
+            "total_seconds": 0.011354850999978794,
+            "skill_bytes": 388587,
+            "hash": "4da3862928992f5b47b4dc5a52dc1abece5b1fb81847e9aa11145a51f042a260",
+            "times": [
+              0.011354850999978794
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.44901238945953786,
+              "accuracy": 0.9375,
+              "kl_bits": 4.3025998468141865e-06,
+              "agreement": 1.0,
+              "near": false,
+              "opposite_accuracy": 0.0390625
+            },
+            "selected": {
+              "bpb": 0.44901238945953786,
+              "accuracy": 0.9375,
+              "kl_bits": 4.3025998468141865e-06,
+              "agreement": 1.0,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.00882951600000581,
+            "total_seconds": 0.012995523500002548,
+            "skill_bytes": 425619,
+            "hash": "9d43d0b5af06ee95332b756cbab0c4944dbf1fb847ca1eebe0e6c96f660a0500",
+            "times": [
+              0.013020592000003717,
+              0.01297045500000138
+            ]
+          }
+        }
+      },
+      "cold_exact": 2,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 903,
+      "domain": "rule",
+      "donors": {
+        "A": {
+          "training_steps": 320,
+          "producer_forward_calls": 362,
+          "creation_and_reference_seconds": 1.4249759409999996,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "3fd6c6dd9310ab7a3270a9357e2499e369a9ff25da022398d5b8637cf9573aa8",
+          "validation": {
+            "bpb": 0.17040683101438464,
+            "accuracy": 0.9765625
+          },
+          "test": {
+            "bpb": 0.35621748177768325,
+            "accuracy": 0.921875
+          }
+        },
+        "B": {
+          "training_steps": 320,
+          "producer_forward_calls": 362,
+          "creation_and_reference_seconds": 1.4110861209999968,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "defae7f1c83b8a4290f85545ff4f0109714d7e4f6de322e280a50731512f54d0",
+          "validation": {
+            "bpb": 0.2018733392311968,
+            "accuracy": 0.96875
+          },
+          "test": {
+            "bpb": 0.12902146193186384,
+            "accuracy": 0.9765625
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.34254905131590874,
+              "accuracy": 0.921875,
+              "kl_bits": 0.04217803345679243,
+              "agreement": 0.9609375,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.34254905131590874,
+              "accuracy": 0.921875,
+              "kl_bits": 0.04217803345679243,
+              "agreement": 0.9609375,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.008532774000002519,
+            "total_seconds": 0.012645403999997029,
+            "skill_bytes": 425619,
+            "hash": "631ac0d8417962e1d5c1e4738d83ac78254fee6db558cb6eafd492cf42cda842",
+            "times": [
+              0.012645403999997029
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 20.130982374529967,
+              "accuracy": 0.0,
+              "kl_bits": 19.091322084668075,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.7550290019104898,
+              "accuracy": 0.8984375,
+              "kl_bits": 3.281704605262502,
+              "agreement": 0.8359375,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.0046327040000022635,
+            "total_seconds": 1.6884724440000056,
+            "skill_bytes": 388587,
+            "hash": "71a89f6c8efdcb9d88a341993aea73f1c07268c29e06d7407e9cb9e495d4fbff",
+            "times": [
+              1.6714341110000106,
+              1.7055107770000006
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 13.575127986340448,
+              "accuracy": 0.0,
+              "kl_bits": 13.384986449844403,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.045289456899276284,
+              "accuracy": 1.0,
+              "kl_bits": 0.6376486745307315,
+              "agreement": 0.921875,
+              "near": false
+            },
+            "matched": true,
+            "steps": 56,
+            "conversion_seconds": 0.0089894409999971,
+            "total_seconds": 0.44114522550000146,
+            "skill_bytes": 425619,
+            "hash": "50a0707a0fd8ff06fe991864cbbe9eab73f0c184e877bb44addb59f425a1b2b4",
+            "times": [
+              0.44001654100000565,
+              0.4422739099999973
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.48465752336047596,
+              "accuracy": 0.8984375,
+              "kl_bits": 0.4290481823700747,
+              "agreement": 0.8671875,
+              "near": false,
+              "opposite_accuracy": 0.0234375
+            },
+            "selected": {
+              "bpb": 0.48465752336047596,
+              "accuracy": 0.8984375,
+              "kl_bits": 0.4290481823700747,
+              "agreement": 0.8671875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.007613210000002368,
+            "total_seconds": 0.011237759000010783,
+            "skill_bytes": 388587,
+            "hash": "8064b5ad932da11bcbf4ca0480ac863cc0322cc7a57cc2f9df1174e21565025c",
+            "times": [
+              0.011237759000010783
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.3570998197328475,
+              "accuracy": 0.921875,
+              "kl_bits": 8.389438484572725e-06,
+              "agreement": 1.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.3570998197328475,
+              "accuracy": 0.921875,
+              "kl_bits": 8.389438484572725e-06,
+              "agreement": 1.0,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.008633842999998365,
+            "total_seconds": 0.013034182500000213,
+            "skill_bytes": 425619,
+            "hash": "1961e7f619ba4491b9dcb35e2dee779dc7114aa4beb226b163981fa66414151d",
+            "times": [
+              0.01285023699999499,
+              0.013218128000005436
+            ]
+          }
+        },
+        "B": {
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.21460042477157582,
+              "accuracy": 0.9453125,
+              "kl_bits": 0.19002615357138528,
+              "agreement": 0.953125,
+              "near": false,
+              "opposite_accuracy": 0.0078125
+            },
+            "selected": {
+              "bpb": 0.21460042477157582,
+              "accuracy": 0.9453125,
+              "kl_bits": 0.19002615357138528,
+              "agreement": 0.953125,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.00781084199999782,
+            "total_seconds": 0.011498156999991238,
+            "skill_bytes": 388587,
+            "hash": "1e78c9fb7ca49770c47f1ce500bd8944297dbd99215f632fc80cb014ce412ad1",
+            "times": [
+              0.011498156999991238
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 20.14181275254588,
+              "accuracy": 0.0,
+              "kl_bits": 20.331780768380437,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.1836319199779414,
+              "accuracy": 0.9453125,
+              "kl_bits": 0.5024946724692999,
+              "agreement": 0.921875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 184,
+            "conversion_seconds": 0.004672987000006401,
+            "total_seconds": 1.2891167805000023,
+            "skill_bytes": 388587,
+            "hash": "1ab78ab87fa4a3e4a80f65b77a71ae5e185b1593fa6520699b68f1232fcbc566",
+            "times": [
+              1.2832427240000044,
+              1.2949908370000003
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.08114669883704728,
+              "accuracy": 0.9765625,
+              "kl_bits": 0.00491683998386985,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.08114669883704728,
+              "accuracy": 0.9765625,
+              "kl_bits": 0.00491683998386985,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008827173000000244,
+            "total_seconds": 0.012854466000007392,
+            "skill_bytes": 425619,
+            "hash": "7a9e42f72bdc26114e745cffb06deb3a33010be56bb91e28b69d8473ac777c40",
+            "times": [
+              0.012854466000007392
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.1278694843985196,
+              "accuracy": 0.9765625,
+              "kl_bits": 2.884978041315337e-06,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.1278694843985196,
+              "accuracy": 0.9765625,
+              "kl_bits": 2.884978041315337e-06,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008417023999996331,
+            "total_seconds": 0.012827856000001248,
+            "skill_bytes": 425619,
+            "hash": "338470c03faf6b3cb47326b096940cb3e860c7f659004d316bfa2c39180069e9",
+            "times": [
+              0.012524933999984,
+              0.013130778000018495
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 13.57243866138216,
+              "accuracy": 0.0,
+              "kl_bits": 13.503777240837401,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.35411376470345,
+              "accuracy": 0.953125,
+              "kl_bits": 0.6065845571740252,
+              "agreement": 0.9296875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 88,
+            "conversion_seconds": 0.008873128000004726,
+            "total_seconds": 0.6882829740000034,
+            "skill_bytes": 425619,
+            "hash": "41c4ee63dc85a87c3938d4b030733f5b259856bdcfb8fbfafe977beeca866541",
+            "times": [
+              0.6877305100000086,
+              0.6888354379999981
+            ]
+          }
+        }
+      },
+      "cold_exact": 2,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 904,
+      "domain": "rule",
+      "donors": {
+        "A": {
+          "training_steps": 320,
+          "producer_forward_calls": 362,
+          "creation_and_reference_seconds": 1.438551474999997,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "db6f1d24cf210a284c45a9d1e66d436f581c8f6227b9f750a453476bfacb2963",
+          "validation": {
+            "bpb": 0.09866415737218391,
+            "accuracy": 0.9765625
+          },
+          "test": {
+            "bpb": 0.002404103131472309,
+            "accuracy": 1.0
+          }
+        },
+        "B": {
+          "training_steps": 320,
+          "producer_forward_calls": 362,
+          "creation_and_reference_seconds": 1.4059807619999987,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "8fda05e7b901b71891bba13601b20425df308f90f9aea723170c75363527c51a",
+          "validation": {
+            "bpb": 0.04537465392608162,
+            "accuracy": 0.984375
+          },
+          "test": {
+            "bpb": 0.05262522800409121,
+            "accuracy": 0.9921875
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.15749683273747642,
+              "accuracy": 0.9765625,
+              "kl_bits": 0.15129980981132352,
+              "agreement": 0.9765625,
+              "near": false,
+              "opposite_accuracy": 0.0234375
+            },
+            "selected": {
+              "bpb": 0.15749683273747642,
+              "accuracy": 0.9765625,
+              "kl_bits": 0.15129980981132352,
+              "agreement": 0.9765625,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.007785663000007048,
+            "total_seconds": 0.011520781000015745,
+            "skill_bytes": 388587,
+            "hash": "5137d81037bc6caff7bf1372a7b442abe615d60e96f6abdc0e57357fb603afb6",
+            "times": [
+              0.011520781000015745
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 19.33465246374397,
+              "accuracy": 0.0,
+              "kl_bits": 19.31202605450731,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.032827393688748735,
+              "accuracy": 0.9921875,
+              "kl_bits": 0.05699549380034253,
+              "agreement": 0.9921875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 96,
+            "conversion_seconds": 0.004882159000004549,
+            "total_seconds": 0.6771827624999958,
+            "skill_bytes": 388587,
+            "hash": "52b7d3d3897c48410b084b4db8cde761ee96bbcea011824643a12ba3db2abd69",
+            "times": [
+              0.6781480209999984,
+              0.6762175039999931
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.0032807881373728386,
+              "accuracy": 1.0,
+              "kl_bits": 0.0006970387741390506,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.0032807881373728386,
+              "accuracy": 1.0,
+              "kl_bits": 0.0006970387741390506,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008768528000004494,
+            "total_seconds": 0.01310229599999957,
+            "skill_bytes": 425619,
+            "hash": "f82a4396a9079c576bbfe457bdd476539048bd2e0d971a3537c3773a102a9c0e",
+            "times": [
+              0.01310229599999957
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.0023976614221442967,
+              "accuracy": 1.0,
+              "kl_bits": 1.3436388945852248e-07,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.0023976614221442967,
+              "accuracy": 1.0,
+              "kl_bits": 1.3436388945852248e-07,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008835989000004929,
+            "total_seconds": 0.013533388500000854,
+            "skill_bytes": 425619,
+            "hash": "007adaffe07a2cd398c4ef0d86bb9741ce609867e691045d29b316544dd5dd21",
+            "times": [
+              0.013127913000005265,
+              0.013938863999996443
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 13.067217727993068,
+              "accuracy": 0.0,
+              "kl_bits": 13.042718211423523,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.0771570541722031,
+              "accuracy": 1.0,
+              "kl_bits": 0.0707156036704211,
+              "agreement": 1.0,
+              "near": false
+            },
+            "matched": false,
+            "steps": 64,
+            "conversion_seconds": 0.008960876000003282,
+            "total_seconds": 0.5141083245000004,
+            "skill_bytes": 425619,
+            "hash": "2fc88a570c9c21d322df0bd034de05983b91cf33fcee4d9d22a2f3c29b4d85ea",
+            "times": [
+              0.5110928180000087,
+              0.5171238309999922
+            ]
+          }
+        },
+        "B": {
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.05523359898296358,
+              "accuracy": 0.9921875,
+              "kl_bits": 0.0009095909379274983,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.05523359898296358,
+              "accuracy": 0.9921875,
+              "kl_bits": 0.0009095909379274983,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008588117999991596,
+            "total_seconds": 0.01280745299999353,
+            "skill_bytes": 425619,
+            "hash": "6ea5caee3d2a06cbc765cf8290fa7fd6a01543f8eb21b137979c651b0be835fb",
+            "times": [
+              0.01280745299999353
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 19.333939372616147,
+              "accuracy": 0.0,
+              "kl_bits": 19.254281231842448,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.09893086033905214,
+              "accuracy": 0.9921875,
+              "kl_bits": 0.4558448003721492,
+              "agreement": 0.984375,
+              "near": false
+            },
+            "matched": false,
+            "steps": 112,
+            "conversion_seconds": 0.004702674000000684,
+            "total_seconds": 0.8053183865000051,
+            "skill_bytes": 388587,
+            "hash": "62dd7e88b04614dddd3f3630c9c55707fd08b188eeaa2363c07f81af8b92a406",
+            "times": [
+              0.8076653260000057,
+              0.8029714470000044
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 13.074049827477147,
+              "accuracy": 0.0,
+              "kl_bits": 13.031057452246387,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.010255544377701865,
+              "accuracy": 1.0,
+              "kl_bits": 0.1272604154585935,
+              "agreement": 0.9921875,
+              "near": false
+            },
+            "matched": true,
+            "steps": 72,
+            "conversion_seconds": 0.008998916999999551,
+            "total_seconds": 0.5882072669999943,
+            "skill_bytes": 425619,
+            "hash": "c57b00e0a13ea2371af1f4c24b9dade1648c422552a8475d880ceb8b43358614",
+            "times": [
+              0.5800302469999963,
+              0.5963842869999922
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.0527063441124736,
+              "accuracy": 0.9921875,
+              "kl_bits": 7.397890199306096e-07,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.0527063441124736,
+              "accuracy": 0.9921875,
+              "kl_bits": 7.397890199306096e-07,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008843628999997577,
+            "total_seconds": 0.013349273999999411,
+            "skill_bytes": 425619,
+            "hash": "f320c9eeeac4d2feb97e45e42cf5008677886c1634e9a3c0149a484113899ef7",
+            "times": [
+              0.013245971000003465,
+              0.013452576999995358
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.5105875862939065,
+              "accuracy": 0.90625,
+              "kl_bits": 0.44602994824385545,
+              "agreement": 0.9140625,
+              "near": false,
+              "opposite_accuracy": 0.03125
+            },
+            "selected": {
+              "bpb": 0.5105875862939065,
+              "accuracy": 0.90625,
+              "kl_bits": 0.44602994824385545,
+              "agreement": 0.9140625,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.00793376699999726,
+            "total_seconds": 0.011633027999991441,
+            "skill_bytes": 388587,
+            "hash": "bc6fdc57682888ff4910c3d404a6f1428ad605ef185349de0ba64b6eb47d6076",
+            "times": [
+              0.011633027999991441
+            ]
+          }
+        }
+      },
+      "cold_exact": 2,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 905,
+      "domain": "rule",
+      "donors": {
+        "A": {
+          "training_steps": 320,
+          "producer_forward_calls": 362,
+          "creation_and_reference_seconds": 1.412344473999994,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "841ec769960e2be1ef9525ae506f6026c63b3deffa5f0d4a6f39384ab5a32dcd",
+          "validation": {
+            "bpb": 0.05538401798600923,
+            "accuracy": 0.984375
+          },
+          "test": {
+            "bpb": 0.05087232891433354,
+            "accuracy": 0.9921875
+          }
+        },
+        "B": {
+          "training_steps": 320,
+          "producer_forward_calls": 362,
+          "creation_and_reference_seconds": 1.4031522939999945,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "e843539463d34fe7770e9c32324b50296e0a4c949ea569bde8ed3bd746203a66",
+          "validation": {
+            "bpb": 0.5032193260844164,
+            "accuracy": 0.9453125
+          },
+          "test": {
+            "bpb": 0.11724742627645303,
+            "accuracy": 0.9921875
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.07743102285891745,
+              "accuracy": 0.9921875,
+              "kl_bits": 0.001281998117496507,
+              "agreement": 1.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.07743102285891745,
+              "accuracy": 0.9921875,
+              "kl_bits": 0.001281998117496507,
+              "agreement": 1.0,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.008528540000000362,
+            "total_seconds": 0.012866371000001209,
+            "skill_bytes": 425619,
+            "hash": "89e64b81c248246ee79b6f842cbcf92ccba1221ae85b9cb4be57cd221d2db76d",
+            "times": [
+              0.012866371000001209
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 25.982847272141097,
+              "accuracy": 0.0,
+              "kl_bits": 25.901255622050858,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.027256833408362924,
+              "accuracy": 1.0,
+              "kl_bits": 0.3054671766090177,
+              "agreement": 0.9921875,
+              "near": false
+            },
+            "matched": true,
+            "steps": 136,
+            "conversion_seconds": 0.0046774500000026364,
+            "total_seconds": 0.9617249755000117,
+            "skill_bytes": 388587,
+            "hash": "7a338ce81f177cb4c3a297d249a0ab5db454b748b90e9e276555430fe3df3c0c",
+            "times": [
+              0.9599400490000107,
+              0.9635099020000126
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 13.572884286649236,
+              "accuracy": 0.0,
+              "kl_bits": 13.54047629357965,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.0028044073375059317,
+              "accuracy": 1.0,
+              "kl_bits": 0.14807836490035942,
+              "agreement": 0.9921875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.009060849999997345,
+            "total_seconds": 1.902439229499997,
+            "skill_bytes": 425619,
+            "hash": "226e8a5c1b0177c69dd29ec377df474f1c2166518f80f01c436ddf7e8b03dd64",
+            "times": [
+              1.8928000749999967,
+              1.9120783839999973
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.04962494584364788,
+              "accuracy": 0.9921875,
+              "kl_bits": 1.7851398511052639e-06,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.04962494584364788,
+              "accuracy": 0.9921875,
+              "kl_bits": 1.7851398511052639e-06,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008847641999992106,
+            "total_seconds": 0.013342842499994845,
+            "skill_bytes": 425619,
+            "hash": "ea2aff0315f7db245396ce2baeb390e08219b139c2bb6101ff3cdedb5e04bb3a",
+            "times": [
+              0.013235681999987037,
+              0.013450003000002653
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.542359047117883,
+              "accuracy": 0.8984375,
+              "kl_bits": 0.5705454588867975,
+              "agreement": 0.890625,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.542359047117883,
+              "accuracy": 0.8984375,
+              "kl_bits": 0.5705454588867975,
+              "agreement": 0.890625,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.00792484299999785,
+            "total_seconds": 0.01178639900000178,
+            "skill_bytes": 388587,
+            "hash": "6e4abaa676959f6bf10ae3455d5e9e55c5b85719ab79483d1288cab0d793ec88",
+            "times": [
+              0.01178639900000178
+            ]
+          }
+        },
+        "B": {
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 0.11721637559296541,
+              "accuracy": 0.9921875,
+              "kl_bits": 4.343364100472824e-06,
+              "agreement": 1.0,
+              "near": true,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.3675311691900998,
+              "accuracy": 0.9453125,
+              "kl_bits": 0.35822411541985455,
+              "agreement": 0.9453125,
+              "near": false
+            },
+            "matched": false,
+            "steps": 32,
+            "conversion_seconds": 0.008630550000006565,
+            "total_seconds": 0.2626390620000123,
+            "skill_bytes": 425619,
+            "hash": "46a8e0b68f49a0b69f3beed9429eab419f4188fbbec52c15be4dece7eb6df669",
+            "times": [
+              0.26294778100000826,
+              0.26233034300001634
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 13.570088082535124,
+              "accuracy": 0.0,
+              "kl_bits": 13.477475120033573,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.24787830884751202,
+              "accuracy": 0.96875,
+              "kl_bits": 0.35250066081996284,
+              "agreement": 0.9609375,
+              "near": false
+            },
+            "matched": false,
+            "steps": 72,
+            "conversion_seconds": 0.009097584000002712,
+            "total_seconds": 0.5695483744999947,
+            "skill_bytes": 425619,
+            "hash": "0e3de8be5ca4fd4d75fd3756346c730325ba660a908437ff0dedce7c4603ab6d",
+            "times": [
+              0.5713359819999937,
+              0.5677607669999958
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 25.94179124697951,
+              "accuracy": 0.0,
+              "kl_bits": 25.666020197036453,
+              "agreement": 0.0,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.26456666673281043,
+              "accuracy": 0.953125,
+              "kl_bits": 0.7351696035122673,
+              "agreement": 0.9453125,
+              "near": false
+            },
+            "matched": false,
+            "steps": 192,
+            "conversion_seconds": 0.004775352999999427,
+            "total_seconds": 1.382717759500018,
+            "skill_bytes": 388587,
+            "hash": "8bbd1087dfc86b2b49c16992bf47157764a792858308111973667cd77949d0c3",
+            "times": [
+              1.387398786999995,
+              1.3780367320000408
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 0.14743247928527012,
+              "accuracy": 0.984375,
+              "kl_bits": 0.015660466616741902,
+              "agreement": 0.9921875,
+              "near": false,
+              "opposite_accuracy": 0.0
+            },
+            "selected": {
+              "bpb": 0.14743247928527012,
+              "accuracy": 0.984375,
+              "kl_bits": 0.015660466616741902,
+              "agreement": 0.9921875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.008619597000006252,
+            "total_seconds": 0.012804068999997753,
+            "skill_bytes": 425619,
+            "hash": "4ade6029e697afc1fb1b96068289c65b6119a58ed0b1eaefeca0a29a894e46fd",
+            "times": [
+              0.012804068999997753
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 0.9173738072672168,
+              "accuracy": 0.796875,
+              "kl_bits": 0.7781521095487457,
+              "agreement": 0.8046875,
+              "near": false,
+              "opposite_accuracy": 0.015625
+            },
+            "selected": {
+              "bpb": 0.9173738072672168,
+              "accuracy": 0.796875,
+              "kl_bits": 0.7781521095487457,
+              "agreement": 0.8046875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.0075982230000022355,
+            "total_seconds": 0.011219685000014579,
+            "skill_bytes": 388587,
+            "hash": "29452b6d7354351f156464baa6ba3210534da9b7af2c9fbb03db1bf3a39a9204",
+            "times": [
+              0.011219685000014579
+            ]
+          }
+        }
+      },
+      "cold_exact": 2,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 911,
+      "domain": "text",
+      "donors": {
+        "A": {
+          "training_steps": 64,
+          "producer_forward_calls": 66,
+          "creation_and_reference_seconds": 0.46950774399999773,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "758d5e43b2f9b04849545da275e4b86d2a2ab741fc7623946e019eeab2e293f4",
+          "validation": {
+            "bpb": 5.001070848501908,
+            "accuracy": 0.16666666666666666
+          },
+          "test": {
+            "bpb": 5.111976169510103,
+            "accuracy": 0.15773809523809523
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 5.687687653947276,
+              "accuracy": 0.13988095238095238,
+              "kl_bits": 1.1875963300345993,
+              "agreement": 0.2876984126984127,
+              "near": false
+            },
+            "selected": {
+              "bpb": 9.923456055550911,
+              "accuracy": 0.10813492063492064,
+              "kl_bits": 5.083102643048953,
+              "agreement": 0.23313492063492064,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.008756487999988849,
+            "total_seconds": 3.1313985129999935,
+            "skill_bytes": 425619,
+            "hash": "f8e08af8fd467afeaf9f1a603fa45309ff2ba5f7af75f02d37b29a5ec304e9f3",
+            "times": [
+              3.125124702999983,
+              3.137672323000004
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 5.111795147140786,
+              "accuracy": 0.15773809523809523,
+              "kl_bits": 3.4804826829278865e-06,
+              "agreement": 0.998015873015873,
+              "near": true
+            },
+            "selected": {
+              "bpb": 5.111795147140786,
+              "accuracy": 0.15773809523809523,
+              "kl_bits": 3.4804826829278865e-06,
+              "agreement": 0.998015873015873,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.009074755000000323,
+            "total_seconds": 0.017950365999993778,
+            "skill_bytes": 425619,
+            "hash": "c8c77e2ef5568947378385e166b63eb945e139ca15451dcf9c29e594281c9cf6",
+            "times": [
+              0.018115091999987953,
+              0.017785639999999603
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 6.411335347811973,
+              "accuracy": 0.08035714285714286,
+              "kl_bits": 1.9338291282917843,
+              "agreement": 0.15476190476190477,
+              "near": false
+            },
+            "selected": {
+              "bpb": 19.43619519075351,
+              "accuracy": 0.0873015873015873,
+              "kl_bits": 14.411908053552972,
+              "agreement": 0.1875,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.00496062700000266,
+            "total_seconds": 2.679114857000002,
+            "skill_bytes": 388587,
+            "hash": "8b2038b070671526a714b0588a3039319a08102751ebe3eee549ce259d2939bd",
+            "times": [
+              2.6753086159999953,
+              2.6829210980000084
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 5.135097380433406,
+              "accuracy": 0.15674603174603174,
+              "kl_bits": 0.01395316428268439,
+              "agreement": 0.9097222222222222,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.135097380433406,
+              "accuracy": 0.15674603174603174,
+              "kl_bits": 0.01395316428268439,
+              "agreement": 0.9097222222222222,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.008815511999983983,
+            "total_seconds": 0.017844115999963606,
+            "skill_bytes": 425619,
+            "hash": "5e7d01a86cdd1a4e7a537fe55c5100471d399943c853558730c335ad3db0ea91",
+            "times": [
+              0.017844115999963606
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 5.19178598680654,
+              "accuracy": 0.15079365079365079,
+              "kl_bits": 0.2591088103165502,
+              "agreement": 0.6626984126984127,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.19178598680654,
+              "accuracy": 0.15079365079365079,
+              "kl_bits": 0.2591088103165502,
+              "agreement": 0.6626984126984127,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.008046551999996154,
+            "total_seconds": 0.0161185370000112,
+            "skill_bytes": 388587,
+            "hash": "4d12535ee02824fd7ed8b9717828d0cb21d6d81d9c58fdf2062157155b23457e",
+            "times": [
+              0.0161185370000112
+            ]
+          }
+        }
+      },
+      "cold_exact": 1,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 912,
+      "domain": "text",
+      "donors": {
+        "A": {
+          "training_steps": 64,
+          "producer_forward_calls": 66,
+          "creation_and_reference_seconds": 0.46009834400001637,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "badf051c7969fa34f1429ea032827273d512b08f3b2a1a42205c61769aaeb9c6",
+          "validation": {
+            "bpb": 4.931822106352191,
+            "accuracy": 0.15773809523809523
+          },
+          "test": {
+            "bpb": 5.050332183843706,
+            "accuracy": 0.1597222222222222
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 5.764930490268391,
+              "accuracy": 0.1388888888888889,
+              "kl_bits": 1.222606004478763,
+              "agreement": 0.3055555555555556,
+              "near": false
+            },
+            "selected": {
+              "bpb": 10.468764459890672,
+              "accuracy": 0.10912698412698413,
+              "kl_bits": 5.386654335113594,
+              "agreement": 0.23412698412698413,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.008940529000000197,
+            "total_seconds": 3.086167187000001,
+            "skill_bytes": 425619,
+            "hash": "03aab4ffbae37ff9d8fc33011fe8b3678f9d44518ecaec72bda28fb237714d0c",
+            "times": [
+              3.1073649790000104,
+              3.0649693949999914
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 7.105874060302129,
+              "accuracy": 0.10912698412698413,
+              "kl_bits": 2.3887404864536963,
+              "agreement": 0.22123015873015872,
+              "near": false
+            },
+            "selected": {
+              "bpb": 20.33789875342835,
+              "accuracy": 0.10714285714285714,
+              "kl_bits": 15.938543443666585,
+              "agreement": 0.2113095238095238,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.004942193999994515,
+            "total_seconds": 2.6784628994999906,
+            "skill_bytes": 388587,
+            "hash": "f2fbf7cab2ecc165b718f3d0d298afb3aa5489b4d5658d845d184bbf48e96811",
+            "times": [
+              2.683236287999989,
+              2.673689510999992
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 5.093950666492784,
+              "accuracy": 0.15674603174603174,
+              "kl_bits": 0.016016165520029487,
+              "agreement": 0.9047619047619048,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.093950666492784,
+              "accuracy": 0.15674603174603174,
+              "kl_bits": 0.016016165520029487,
+              "agreement": 0.9047619047619048,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.008801151000000118,
+            "total_seconds": 0.017570433999992474,
+            "skill_bytes": 425619,
+            "hash": "b3acb372fc214cab0dccfe23831ca3af79a59bcccad60f973079bd8266f80620",
+            "times": [
+              0.017570433999992474
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 5.118147435656811,
+              "accuracy": 0.1349206349206349,
+              "kl_bits": 0.20857729891252122,
+              "agreement": 0.6825396825396826,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.118147435656811,
+              "accuracy": 0.1349206349206349,
+              "kl_bits": 0.20857729891252122,
+              "agreement": 0.6825396825396826,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.007750352000016392,
+            "total_seconds": 0.0155773700000168,
+            "skill_bytes": 388587,
+            "hash": "4f43112515706ba73501440fc71a53693c869e8661b874722e1e2f4c9602061a",
+            "times": [
+              0.0155773700000168
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 5.050333022331855,
+              "accuracy": 0.1597222222222222,
+              "kl_bits": 2.4217708545373626e-06,
+              "agreement": 0.9990079365079365,
+              "near": true
+            },
+            "selected": {
+              "bpb": 5.050333022331855,
+              "accuracy": 0.1597222222222222,
+              "kl_bits": 2.4217708545373626e-06,
+              "agreement": 0.9990079365079365,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008753433000009636,
+            "total_seconds": 0.017506744500010996,
+            "skill_bytes": 425619,
+            "hash": "dd4d0d08151c450ddb157fca84bdea97656a756337704721ddd150cfadf2fc7a",
+            "times": [
+              0.017363788000011482,
+              0.01764970100001051
+            ]
+          }
+        }
+      },
+      "cold_exact": 1,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 913,
+      "domain": "text",
+      "donors": {
+        "A": {
+          "training_steps": 64,
+          "producer_forward_calls": 66,
+          "creation_and_reference_seconds": 0.47422138999999675,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "78f657acaab0324df52bcdfd99781b60c0f5d45968196c0f7cb1524c08a7a180",
+          "validation": {
+            "bpb": 4.857835064146843,
+            "accuracy": 0.17063492063492064
+          },
+          "test": {
+            "bpb": 5.006830425802776,
+            "accuracy": 0.17261904761904762
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 5.078642582159614,
+              "accuracy": 0.15773809523809523,
+              "kl_bits": 0.20740076213182287,
+              "agreement": 0.6378968253968254,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.078642582159614,
+              "accuracy": 0.15773809523809523,
+              "kl_bits": 0.20740076213182287,
+              "agreement": 0.6378968253968254,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.007761340000001837,
+            "total_seconds": 0.01685916499999962,
+            "skill_bytes": 388587,
+            "hash": "5eb651e402255d9597a2d3aeb8b7f1a0c8d9545f926b67bb96f42776bdabc3b8",
+            "times": [
+              0.01685916499999962
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 5.749599018950627,
+              "accuracy": 0.13392857142857142,
+              "kl_bits": 1.2709755433283865,
+              "agreement": 0.2490079365079365,
+              "near": false
+            },
+            "selected": {
+              "bpb": 10.424757570003926,
+              "accuracy": 0.11011904761904762,
+              "kl_bits": 5.821485490155285,
+              "agreement": 0.23313492063492064,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.009044667000011941,
+            "total_seconds": 3.1013024060000163,
+            "skill_bytes": 425619,
+            "hash": "ad777e4159730a180ee27459346cc85ddd41b48e1787443d08289e62b8789a0b",
+            "times": [
+              3.109769144000012,
+              3.0928356680000206
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 5.00664048453832,
+              "accuracy": 0.17261904761904762,
+              "kl_bits": 2.6689136352376656e-06,
+              "agreement": 0.9990079365079365,
+              "near": true
+            },
+            "selected": {
+              "bpb": 5.00664048453832,
+              "accuracy": 0.17261904761904762,
+              "kl_bits": 2.6689136352376656e-06,
+              "agreement": 0.9990079365079365,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.008762976000014078,
+            "total_seconds": 0.017979892500008532,
+            "skill_bytes": 425619,
+            "hash": "598f71ca823dbd3c29de272368dba57c8cb6ef60dfcdb2e0b86958c1cd0859ce",
+            "times": [
+              0.01795219800001746,
+              0.018007586999999603
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 5.030991033595248,
+              "accuracy": 0.1736111111111111,
+              "kl_bits": 0.01209689115603062,
+              "agreement": 0.9107142857142857,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.030991033595248,
+              "accuracy": 0.1736111111111111,
+              "kl_bits": 0.01209689115603062,
+              "agreement": 0.9107142857142857,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.0086793039999975,
+            "total_seconds": 0.0179023299999983,
+            "skill_bytes": 425619,
+            "hash": "4e8596ce4c40976ac87cb77bc0570c4c8fa8fc619b4b359ced67cca1164b883d",
+            "times": [
+              0.0179023299999983
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 7.078955208452381,
+              "accuracy": 0.07936507936507936,
+              "kl_bits": 2.6015423543892022,
+              "agreement": 0.1488095238095238,
+              "near": false
+            },
+            "selected": {
+              "bpb": 19.78560610088699,
+              "accuracy": 0.10515873015873016,
+              "kl_bits": 15.774950048673945,
+              "agreement": 0.20436507936507936,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.004832218999979432,
+            "total_seconds": 2.617723733999995,
+            "skill_bytes": 388587,
+            "hash": "54631ce1c1be65dcb33cf53feb0e0bfa96c688071ef8a6084b18ab79cd0c2ec3",
+            "times": [
+              2.6305027459999906,
+              2.604944721999999
+            ]
+          }
+        }
+      },
+      "cold_exact": 1,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 914,
+      "domain": "text",
+      "donors": {
+        "A": {
+          "training_steps": 64,
+          "producer_forward_calls": 66,
+          "creation_and_reference_seconds": 0.46506222299998967,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "897f9ff7a008eba20542ffbbae71a92fc12e457416c5f28611530e2ef3a249da",
+          "validation": {
+            "bpb": 4.9755930656809015,
+            "accuracy": 0.1746031746031746
+          },
+          "test": {
+            "bpb": 5.124627601692899,
+            "accuracy": 0.15674603174603174
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 7.206235746675779,
+              "accuracy": 0.07043650793650794,
+              "kl_bits": 2.707051798909472,
+              "agreement": 0.1111111111111111,
+              "near": false
+            },
+            "selected": {
+              "bpb": 19.688912674535786,
+              "accuracy": 0.1259920634920635,
+              "kl_bits": 15.926882286570123,
+              "agreement": 0.20833333333333334,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.004756901000007474,
+            "total_seconds": 2.6593293380000063,
+            "skill_bytes": 388587,
+            "hash": "6e4cb90d6aace56dd011063d967e0099df81b0ba21cc3104f47b66c3bfcf4b86",
+            "times": [
+              2.65359876200003,
+              2.6650599139999827
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 5.269382902729107,
+              "accuracy": 0.1259920634920635,
+              "kl_bits": 0.3316127722760408,
+              "agreement": 0.5843253968253969,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.269382902729107,
+              "accuracy": 0.1259920634920635,
+              "kl_bits": 0.3316127722760408,
+              "agreement": 0.5843253968253969,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.007977918999984013,
+            "total_seconds": 0.016992171999959282,
+            "skill_bytes": 388587,
+            "hash": "d08a41ce7a47109678386f25a4f3292291db399292025d2c83dce140d03709d2",
+            "times": [
+              0.016992171999959282
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 5.124771698854786,
+              "accuracy": 0.15674603174603174,
+              "kl_bits": 3.486875173878445e-06,
+              "agreement": 1.0,
+              "near": true
+            },
+            "selected": {
+              "bpb": 5.124771698854786,
+              "accuracy": 0.15674603174603174,
+              "kl_bits": 3.486875173878445e-06,
+              "agreement": 1.0,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.00929133799999704,
+            "total_seconds": 0.018961055500000157,
+            "skill_bytes": 425619,
+            "hash": "4c1d9a65edcb94320b38f6945833cc1ed7b25900a0b25fb282ff26429e6c0440",
+            "times": [
+              0.019170561999999336,
+              0.018751549000000978
+            ]
+          },
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 5.177861723494196,
+              "accuracy": 0.14682539682539683,
+              "kl_bits": 0.01861549200480061,
+              "agreement": 0.9087301587301587,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.177861723494196,
+              "accuracy": 0.14682539682539683,
+              "kl_bits": 0.01861549200480061,
+              "agreement": 0.9087301587301587,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.009344314999992775,
+            "total_seconds": 0.019923138999985213,
+            "skill_bytes": 425619,
+            "hash": "9df3011e67853d979764a64c2a38b4198debfa51e9187ecfedca36b18deeb59e",
+            "times": [
+              0.019923138999985213
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 5.691806916483498,
+              "accuracy": 0.1388888888888889,
+              "kl_bits": 1.3567862419200707,
+              "agreement": 0.2490079365079365,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.049950281190139,
+              "accuracy": 0.1488095238095238,
+              "kl_bits": 0.7219676535632743,
+              "agreement": 0.39880952380952384,
+              "near": false
+            },
+            "matched": true,
+            "steps": 24,
+            "conversion_seconds": 0.009262940000013486,
+            "total_seconds": 0.33655768399999886,
+            "skill_bytes": 425619,
+            "hash": "8b2bb53983b2f57063a4a84be5ca75e16263c06012afd6e2819c3e286c4d895f",
+            "times": [
+              0.35180067699999995,
+              0.32131469099999777
+            ]
+          }
+        }
+      },
+      "cold_exact": 1,
+      "forbidden_calls": 0
+    },
+    {
+      "seed": 915,
+      "domain": "text",
+      "donors": {
+        "A": {
+          "training_steps": 64,
+          "producer_forward_calls": 66,
+          "creation_and_reference_seconds": 0.4756090509999922,
+          "checkpoint_bytes": 150613,
+          "checkpoint_sha256": "61ec41d9cc1da6bd1e01a02f95e4f3259e84d3311479cd17978c7561b1a5726a",
+          "validation": {
+            "bpb": 4.977635798829438,
+            "accuracy": 0.17559523809523808
+          },
+          "test": {
+            "bpb": 5.153289919754808,
+            "accuracy": 0.16865079365079366
+          }
+        }
+      },
+      "cases": {
+        "A": {
+          "naive": {
+            "arm": "naive",
+            "zero": {
+              "bpb": 5.197635185603266,
+              "accuracy": 0.16765873015873015,
+              "kl_bits": 0.023102552692277893,
+              "agreement": 0.8988095238095238,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.197635185603266,
+              "accuracy": 0.16765873015873015,
+              "kl_bits": 0.023102552692277893,
+              "agreement": 0.8988095238095238,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.00864420800002108,
+            "total_seconds": 0.018632726000021194,
+            "skill_bytes": 425619,
+            "hash": "0407c36acd80042907a8cdbe8779a3550fc0906c449a3321916fecba08cbaf41",
+            "times": [
+              0.018632726000021194
+            ]
+          },
+          "scratch": {
+            "arm": "scratch",
+            "zero": {
+              "bpb": 7.611625868207767,
+              "accuracy": 0.04662698412698413,
+              "kl_bits": 2.7160723519345797,
+              "agreement": 0.0882936507936508,
+              "near": false
+            },
+            "selected": {
+              "bpb": 18.83735465026922,
+              "accuracy": 0.1130952380952381,
+              "kl_bits": 14.413685824859527,
+              "agreement": 0.21825396825396826,
+              "near": false
+            },
+            "matched": false,
+            "steps": 240,
+            "conversion_seconds": 0.005122777999986283,
+            "total_seconds": 2.6415102849999954,
+            "skill_bytes": 388587,
+            "hash": "72a53b52ad9d883829b7f6cd3daaa36a198aecd4fcc2bfce471a744da09a1206",
+            "times": [
+              2.64666622499999,
+              2.636354345000001
+            ]
+          },
+          "lift": {
+            "arm": "lift",
+            "zero": {
+              "bpb": 5.153350019127672,
+              "accuracy": 0.16865079365079366,
+              "kl_bits": 4.015810606441528e-06,
+              "agreement": 0.9990079365079365,
+              "near": true
+            },
+            "selected": {
+              "bpb": 5.153350019127672,
+              "accuracy": 0.16865079365079366,
+              "kl_bits": 4.015810606441528e-06,
+              "agreement": 0.9990079365079365,
+              "near": true
+            },
+            "matched": true,
+            "steps": 0,
+            "conversion_seconds": 0.009023029000019278,
+            "total_seconds": 0.018899564500017618,
+            "skill_bytes": 425619,
+            "hash": "39fc86b5bf7492218c3cc33f363d72a24203c82ded4153af4b34bae18106201b",
+            "times": [
+              0.018734959000028084,
+              0.019064170000007152
+            ]
+          },
+          "rank1": {
+            "arm": "rank1",
+            "zero": {
+              "bpb": 5.1443711786714665,
+              "accuracy": 0.16170634920634921,
+              "kl_bits": 0.264323805086126,
+              "agreement": 0.6696428571428571,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.1443711786714665,
+              "accuracy": 0.16170634920634921,
+              "kl_bits": 0.264323805086126,
+              "agreement": 0.6696428571428571,
+              "near": false
+            },
+            "matched": false,
+            "steps": 0,
+            "conversion_seconds": 0.00799385599998459,
+            "total_seconds": 0.01728054299996984,
+            "skill_bytes": 388587,
+            "hash": "6d5edb6ebf1aeb5ec2cb98035d8469fd7e9a09353d50a848a392545137ee0bb1",
+            "times": [
+              0.01728054299996984
+            ]
+          },
+          "parent": {
+            "arm": "parent",
+            "zero": {
+              "bpb": 5.705326037543557,
+              "accuracy": 0.13392857142857142,
+              "kl_bits": 1.2303796882485991,
+              "agreement": 0.29464285714285715,
+              "near": false
+            },
+            "selected": {
+              "bpb": 5.0916996098813545,
+              "accuracy": 0.16865079365079366,
+              "kl_bits": 0.6739491600965624,
+              "agreement": 0.41964285714285715,
+              "near": false
+            },
+            "matched": true,
+            "steps": 24,
+            "conversion_seconds": 0.009105164000004606,
+            "total_seconds": 0.30940310049997777,
+            "skill_bytes": 425619,
+            "hash": "bd319b3be0d7da2369751512ee7316141f4cf4f7ff35acad64ede591b91636a0",
+            "times": [
+              0.3132172409999896,
+              0.30558895999996594
+            ]
+          }
+        }
+      },
+      "cold_exact": 1,
+      "forbidden_calls": 0
+    }
+  ]
+}
