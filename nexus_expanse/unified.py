@@ -131,9 +131,9 @@ class NexusExpanseUnified:
             episodic=self.episodic.snapshot(max_bytes=self.MEMORY_BUDGET),
             relation=self.reasoning.snapshot(),
             arbitration=(self.arbitrator.share, self.arbitrator.weight(0.0), self.arbitrator.updates),
-            reader=(bytes(self.reader.events), self.reader.previous, self.reader.pending,
+            reader=(bytes(self.reader.events).hex(), self.reader.previous, self.reader.pending,
                     self.reader.deep_calls),
-            history=bytes(self._history),
+            history=bytes(self._history).hex(),
             preceding_forecast=self._previous,
             delta_state=self.stream.states if kind == "delta" else None,
         )
@@ -170,11 +170,12 @@ class NexusExpanseUnified:
         restored.arbitrator._weights[0] = weight
         restored.arbitrator.updates = updates
 
-        events, previous, pending, calls = saved["reader"]
-        history = saved["history"]
+        cursor, previous, pending, calls = saved["reader"]
+        events = bytes.fromhex(cursor)
+        history = bytes.fromhex(saved["history"])
         forecast = saved["preceding_forecast"]
-        if (not isinstance(events, bytes) or len(events) > restored.max_seq_len
-                or not isinstance(history, bytes) or len(history) > restored.episodic.max_order
+        if (len(events) > restored.max_seq_len
+                or len(history) > restored.episodic.max_order
                 or previous != (history[-1] if history else None)
                 or (pending is not None and pending != previous)
                 or type(calls) is not int or calls < 0
