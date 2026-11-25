@@ -7,15 +7,10 @@ import torch
 from torch.nn import functional as F
 from nexus_expanse.jepa import KuramotoJEPA,encoder,latent,stream_latent,state_hash
 from benchmarks.gate9_jepa_corpus import manifest
+from benchmarks.dev_artifacts import atomic, digest
 SEEDS=(42,43,44); ARMS=('untrained_kuramoto','next_byte_ce_kuramoto','kuramoto_jepa'); DOMAINS=('math','code','science'); EPOCHS=4; BATCH=12
 
 def git(*args): return subprocess.check_output(['git',*args],cwd=ROOT,text=True).strip()
-def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
-def atomic(p,obj):
-    if p.exists(): raise FileExistsError(p)
-    t=p.with_suffix(p.suffix+'.partial')
-    with t.open('x') as f: json.dump(obj,f,indent=2,allow_nan=False); f.write('\n'); f.flush(); os.fsync(f.fileno())
-    os.link(t,p); t.unlink()
 def identity():
     if git('status','--porcelain'): raise ValueError('dirty tree')
     m=manifest(); assert m==json.loads((ROOT/'docs/GATE9_CORPUS_MANIFEST.json').read_text())

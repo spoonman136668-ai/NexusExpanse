@@ -1,5 +1,5 @@
 """Frozen Gate 10 experiment; immutable per-epoch checkpoints, per-arm receipts."""
-import argparse, json, os, platform, resource, subprocess, sys, time
+import argparse, json, platform, resource, subprocess, sys, time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]; sys.path.insert(0,str(ROOT))
 import numpy as np
@@ -7,6 +7,7 @@ import torch
 from torch.nn import functional as F
 from benchmarks.gate9_jepa_dev import git,digest,atomic,pack,raw,fit,predict,noncollapse,features,state_hash,stream_latent,latent,encoder
 from benchmarks.gate10_jepa_corpus import manifest,DOMAINS
+from benchmarks.dev_artifacts import save_pt
 from nexus_expanse.jepa_domain import DomainKuramotoJEPA
 SEEDS=(42,43,44); ARMS=('untrained_kuramoto','next_byte_ce_kuramoto','kuramoto_jepa','hybrid_jepa_ce_kuramoto'); EPOCHS=10; BATCH=12; STEPS=300
 
@@ -71,12 +72,6 @@ def evaluate(m,train,ev):
         x=bytes.fromhex(r['ctx']); zz=latent(b,*pack([x]))[0]; diff=max(diff,float((zz-stream_latent(b,x)).abs().max()))
     out['max_stream_vs_batch_diff']=diff; assert diff==0.; assert before==state_hash(m)
     return out
-
-def save_pt(path,obj):
-    tmp=path.with_suffix('.partial'); assert not tmp.exists() and not path.exists()
-    torch.save(obj,tmp)
-    with tmp.open('rb') as f: os.fsync(f.fileno())
-    os.link(tmp,path); tmp.unlink()
 
 def run_arm(seed,arm,directory,ident,epoch_limit):
     train,ev=[manifest()['splits'][s] for s in ('train','eval')]; m=model_for(seed,arm)

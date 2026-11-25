@@ -20,6 +20,7 @@ from benchmarks.gate9_jepa_dev import atomic, digest
 from benchmarks.gate11_selective_kuramoto_dev import capacity_eval, identity, manifest, setup
 from benchmarks.gate12_deltanet_dev import ATTENTION, DELTA, SEEDS, model_for, run_spec
 from benchmarks.gate_custody import peak_rss, prepare_directory, writer
+from benchmarks.unified_checks import EXPERTS, exactness
 from nexus_expanse.consolidation import ConsolidatingMemory
 from nexus_expanse.jepa import state_hash
 from nexus_expanse.patching import CompactBigram
@@ -28,8 +29,6 @@ from nexus_expanse.unified import NexusExpanseUnified
 GATE12 = ROOT / "evidence/gate12-deltanet-dev-001.json"
 GATE13 = ROOT / "evidence/gate13-jepa-proven-backbone-dev-001.json"
 GATE8 = ROOT / "evidence/gate8a-hopfield-vsa-dev-001.json"
-EXPERTS = ("mixed", "patch", "episodic")
-PREFIX_CUTS = (1, 7, 13, 25, 31)
 CONTINUATION = b"\n    return result\n"
 
 
@@ -47,33 +46,6 @@ def experiment_identity():
 
 def subrun(*args):
     return json.loads(subprocess.check_output([sys.executable, __file__, *map(str, args)], text=True))
-
-
-@torch.inference_mode()
-def exactness(unified, reference, span):
-    tokens = torch.tensor([list(span)])
-    logits, hidden = unified.forward_neural(tokens)[:2]
-    result = dict(prefix_logits=0.0, prefix_hidden=0.0, streaming_logits=0.0,
-                  unified_stream_probabilities=0.0)
-    for cut in PREFIX_CUTS:
-        if cut >= len(span):
-            continue
-        a, b = unified.forward_neural(tokens[:, :cut])[:2]
-        result["prefix_logits"] = max(result["prefix_logits"], (a - logits[:, :cut]).abs().max().item())
-        result["prefix_hidden"] = max(result["prefix_hidden"], (b - hidden[:, :cut]).abs().max().item())
-    unified.reset_context()
-    for position, byte in enumerate(span):
-        decoded = unified.stream.append(byte)
-        result["streaming_logits"] = max(result["streaming_logits"],
-                                         (decoded - logits[0, position]).abs().max().item())
-    unified.reset_context()
-    reference.reader.cache = None
-    for byte in span:
-        a, b = unified.step(byte), reference.step(byte)
-        for key in EXPERTS:
-            error = (getattr(a, key) - getattr(b, key)).abs().max().item()
-            result["unified_stream_probabilities"] = max(result["unified_stream_probabilities"], error)
-    return result
 
 
 def evaluate_corpus(unified, blocks):

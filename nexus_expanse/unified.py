@@ -12,6 +12,7 @@ from nexus_expanse.arbitration import ReliabilityArbitrator
 from nexus_expanse.consolidation import ConsolidatingMemory
 from nexus_expanse.core import NexusExpanseByteCore
 from nexus_expanse.deltanet import DeltaNetMonarchByteCore
+from nexus_expanse.hybrid_backbone import HybridDeltaAttentionCore
 from nexus_expanse.hopfield_vsa import HopfieldVSAMemory
 from nexus_expanse.patching import BytePatchReader, CompactBigram
 from nexus_expanse.substrate import DirectMonarchLinear
@@ -57,7 +58,7 @@ class NexusExpanseUnified:
     def __init__(self, backbone, counts, *, memory=None):
         if not isinstance(counts, CompactBigram):
             raise ValueError("a compact fitted byte bigram is required")
-        if not isinstance(backbone, (DeltaNetMonarchByteCore, NexusExpanseByteCore)):
+        if not isinstance(backbone, (DeltaNetMonarchByteCore, HybridDeltaAttentionCore, NexusExpanseByteCore)):
             raise ValueError("unsupported reasoning backbone")
         if backbone.emb.weight.device.type != "cpu" or backbone.emb.weight.dtype != torch.float32:
             raise ValueError("unified DEV requires FP32 CPU weights")
@@ -75,6 +76,8 @@ class NexusExpanseUnified:
                 layer.ffn.enable_skip = True
                 layer.ffn.tau_eval.fill_(-math.inf)
             self.stream = backbone.new_kv_cache()
+        elif isinstance(backbone, HybridDeltaAttentionCore):
+            self.stream = backbone.new_stream()
         else:
             self.stream = _DeltaStream(backbone)
         self.reader = BytePatchReader(self, counts, kv_cache=self.stream)
@@ -119,6 +122,9 @@ class NexusExpanseUnified:
                      ffn_mult=layer.ffn.fc1.out_dim // model.dim)
         if isinstance(model, NexusExpanseByteCore):
             return "attention", dict(shape, n_heads=layer.attn.num_heads, max_seq_len=model.max_seq_len)
+        if isinstance(model, HybridDeltaAttentionCore):
+            return "hybrid", dict(dim=model.dim, n_heads=model.n_heads, ffn_mult=model.ffn_mult,
+                                  max_seq_len=model.max_seq_len, schedule=model.schedule)
         return "delta", dict(shape, n_heads=layer.n_heads)
 
     def snapshot(self):
@@ -153,6 +159,8 @@ class NexusExpanseUnified:
         with torch.random.fork_rng(devices=[]):
             if saved["kind"] == "attention":
                 backbone = NexusExpanseByteCore(**saved["config"], dropout=0.0, enable_skip=True)
+            elif saved["kind"] == "hybrid":
+                backbone = HybridDeltaAttentionCore(**saved["config"])
             elif saved["kind"] == "delta":
                 backbone = DeltaNetMonarchByteCore(**saved["config"])
             else:
@@ -194,7 +202,7 @@ class NexusExpanseUnified:
         restored._history.extend(history)
         restored._previous = forecast
 
-        if saved["kind"] == "attention":
+        if saved["kind"] in ("attention", "hybrid"):
             for byte in events:
                 restored.stream.append(byte)
         else:

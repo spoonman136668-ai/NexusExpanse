@@ -1,13 +1,13 @@
 """Immutable, resumable CPU training receipts for the Gate 12–14 DEV suite."""
-import fcntl
+import os
+import platform
 import json
 import time
 from contextlib import contextmanager
 
 import torch
 
-from benchmarks.gate9_jepa_dev import atomic, digest
-from benchmarks.gate10_jepa_dev import save_pt
+from benchmarks.dev_artifacts import atomic, digest, save_pt
 
 
 def prepare_directory(path, root):
@@ -20,27 +20,64 @@ def prepare_directory(path, root):
 
 @contextmanager
 def writer(directory, name):
-    with (directory / f"{name}.lock").open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    with (directory / f"{name}.lock").open("a+b") as lock:
+        if os.name == "nt":
+            import msvcrt
+
+            lock.seek(0)
+            msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         yield
 
 
 def peak_rss():
-    # Linux's per-exec high-water mark excludes an unrelated parent's heap.
-    with open("/proc/self/status") as status:
-        for line in status:
-            if line.startswith("VmHWM:"):
-                return int(line.split()[1]) * 1024
-    raise RuntimeError("Linux peak RSS unavailable")
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+
+        class ProcessMemoryCounters(ctypes.Structure):
+            _fields_ = [
+                ("cb", wintypes.DWORD), ("page_fault_count", wintypes.DWORD),
+                ("peak_working_set", ctypes.c_size_t), ("working_set", ctypes.c_size_t),
+                ("peak_paged_pool", ctypes.c_size_t), ("paged_pool", ctypes.c_size_t),
+                ("peak_nonpaged_pool", ctypes.c_size_t), ("nonpaged_pool", ctypes.c_size_t),
+                ("pagefile", ctypes.c_size_t), ("peak_pagefile", ctypes.c_size_t),
+            ]
+
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.GetCurrentProcess.restype = wintypes.HANDLE
+        get_memory = ctypes.WinDLL("psapi", use_last_error=True).GetProcessMemoryInfo
+        get_memory.argtypes = (wintypes.HANDLE, ctypes.POINTER(ProcessMemoryCounters), wintypes.DWORD)
+        get_memory.restype = wintypes.BOOL
+        counters = ProcessMemoryCounters()
+        counters.cb = ctypes.sizeof(counters)
+        if not get_memory(kernel.GetCurrentProcess(), ctypes.byref(counters), counters.cb):
+            raise ctypes.WinError(ctypes.get_last_error())
+        return counters.peak_working_set
+    if platform.system() == "Linux":
+        # Unlike getrusage after fork, this excludes the parent's prior RSS.
+        with open("/proc/self/status") as status:
+            for line in status:
+                if line.startswith("VmHWM:"):
+                    return int(line.split()[1]) * 1024
+        raise RuntimeError("Linux peak RSS unavailable")
+    import resource
+
+    value = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return value if platform.system() == "Darwin" else value * 1024
 
 
 class EpochRun:
-    def __init__(self, directory, name, identity, epochs, steps_per_epoch):
+    def __init__(self, directory, name, identity, epochs, steps_per_epoch, *, device="cpu"):
         self.directory = directory
         self.name = name
         self.identity = identity
         self.epochs = epochs
         self.steps_per_epoch = steps_per_epoch
+        self.device = torch.device(device)
 
     def paths(self, epoch):
         base = self.directory / f"{self.name}-epoch-{epoch:02}"
@@ -87,7 +124,8 @@ class EpochRun:
             raise ValueError(f"invalid completed receipt: {self.receipt}")
         return record
 
-    def advance(self, model, optimizer, epoch_limit, train_epoch, cold, evaluate, initial_hash):
+    def advance(self, model, optimizer, epoch_limit, train_epoch, cold, evaluate, initial_hash,
+                *, epoch_metrics=None):
         with writer(self.directory, self.name):
             if self.receipt.exists():
                 return self.read()
@@ -95,10 +133,12 @@ class EpochRun:
             history = self.history()
             completed = len(history)
             if history:
-                restored = torch.load(self.paths(completed)[1], weights_only=True)
+                restored = torch.load(self.paths(completed)[1], weights_only=True, map_location="cpu")
                 model.load_state_dict(restored["model"])
                 optimizer.load_state_dict(restored["optimizer"])
                 torch.set_rng_state(restored["rng"])
+                if self.device.type == "cuda":
+                    torch.cuda.set_rng_state(restored["cuda_rng"], self.device)
             for epoch in range(completed + 1, min(completed + epoch_limit, self.epochs) + 1):
                 # A slice finishes at an epoch boundary. Leave a conservative
                 # multiple of the slowest measured epoch for the next one.
@@ -112,14 +152,21 @@ class EpochRun:
                 atomic(intent, data)
                 wall, cpu = time.monotonic(), time.process_time()
                 model.train()
+                if self.device.type == "cuda":
+                    torch.cuda.reset_peak_memory_stats(self.device)
                 losses = train_epoch(epoch)
                 if len(losses) != self.steps_per_epoch:
                     raise ValueError("wrong number of optimizer steps")
-                save_pt(checkpoint, dict(model=model.state_dict(), optimizer=optimizer.state_dict(),
-                                         rng=torch.get_rng_state()))
+                state = dict(model=model.state_dict(), optimizer=optimizer.state_dict(),
+                             rng=torch.get_rng_state())
+                if self.device.type == "cuda":
+                    state["cuda_rng"] = torch.cuda.get_rng_state(self.device)
+                save_pt(checkpoint, state)
                 data.update(sha256=digest(checkpoint), losses=losses,
                             wall_seconds=time.monotonic() - wall,
                             cpu_seconds=time.process_time() - cpu, peak_rss_bytes=peak_rss())
+                if epoch_metrics is not None:
+                    data["telemetry"] = epoch_metrics(epoch, data["wall_seconds"])
                 atomic(meta, data)
                 history.append(data)
                 print(f"{self.name} epoch {epoch}/{self.epochs} {data['wall_seconds']:.2f}s", flush=True)
