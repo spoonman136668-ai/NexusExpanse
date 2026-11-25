@@ -59,6 +59,10 @@ class OpenWorldSkillBank(nn.Module):
         self._birth_lock = RLock()
         self.eval()
 
+    @property
+    def resident_names(self):
+        return self.bank.resident_names
+
     def forward(self, raw, *, include_next=False):
         """Forecast through the currently registered bank without updating it."""
         return self.bank.forward_hmm_bma(raw, include_next=include_next)

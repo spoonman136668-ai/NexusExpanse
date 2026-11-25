@@ -19,9 +19,13 @@ BANK_V1 = "nexus-multi-skill-bank-v1"
 BANK_V2 = "nexus-multi-skill-bank-v2"
 
 
+def _validate_probability(value, name):
+    if not math.isfinite(value) or not 0 <= value <= 1:
+        raise ValueError(f"{name} must be in [0, 1]")
+
+
 def _sticky_transition(reference, k, switch_prob):
-    if not math.isfinite(switch_prob) or not 0 <= switch_prob <= 1:
-        raise ValueError("switch_prob must be in [0, 1]")
+    _validate_probability(switch_prob, "switch_prob")
     if k == 1:
         return reference.new_zeros(1, 1)
     return reference.new_full((k, k), switch_prob / (k - 1)).fill_diagonal_(1 - switch_prob).log()
@@ -48,6 +52,7 @@ class MultiSkillBank(nn.Module):
         self, base: ImportedSkill, skills: Mapping[str, ImportedSkill | EpisodicAssistedBornSkill], *,
         base_name: str = "base_python", gamma: float = 0.85,
         surprise_threshold_bits: float = 3.5, probe_interval: int = 16,
+        resident_names: tuple[str, ...] | list[str] | None = None,
     ):
         super().__init__()
         if base_name in skills:
@@ -61,6 +66,13 @@ class MultiSkillBank(nn.Module):
                   for skill in modules.values()]
         if len({id(skill) for skill in neural}) != len(modules):
             raise ValueError("each bank entry requires an independent receiver")
+        if resident_names is None:
+            resident_names = tuple(modules)
+        if (not isinstance(resident_names, (tuple, list))
+                or any(not isinstance(name, str) or name not in modules for name in resident_names)
+                or len(set(resident_names)) != len(resident_names) or base_name not in resident_names):
+            raise ValueError("resident names must uniquely identify existing skills including the base")
+        self._resident_names = tuple(resident_names)
         self.skills = nn.ModuleDict(modules)
         self.base_name = base_name
         self.context = min(skill.core.max_seq_len for skill in self.skills.values())
@@ -79,6 +91,11 @@ class MultiSkillBank(nn.Module):
     @property
     def skill_names(self):
         return tuple(self.skills)
+
+    @property
+    def resident_names(self):
+        """The original group retained across births."""
+        return self._resident_names
 
     @staticmethod
     def _discount(gamma):
@@ -225,9 +242,46 @@ class MultiSkillBank(nn.Module):
     def forward_hmm_bma(self, raw, switch_prob=0.05, *, include_next=False):
         """Mix expert probabilities using the predictive Sticky-HMM prior."""
         components = self.component_log_probs(raw, include_next=include_next)
-        batch, steps, k, _ = components.shape
+        batch, _, k, _ = components.shape
         transition = _sticky_transition(components, k, switch_prob)
         prior = components.new_full((batch, k), -math.log(k))
+        return self._mix_hmm(raw, components, prior, transition)
+
+    @torch.inference_mode()
+    def forward_hmm_bma_hierarchical(
+        self, raw, switch_prob=0.05, born_prior_mass=0.02, born_switch_share=0.10, *, include_next=False,
+    ):
+        """Give the born group a fixed initial and resident-switch mass."""
+        names = self.skill_names
+        residents = len(self.resident_names)
+        born = len(names) - residents
+        if born == 0:
+            return self.forward_hmm_bma(raw, switch_prob, include_next=include_next)
+
+        _validate_probability(switch_prob, "switch_prob")
+        _validate_probability(born_prior_mass, "born_prior_mass")
+        _validate_probability(born_switch_share, "born_switch_share")
+        components = self.component_log_probs(raw, include_next=include_next)
+        batch, _, k, _ = components.shape
+        is_resident = torch.tensor([name in self.resident_names for name in names], device=components.device)
+
+        prior_probs = components.new_full((k,), born_prior_mass / born)
+        prior_probs[is_resident] = (1 - born_prior_mass) / residents
+        prior = prior_probs.log().expand(batch, k)
+
+        # A lone resident has no peer to receive its resident-switch share.
+        share = born_switch_share if residents > 1 else 1.0
+        rates = components.new_full((k,), switch_prob * share / born)
+        if residents > 1:
+            rates[is_resident] = switch_prob * (1 - share) / (residents - 1)
+        transition = components.new_full((k, k), switch_prob / (k - 1))
+        transition[is_resident] = rates
+        transition.fill_diagonal_(1 - switch_prob).log_()
+        return self._mix_hmm(raw, components, prior, transition)
+
+    @staticmethod
+    def _mix_hmm(raw, components, prior, transition):
+        _, steps, k, _ = components.shape
         history = [prior]
         for t in range(1, steps):
             observed = raw[:, t - 1].long().view(-1, 1, 1).expand(-1, k, 1)
@@ -320,7 +374,7 @@ def save_bank(bank: MultiSkillBank, path):
             schema = BANK_V2
         entries[name] = entry
     package = dict(
-        schema=schema, base_name=bank.base_name, entries=entries,
+        schema=schema, base_name=bank.base_name, entries=entries, resident_names=list(bank.resident_names),
         gamma=bank.gamma, surprise_threshold_bits=bank.surprise_threshold_bits,
         probe_interval=bank.probe_interval,
     )
@@ -378,5 +432,5 @@ def load_bank(path):
         skills.pop(base_name), skills, base_name=base_name,
         gamma=package.get("gamma", float("nan")),
         surprise_threshold_bits=package.get("surprise_threshold_bits", float("nan")),
-        probe_interval=package.get("probe_interval"),
+        probe_interval=package.get("probe_interval"), resident_names=package.get("resident_names"),
     )

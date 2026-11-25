@@ -396,7 +396,8 @@ def parser():
     route = sub.add_parser("route-stream", help="forecast raw bytes with a saved multi-skill bank")
     route.add_argument("--bank", type=Path, required=True)
     route.add_argument(
-        "--router", choices=("bayes_bma", "bayes_argmax", "surprise_sparse", "hmm_bma", "hmm_sparse"),
+        "--router", choices=("bayes_bma", "bayes_argmax", "surprise_sparse", "hmm_bma",
+                             "hmm_sparse", "hmm_bma_hierarchical"),
         required=True,
     )
     route.add_argument("--input-hex", action="append", help="repeat for chunks, or send hex lines on stdin")
