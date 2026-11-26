@@ -32,7 +32,10 @@ FALLBACK_TOKEN = re.compile(r"<0x([A-Fa-f0-9]{2})>")
 def token_bytes(token, family):
     """Decode one vocabulary token without Unicode replacement or per-token stripping."""
     if family == "gpt2":
-        return bytes(GPT2_BYTES[c] for c in token)
+        try:
+            return bytes(GPT2_BYTES[c] for c in token)
+        except KeyError:
+            return token.encode("utf-8")
     if family == "sentencepiece":
         match = FALLBACK_TOKEN.fullmatch(token)
         if match:

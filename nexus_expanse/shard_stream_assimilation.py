@@ -18,10 +18,16 @@ from nexus_expanse.weight_editing import exact_skill_receipt, verify_skill
 
 INITIAL_ALPHA = 0.25
 ROW_CHUNK = 256
+GRAM_MIN_VOCAB = 4096
 LAYER_NUMBER = re.compile(r"(?:^|\.)(?:layers|blocks|h)\.(\d+)\.")
 ATTENTION_WEIGHTS = ("v_proj", "o_proj")
+MLA_WEIGHTS = ("wkv", "wo_a", "wo_b")
+MLA_QUERY = ("wq_a", "wq_b")
 MLP_WEIGHTS = ("up_proj", "down_proj")
 OPTIONAL_WEIGHTS = ("q_proj", "k_proj", "input_layernorm", "post_attention_layernorm")
+FP8_WEIGHTS = (torch.float8_e4m3fn, torch.float8_e5m2)
+INTEGER_WEIGHTS = (torch.int8, torch.int16, torch.int32, torch.int64,
+                   torch.uint8, torch.uint16, torch.uint32, torch.uint64)
 HF_INDEX = "model.safetensors.index.json"
 HF_TOKENIZER = "tokenizer.json"
 
@@ -67,6 +73,72 @@ def _hf_source(repo):
         return _local_file(directory, name)
 
     return download, revision
+
+
+def _repeat_scale(scale, index, axis, block, extent):
+    if isinstance(index, slice):
+        start, stop, _ = index.indices(extent)
+        first, end = start // block, (stop + block - 1) // block
+        return scale.narrow(axis, first, end - first).repeat_interleave(block, dim=axis).narrow(
+            axis, start % block, stop - start,
+        )
+    return scale.index_select(axis, index // block)
+
+
+class _ScaledWeight:
+    """Dequantize just the requested rows and columns of a mapped tensor."""
+
+    def __init__(self, weight, scale, quantization):
+        self.weight = weight
+        self.shape = weight.shape
+        self.ndim = weight.ndim
+        if (self.ndim not in (1, 2) or not all(self.shape) or not isinstance(scale, torch.Tensor)
+                or not (scale.is_floating_point() or scale.dtype in INTEGER_WEIGHTS)):
+            raise ValueError("invalid quantized weight or scale")
+        if scale.dtype == torch.uint8 and quantization.get("scale_fmt") == "ue8m0":
+            scale = scale.view(torch.float8_e8m0fnu)
+        scale = _finite(scale)
+        self.block = None
+        if scale.numel() == 1 and scale.ndim < 2:
+            self.scale = scale.reshape(())
+        elif scale.ndim == 1 and scale.shape[0] == self.shape[-1]:
+            self.scale = scale
+            self.axis = self.ndim - 1
+        elif scale.ndim == 1 and self.ndim == 2 and scale.shape[0] == self.shape[0]:
+            self.scale = scale
+            self.axis = 0
+        elif scale.ndim == self.ndim == 2 and all(0 < s <= n for n, s in zip(self.shape, scale.shape)):
+            self.scale = scale
+            configured = quantization.get("weight_block_size")
+            if configured is not None and (
+                not isinstance(configured, (list, tuple)) or len(configured) != 2
+                or any(type(block) is not int or block < 1 for block in configured)
+            ):
+                raise ValueError("invalid quantized weight block size")
+            if configured and tuple(math.ceil(n / b) for n, b in zip(self.shape, configured)) == scale.shape:
+                self.block = configured
+            elif configured and any(n % s for n, s in zip(self.shape, scale.shape)):
+                raise ValueError("block scale grid does not match configured weight block size")
+            else:
+                self.block = [math.ceil(n / s) for n, s in zip(self.shape, scale.shape)]
+                if tuple(math.ceil(n / b) for n, b in zip(self.shape, self.block)) != scale.shape:
+                    raise ValueError("block scale grid does not cover the weight")
+        else:
+            raise ValueError("invalid scale shape for quantized weight")
+
+    def __getitem__(self, index):
+        rows, columns = index if isinstance(index, tuple) else (index, slice(None))
+        weight = self.weight[index].float()
+        if self.block is not None:
+            scale = _repeat_scale(self.scale, rows, 0, self.block[0], self.shape[0])
+            scale = _repeat_scale(scale, columns, 1, self.block[1], self.shape[1])
+        elif self.scale.ndim == 1:
+            scale = self.scale[(rows, columns)[self.axis]]
+            if self.ndim == 2 and self.axis == 0:
+                scale = scale[:, None]
+        else:
+            scale = self.scale
+        return weight * scale
 
 
 class ShardStream:
@@ -145,7 +217,7 @@ class ShardStream:
         finally:
             self.live -= 1
 
-    def consume(self, transforms):
+    def consume(self, transforms, *, read_config):
         grouped = {}
         for key, transform in transforms.items():
             grouped.setdefault(self.weight_map[key], []).append((key, transform))
@@ -155,8 +227,17 @@ class ShardStream:
                     for key, transform in entries:
                         raw = read(key)
                         try:
-                            if not isinstance(raw, torch.Tensor) or not raw.is_floating_point():
-                                raise ValueError(f"expected a floating-point tensor at {key}")
+                            if not isinstance(raw, torch.Tensor):
+                                raise ValueError(f"expected a tensor at {key}")
+                            if raw.dtype in (*FP8_WEIGHTS, *INTEGER_WEIGHTS):
+                                scale_key = key.removesuffix(".weight") + ".scale"
+                                if self.weight_map.get(scale_key) == name:
+                                    raw = _ScaledWeight(raw, read(scale_key),
+                                                        read_config().get("quantization_config") or {})
+                                elif scale_key in self.weight_map:
+                                    raise ValueError(f"expected {scale_key} in the same shard as {key}")
+                            if isinstance(raw, torch.Tensor) and not raw.is_floating_point():
+                                raise ValueError(f"expected a floating-point or scaled tensor at {key}")
                             transform(raw)
                         finally:
                             del raw
@@ -226,30 +307,50 @@ def _find(keys, suffix, *, required=False):
 
 
 def _layer_keys(keys, depth):
+    deepseek = "embed.weight" in keys
     groups = {}
     for key in keys:
-        if match := LAYER_NUMBER.search(key):
+        if (match := LAYER_NUMBER.search(key)) and (not deepseek or key.startswith("layers.")):
             groups.setdefault(int(match[1]), []).append(key)
     if len(groups) < depth:
         raise ValueError("checkpoint has insufficient donor layers")
     for index in sorted(groups)[:depth]:
-        candidates = [key for key in groups[index] if ".experts." not in key and ".shared_experts." not in key]
+        group = groups[index]
+        candidates = [key for key in group if ".experts." not in key and ".shared_experts." not in key]
         mlp = {name: _find(candidates, f"{name}.weight") for name in MLP_WEIGHTS}
         if not any(mlp.values()):
-            mlp = {
-                name: _find(groups[index], f"mlp.shared_experts.{name}.weight", required=True)
-                for name in MLP_WEIGHTS
-            }
+            mlp = {name: _find(group, f"mlp.shared_experts.{name}.weight") for name in MLP_WEIGHTS}
+        if not any(mlp.values()):
+            shared = "ffn.shared_experts."
+            # DeepSeek's SwiGLU uses w3 for the up branch and w1 for the gate.
+            mlp = dict(up_proj=_find(group, shared + "w3.weight") or _find(group, shared + "w1.weight"),
+                       down_proj=_find(group, shared + "w2.weight"))
         if not all(mlp.values()):
             raise ValueError(f"checkpoint layer {index} needs paired MLP up/down projections")
-        attention = {name: _find(candidates, f"{name}.weight", required=True) for name in ATTENTION_WEIGHTS}
+        attention = {name: _find(candidates, f"{name}.weight") for name in ATTENTION_WEIGHTS}
+        if not any(attention.values()):
+            attention = {name: _find(candidates, f"attn.{name}.weight", required=True) for name in MLA_WEIGHTS}
+            query = {name: _find(candidates, f"attn.{name}.weight") for name in MLA_QUERY}
+            if any(query.values()):
+                if not all(query.values()):
+                    raise ValueError(f"checkpoint layer {index} needs both low-rank query factors")
+                attention.update(query)
+        if not all(attention.values()):
+            raise ValueError(f"checkpoint layer {index} needs both value and output projections")
         optional = {
             name: key for name in OPTIONAL_WEIGHTS if (key := _find(candidates, f"{name}.weight"))
         }
+        if deepseek:
+            for name, alias in (("input_layernorm", "attn_norm"), ("post_attention_layernorm", "ffn_norm")):
+                key = f"layers.{index}.{alias}.weight"
+                if key in group:
+                    optional.setdefault(name, key)
         yield {**attention, **mlp, **optional}
 
 
 def _finite(x):
+    if isinstance(x, _ScaledWeight):
+        x = x[:]
     x = x.float()
     if not torch.isfinite(x).all():
         raise ValueError("checkpoint contains a nonfinite mapped tensor")
@@ -259,23 +360,65 @@ def _finite(x):
 def _right_project(weight, projection):
     if weight.ndim != 2 or weight.shape[1] != projection.shape[0]:
         raise ValueError("donor matrix has an invalid input width")
-    return torch.cat([_finite(block) @ projection for block in weight.split(ROW_CHUNK)])
+    return torch.cat([_finite(weight[i:i + ROW_CHUNK]) @ projection for i in range(0, weight.shape[0], ROW_CHUNK)])
 
 
 def _left_project(weight, projection):
     if weight.ndim != 2 or weight.shape[0] != projection.shape[0]:
         raise ValueError("donor matrix has an invalid output width")
-    return torch.cat([projection.T @ _finite(block) for block in weight.split(ROW_CHUNK, dim=1)], dim=1)
+    return torch.cat([projection.T @ _finite(weight[:, i:i + ROW_CHUNK])
+                      for i in range(0, weight.shape[1], ROW_CHUNK)], dim=1)
 
 
-def _aligned_basis(embeddings, reference):
+def _aligned_basis(weight, ids, anchors, reference):
     width = reference.shape[1]
-    if embeddings.shape[1] < width:
+    if weight.shape[1] < width:
         raise ValueError("donor embedding width must be at least the native student width")
-    _, singular, right = torch.linalg.svd(embeddings, full_matrices=False)
-    basis = right[:width].T.contiguous()
-    u, _, vh = torch.linalg.svd((embeddings @ basis).T @ reference, full_matrices=False)
-    return basis @ (u @ vh), singular[:width].tolist()
+    if weight.shape[0] > GRAM_MIN_VOCAB:
+        gram = torch.zeros((weight.shape[1], weight.shape[1]), dtype=torch.float32)
+        for group in ids.split(ROW_CHUNK):
+            rows = _finite(weight[group])
+            gram.addmm_(rows.T, rows)
+        values, vectors = torch.linalg.eigh(gram)
+        basis = vectors[:, -width:].flip((1,)).contiguous()
+        singular = values[-width:].flip((0,)).clamp_min_(0).sqrt_()
+    else:
+        _, singular, right = torch.linalg.svd(anchors, full_matrices=False)
+        basis = right[:width].T.contiguous()
+        singular = singular[:width]
+    u, _, vh = torch.linalg.svd((anchors @ basis).T @ reference, full_matrices=False)
+    return basis @ (u @ vh), singular.tolist()
+
+
+def _sum_heads(weight, head_dim, axis):
+    if weight.ndim != 2 or weight.shape[axis] < head_dim or weight.shape[axis] % head_dim:
+        raise ValueError("DeepSeek attention weight is incompatible with its shared KV width")
+    shape = list(weight.shape)
+    shape[axis] = head_dim
+    result = torch.zeros(shape, dtype=torch.float32)
+    for start in range(0, weight.shape[axis], head_dim):
+        span = slice(start, start + head_dim)
+        block = weight[span] if axis == 0 else weight[:, span]
+        result.add_(_finite(block))
+    return result
+
+
+def _mla_projections(factors, width):
+    kv, output_a, output_b = (factors[name] for name in MLA_WEIGHTS)
+    if output_a.shape[1] != kv.shape[0] or output_b.shape[1] != output_a.shape[0]:
+        raise ValueError("incompatible DeepSeek attention output factors")
+    # Express the donor's shared key/value latent in an orthonormal space that
+    # contains its projected input. The output map consumes the same coordinates.
+    latent, _ = torch.linalg.qr(kv, mode="reduced")
+    latent = F.pad(latent, (0, width - latent.shape[1]))
+    value = latent.T @ kv
+    projections = dict(k_proj=value, v_proj=value, o_proj=(output_b @ output_a) @ latent)
+    if "wq_a" in factors:
+        query_a, query_b = (factors[name] for name in MLA_QUERY)
+        if query_b.shape != (kv.shape[0], query_a.shape[0]):
+            raise ValueError("incompatible DeepSeek attention query factors")
+        projections["q_proj"] = (latent.T @ query_b) @ query_a
+    return projections
 
 
 def _attention_project(weight, basis, read_config):
@@ -345,8 +488,9 @@ def _transport(student, stream, directory, *, shuffle_seed):
     keys = stream.weight_map
     tokenizer = _local_file(directory, HF_TOKENIZER).read_bytes()
     singles, ids, leading = _lexicon(tokenizer)
-    embed_key = _find(keys, "embed_tokens.weight", required=True)
-    head_key = _find(keys, "lm_head.weight")
+    deepseek = "embed.weight" in keys
+    embed_key = "embed.weight" if deepseek else _find(keys, "embed_tokens.weight", required=True)
+    head_key = "head.weight" if "head.weight" in keys else _find(keys, "lm_head.weight")
     config_path = directory / "config.json"
     config = None
     if stream.hf_repo is None:
@@ -355,7 +499,7 @@ def _transport(student, stream, directory, *, shuffle_seed):
     def read_config():
         nonlocal config
         if config is None:
-            # Only grouped-query geometry needs this additional metadata.
+            # Fetch geometry or quantization metadata only when a mapped weight needs it.
             path = stream.download("config.json", directory)
             config = json.loads(path.read_bytes())
         return config
@@ -372,7 +516,7 @@ def _transport(student, stream, directory, *, shuffle_seed):
         if weight.ndim != 2 or weight.shape[0] <= ids.max().item():
             raise ValueError("embedding tensor is missing tokenizer rows")
         rows = _finite(weight[singles])
-        basis, spectrum = _aligned_basis(rows, student.core.emb.weight)
+        basis, spectrum = _aligned_basis(weight, ids, rows, student.core.emb.weight)
         embedded.update(spectrum=spectrum, input=_shuffle(rows @ basis, rng))
 
     def read_head(weight):
@@ -382,9 +526,13 @@ def _transport(student, stream, directory, *, shuffle_seed):
         reduced["head"] = _shuffle(projected, rng)
 
     transforms[head_key or embed_key] = read_head
-    pos = _find(keys, "embed_positions.weight")
-    final_norm = _find((key for key in keys if not LAYER_NUMBER.search(key)), "norm.weight")
-    engram_key = _find(keys, "engram.weight")
+    if deepseek:
+        pos, final_norm, engram_key = (key if key in keys else None
+                                       for key in ("embed_positions.weight", "norm.weight", "engram.weight"))
+    else:
+        pos = _find(keys, "embed_positions.weight")
+        final_norm = _find((key for key in keys if not LAYER_NUMBER.search(key)), "norm.weight")
+        engram_key = _find(keys, "engram.weight")
     if pos:
         transforms[pos] = lambda weight: reduced.update(pos=_right_project(weight[:student.core.max_seq_len], basis))
     if final_norm:
@@ -398,7 +546,24 @@ def _transport(student, stream, directory, *, shuffle_seed):
 
     layers = list(_layer_keys(keys, len(student.core.layers)))
 
-    def project(weight, name):
+    def project(weight, name, index):
+        if name in ("wkv", "wq_a"):
+            return _right_project(weight, basis)
+        if name == "wo_b":
+            return _left_project(weight, basis)
+        if name in ("wq_b", "wo_a"):
+            kv = reduced.get((index, "wkv"))
+            if kv is None:
+                geometry = read_config()
+                head_dim = geometry.get("text_config", geometry).get("head_dim")
+                if type(head_dim) is not int or head_dim < 1:
+                    raise ValueError("DeepSeek attention factors preceding KV require head_dim in config.json")
+            else:
+                head_dim = kv.shape[0]
+            if name == "wq_b":
+                return _sum_heads(weight, head_dim, 0) / (weight.shape[0] // head_dim)
+            # Each output group consumes replicated values from its local heads.
+            return _sum_heads(weight, head_dim, 1)
         if name in ("q_proj", "k_proj", "v_proj"):
             matrix = _attention_project(weight, basis, read_config)
         elif name == "o_proj":
@@ -414,11 +579,11 @@ def _transport(student, stream, directory, *, shuffle_seed):
     for index, layer in enumerate(layers):
         for name, key in layer.items():
             def collect(weight, index=index, name=name):
-                reduced[index, name] = project(weight, name)
+                reduced[index, name] = project(weight, name, index)
             transforms[key] = collect
     if stream.hf_repo is None:
-        stream.consume({embed_key: embed})
-        stream.consume(transforms)
+        stream.consume({embed_key: embed}, read_config=read_config)
+        stream.consume(transforms, read_config=read_config)
     else:
         def embed_first(weight):
             embed(weight)
@@ -427,7 +592,7 @@ def _transport(student, stream, directory, *, shuffle_seed):
 
         if head_key is None:
             del transforms[embed_key]
-        stream.consume({embed_key: embed_first, **transforms})
+        stream.consume({embed_key: embed_first, **transforms}, read_config=read_config)
 
     student.core.emb.weight.copy_(embedded["input"])
     if "pos" in reduced:
@@ -441,6 +606,11 @@ def _transport(student, stream, directory, *, shuffle_seed):
     transport = torch.zeros(width, width)
     for index, layer in enumerate(student.core.layers):
         attn = layer.attn
+        if "wkv" in layers[index]:
+            factors = {name: reduced.pop((index, name)) for name in (*MLA_WEIGHTS, *MLA_QUERY)
+                       if (index, name) in reduced}
+            for name, projected in _mla_projections(factors, width).items():
+                reduced[index, name] = _shuffle(projected, rng)
         for part, name in enumerate(("q_proj", "k_proj", "v_proj")):
             if (index, name) in reduced:
                 attn.in_proj_weight[part * width:(part + 1) * width].copy_(reduced[index, name])
