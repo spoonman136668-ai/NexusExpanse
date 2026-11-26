@@ -29,8 +29,10 @@ class NexusLayer(nn.Module):
         enable_skip: bool,
         dropout: float,
         ffn_kind: str = "monarch",
+        use_sdpa: bool = False,
     ) -> None:
         super().__init__()
+        self.use_sdpa = use_sdpa
         self.attn_norm = nn.LayerNorm(dim)
         self.attn = nn.MultiheadAttention(dim, n_heads, dropout=dropout, batch_first=True)
         self.drop = nn.Dropout(dropout)
@@ -45,15 +47,30 @@ class NexusLayer(nn.Module):
             ffn_kind=ffn_kind,
         )
 
+    def sdpa_context(self, hidden):
+        """Compute the causal context before the existing output projection."""
+        batch, length, width = hidden.shape
+        heads = self.attn.num_heads
+        packed = F.linear(hidden, self.attn.in_proj_weight, self.attn.in_proj_bias)
+        q, k, v = (part.reshape(batch, length, heads, width // heads).transpose(1, 2)
+                   for part in packed.chunk(3, dim=-1))
+        context = F.scaled_dot_product_attention(
+            q, k, v, is_causal=True, dropout_p=self.attn.dropout if self.training else 0.0,
+        )
+        return context.transpose(1, 2).reshape(batch, length, width)
+
     def attention_residual(self, x, causal_mask):
         h = self.attn_norm(x)
-        attn, _ = self.attn(h, h, h, attn_mask=causal_mask, need_weights=False)
+        if self.use_sdpa and causal_mask is None:
+            attn = self.attn.out_proj(self.sdpa_context(h))
+        else:
+            attn, _ = self.attn(h, h, h, attn_mask=causal_mask, need_weights=False)
         return x + self.drop(attn)
 
     def forward(
         self,
         x: torch.Tensor,
-        causal_mask: torch.Tensor,
+        causal_mask: Optional[torch.Tensor],
         out_norm: nn.LayerNorm,
         emb_weight: torch.Tensor,
         targets: Optional[torch.Tensor] = None,
@@ -101,10 +118,12 @@ class NexusExpanseByteCore(nn.Module):
         fast_lr: float = 0.08,
         ffn_kind: str = "monarch",
         fixed_eval_geometry: bool = False,
+        use_sdpa: bool = False,
     ) -> None:
         super().__init__()
         self.dim = dim
         self.fixed_eval_geometry = fixed_eval_geometry
+        self.use_sdpa = use_sdpa
         self.max_seq_len = max_seq_len
         self.n_blocks = rank_safe_blocks(dim, dim * ffn_mult)
 
@@ -122,6 +141,7 @@ class NexusExpanseByteCore(nn.Module):
                     enable_skip=enable_skip,
                     dropout=dropout,
                     ffn_kind=ffn_kind,
+                    use_sdpa=use_sdpa,
                 )
                 for _ in range(n_layers)
             ]
@@ -138,14 +158,17 @@ class NexusExpanseByteCore(nn.Module):
         return CausalKVCache(self)
 
     def _backbone_inputs(self, tokens):
-        # Fixed eval geometry prevents a length-dependent kernel choice at a hard gate.
-        if not self.training and (self.fixed_eval_geometry or any(layer.ffn.enable_skip for layer in self.layers)):
+        # Exact short-prefix comparisons require the same kernel geometry.
+        fixed = self.fixed_eval_geometry or self.use_sdpa or any(layer.ffn.enable_skip for layer in self.layers)
+        if not self.training and fixed:
             if tokens.shape[1] > self.max_seq_len:
                 raise ValueError("input exceeds position embedding length")
             tokens = F.pad(tokens, (0, self.max_seq_len - tokens.shape[1]))
         t = tokens.shape[1]
         pos = torch.arange(t, device=tokens.device).unsqueeze(0)
-        mask = torch.triu(torch.ones((t, t), dtype=torch.bool, device=tokens.device), diagonal=1)
+        mask = None
+        if not self.use_sdpa:
+            mask = torch.triu(torch.ones((t, t), dtype=torch.bool, device=tokens.device), diagonal=1)
         x = self.drop(self.emb(tokens) + self.pos_emb(pos))
 
         return x, mask
@@ -161,7 +184,7 @@ class NexusExpanseByteCore(nn.Module):
         skips: List[float] = []
         for layer in self.layers:
             valid_length = length
-            if self.fixed_eval_geometry and not self.training and not layer.ffn.enable_skip:
+            if (self.fixed_eval_geometry or self.use_sdpa) and not self.training and not layer.ffn.enable_skip:
                 # Always-on FFNs also keep the same matrix shapes for a short prefix.
                 valid_length = x.shape[1]
             x, aux, sk = layer(x, mask, self.out_norm, self.emb.weight, targets=targets, valid_length=valid_length)

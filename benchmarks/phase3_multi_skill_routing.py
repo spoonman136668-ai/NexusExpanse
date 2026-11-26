@@ -129,10 +129,12 @@ def data_for(seed):
     return {DOMAINS[k]: torch.tensor([list(block) for block in blocks]) for k, blocks in fit.items()}, suites, manifest
 
 
-def produce(directory, seed):
+def produce(directory, seed, domains=DOMAINS):
     fit = torch.load(directory / "fit.pt", weights_only=True, map_location="cpu")
     receipt = {}
     for k, name in enumerate(DOMAINS):
+        if name not in domains:
+            continue
         started = time.perf_counter()
         child_seed = seed * 19 + k
         donor = setup_donor(child_seed)

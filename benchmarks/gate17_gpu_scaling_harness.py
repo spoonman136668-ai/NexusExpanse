@@ -92,24 +92,27 @@ def device_for(requested, dtype):
     return torch.device(requested)
 
 
-def selected_backbone():
+def selected_backbone(*, use_sdpa=False):
     prior = json.loads(GATE15.read_text())
     if prior["schema"] != "nexus-gate15-hybrid-dev-v1" or prior["status"] not in ("PASS", "MIXED", "FAIL"):
         raise ValueError("invalid Gate 15 evidence")
     if prior["status"] == "PASS":
         if not all((prior["parity"]["passed"], prior["reasoning_bar"], prior["speed_cache_bar"])):
             raise ValueError("Gate 15 PASS is inconsistent with its raw criteria")
-        return "hybrid"
+        if not use_sdpa:
+            return "hybrid"
     return "causal_attention_monarch"
 
 
-def model_for(geometry, backbone, device):
+def model_for(geometry, backbone, device, *, use_sdpa=False):
     torch.manual_seed(geometry.seed)
     common = dict(dim=geometry.dim, n_heads=4, ffn_mult=2, max_seq_len=geometry.context)
     if backbone == "hybrid":
         model = HybridDeltaAttentionCore(**common)
     else:
-        model = NexusExpanseByteCore(**common, n_layers=2, dropout=0.0, enable_skip=False)
+        model = NexusExpanseByteCore(
+            **common, n_layers=2, dropout=0.0, enable_skip=False, use_sdpa=use_sdpa,
+        )
     return model.to(device)
 
 
@@ -180,8 +183,11 @@ def build_unified(model, train):
 @torch.inference_mode()
 def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
     start = time.perf_counter()
-    model = model_for(geometry, backbone, device).eval()
-    model.load_state_dict(torch.load(path, map_location="cpu", weights_only=True))
+    model = model_for(geometry, backbone, device, use_sdpa=args.use_sdpa).eval()
+    state = torch.load(path, map_location="cpu", weights_only=True)
+    model.load_state_dict(state)
+    if not args.use_sdpa:
+        del state
     restored = state_hash(model)
     if device.type == "cuda":
         torch.cuda.synchronize(device)
@@ -206,6 +212,11 @@ def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
     gpu = vram(device)
     torch.backends.mha.set_fastpath_enabled(True)
 
+    if args.use_sdpa:
+        # The CPU unified runtime uses the legacy cache's exact reference geometry.
+        del model
+        model = model_for(geometry, backbone, torch.device("cpu")).eval()
+        model.load_state_dict(state)
     unified = build_unified(model, train)
     raw = evaluation["prose"][:min(32, geometry.context)]
     checkpoint = unified.snapshot()
@@ -224,16 +235,19 @@ def experiment_identity(args, geometry, backbone, manifest, device):
         name=torch.cuda.get_device_name(device), capability=list(torch.cuda.get_device_capability(device)),
         runtime=torch.version.cuda,
     )
-    return dict(source_sha=git("rev-parse", "HEAD").decode().strip(),
+    identity = dict(source_sha=git("rev-parse", "HEAD").decode().strip(),
                 tree=git("rev-parse", "HEAD^{tree}").decode().strip(), gate15_sha256=digest(GATE15),
                 backbone=backbone, corpora=manifest, geometry=asdict(geometry), smoke=args.smoke,
                 dtype=args.dtype, device=device.type, cuda=cuda, threads=torch.get_num_threads(),
                 platform=platform.platform(), torch=str(torch.__version__), numpy=np.__version__,
                 python=sys.version)
+    if args.use_sdpa:
+        identity["use_sdpa"] = True
+    return identity
 
 
 def run_slice(spec, args, geometry, backbone, train, device, argv):
-    model = model_for(geometry, backbone, device)
+    model = model_for(geometry, backbone, device, use_sdpa=args.use_sdpa)
     optimizer = torch.optim.AdamW(model.parameters(), lr=.003, weight_decay=.01)
     epoch_trace = {}
     cold_report = {}
@@ -311,6 +325,7 @@ def main(argv=None):
     p.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
     p.add_argument("--dtype", choices=("fp32", "bf16"), default="fp32")
     p.add_argument("--smoke", action="store_true")
+    p.add_argument("--use-sdpa", action="store_true")
     p.add_argument("--epoch-limit", type=int, default=1, choices=range(1, 9))
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--dim", type=int, default=64, choices=range(32, 257, 32), metavar="{32,64,...,256}")
@@ -336,7 +351,8 @@ def main(argv=None):
         args.seed, args.dim, args.context, args.epochs, args.steps_per_epoch, args.batch_per_domain,
         args.eval_blocks,
     )
-    if not (8 <= geometry.context <= 512 and 1 <= geometry.epochs <= 5000
+    max_context = 4096 if args.use_sdpa else 512
+    if not (8 <= geometry.context <= max_context and 1 <= geometry.epochs <= 5000
             and 1 <= geometry.steps_per_epoch <= 64 and 1 <= geometry.batch_per_domain <= 8
             and 1 <= geometry.eval_blocks <= 128):
         p.error("invalid context, epoch, step, batch or evaluation size")
@@ -355,7 +371,7 @@ def main(argv=None):
     except ValueError as exc:
         p.error(str(exc))
 
-    backbone = selected_backbone()
+    backbone = selected_backbone(use_sdpa=args.use_sdpa)
     if args.cold:
         result = cold_evaluate(args.cold, args, geometry, backbone, train, evaluation, device)
         print(json.dumps(result, allow_nan=False))

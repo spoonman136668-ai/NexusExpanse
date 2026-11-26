@@ -27,10 +27,8 @@ def _ffn_layout(module):
     raise ValueError("unsupported standalone skill affine layer")
 
 
-@torch.inference_mode()
-def skill_snapshot(skill):
-    packed = BytesIO()
-    torch.save(dict(
+def skill_payload(skill):
+    return dict(
         schema=SCHEMA,
         width=skill.readout.in_features,
         fixed_eval_geometry=skill.core.fixed_eval_geometry,
@@ -38,7 +36,13 @@ def skill_snapshot(skill):
         ffn_layouts=[[_ffn_layout(getattr(layer.ffn, name)) for name in FFN_NAMES]
                      for layer in skill.core.layers],
         state={key: value.detach().cpu() for key, value in skill.state_dict().items()},
-    ), packed)
+    )
+
+
+@torch.inference_mode()
+def skill_snapshot(skill):
+    packed = BytesIO()
+    torch.save(skill_payload(skill), packed)
     return packed.getvalue()
 
 
@@ -47,12 +51,20 @@ def restore_skill(source):
     """Read Phase 9 and legacy import-skill snapshots without a donor."""
     payload = torch.load(BytesIO(source) if isinstance(source, bytes) else Path(source),
                          weights_only=True, map_location="cpu")
+    return restore_skill_payload(payload)
+
+
+def restore_skill_payload(payload, *, assign=False):
+    """Rebuild the native skill used by both standalone and bank archives."""
     # Restored parameters remain eligible for a later native adaptation step.
     with torch.inference_mode(False), torch.no_grad(), torch.random.fork_rng(devices=[]):
         skill = ImportedSkill(payload["width"])
         schema = payload.get("schema")
         if schema == SCHEMA:
-            skill.core.fixed_eval_geometry = payload["fixed_eval_geometry"]
+            fixed_eval_geometry = payload["fixed_eval_geometry"]
+            if type(fixed_eval_geometry) is not bool:
+                raise ValueError("invalid fixed evaluation geometry")
+            skill.core.fixed_eval_geometry = fixed_eval_geometry
             layouts = payload["ffn_layouts"]
         elif schema is None and "method" in payload:
             layouts = [[payload["method"]] * len(FFN_NAMES) for _ in skill.core.layers]
@@ -75,12 +87,12 @@ def restore_skill(source):
                 or (alpha and prior is None)):
             raise ValueError("invalid standalone skill prior alpha")
         if prior is not None:
-            if (prior.shape != (256, 256) or not prior.is_floating_point()
+            if (not isinstance(prior, torch.Tensor) or prior.shape != (256, 256) or not prior.is_floating_point()
                     or not torch.isfinite(prior).all()):
                 raise ValueError("invalid standalone static byte prior")
             skill.static_byte_prior = torch.empty_like(prior)
         skill.prior_alpha = alpha
-        skill.load_state_dict(state, strict=True)
+        skill.load_state_dict(state, strict=True, assign=assign)
     return skill.eval().requires_grad_(False)
 
 

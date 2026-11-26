@@ -128,6 +128,15 @@ def search(faulted, direction, val):
 
 @torch.inference_mode()
 def edit_experiment(donor_path, seed, data):
+    clean = load_skill(donor_path, "residual8").eval().requires_grad_(False)
+    clean.core.fixed_eval_geometry = True
+    receipt, _ = edit_skill_experiment(clean, seed, data)
+    return receipt
+
+
+@torch.inference_mode()
+def edit_skill_experiment(clean, seed, data):
+    """Run the frozen fault and matched repair arms on an existing native receiver."""
     blocked = 0
 
     def forbidden(*args, **kwargs):
@@ -139,8 +148,6 @@ def edit_experiment(donor_path, seed, data):
         stack.enter_context(patch.object(torch.autograd, "backward", forbidden))
         stack.enter_context(patch.object(torch.autograd, "grad", forbidden))
         stack.enter_context(patch.object(torch.Tensor, "backward", forbidden))
-        clean = load_skill(donor_path, "residual8").eval().requires_grad_(False)
-        clean.core.fixed_eval_geometry = True
         fit, val, test = (data[name] for name in ("fit", "val", "check"))
         fit_direction = inspect_fault_direction(clean, fit[DOMAINS[0]], fit[DOMAINS[1]], LAYER)
         v = fit_direction["direction_v"]
@@ -185,7 +192,7 @@ def edit_experiment(donor_path, seed, data):
             fit_val_direction_abs_cosine=abs(float(torch.dot(v, svd_direction))),
             validation_singular_values=validation["layers"][LAYER]["singular_values"],
             donor_forward_calls=guard.donor_forward_calls, autograd_calls=blocked, all_parameters_frozen=all_frozen,
-        )
+        ), svd_skill
 
 
 def assimilate_experiment(directory, donor, seed, data):

@@ -165,7 +165,7 @@ def export_trained_snapshot(directory, paths, target):
     if (scaling.git("status", "--porcelain")
             or identity["source_sha"] != scaling.git("rev-parse", "HEAD").decode().strip()
             or identity["tree"] != scaling.git("rev-parse", "HEAD^{tree}").decode().strip()
-            or identity["backbone"] != scaling.selected_backbone()
+            or identity["backbone"] != scaling.selected_backbone(use_sdpa=identity.get("use_sdpa", False))
             or identity["gate15_sha256"] != digest(scaling.GATE15)):
         raise ValueError("training result does not bind the current committed source")
     train, _, manifest = scaling.load_corpora(SimpleNamespace(smoke=False, **paths))
@@ -200,6 +200,8 @@ def train_command(args):
             command.extend(("--" + name.replace("_", "-"), str(value)))
     for name, path in paths.items():
         command.extend(("--" + name.replace("_", "-"), str(path)))
+    if args.use_sdpa:
+        command.append("--use-sdpa")
     if args.until_complete:
         command.append("--until-complete")
     scaling.main(command)
@@ -412,6 +414,7 @@ def parser():
     train.add_argument("--epoch-limit", type=int, choices=range(1, 9), default=1)
     for name in TRAIN_OPTIONS[3:]:
         train.add_argument("--" + name.replace("_", "-"), type=int)
+    train.add_argument("--use-sdpa", action="store_true", help="causal SDPA training up to 4096 bytes")
     train.add_argument("--until-complete", action="store_true")
     train.add_argument("--save-snapshot", type=Path, help="export an exact checked unified snapshot on completion")
     train.set_defaults(handler=train_command)

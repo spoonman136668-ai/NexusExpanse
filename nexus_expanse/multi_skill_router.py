@@ -11,8 +11,9 @@ import tempfile
 import torch
 from torch import nn
 
-from nexus_expanse.checkpoint_transport import CONFIG, CorrectedLinear, ImportedSkill
+from nexus_expanse.checkpoint_transport import CONFIG, ImportedSkill
 from nexus_expanse.episodic_born_skill import EpisodicAssistedBornSkill
+from nexus_expanse.weight_editing import SCHEMA as SKILL_SCHEMA, restore_skill_payload, skill_payload
 
 
 BANK_V1 = "nexus-multi-skill-bank-v1"
@@ -504,11 +505,15 @@ def save_bank(bank: MultiSkillBank, path):
     for name, skill in bank.skills.items():
         episodic = isinstance(skill, EpisodicAssistedBornSkill)
         model = skill.neural if episodic else skill
-        methods = []
-        for layer in model.core.layers:
-            for linear in (layer.ffn.fc1, layer.ffn.fc2):
-                methods.append(linear.method if isinstance(linear, CorrectedLinear) else "monarch")
-        entry = dict(width=model.core.dim, methods=methods, state=model.state_dict())
+        payload = skill_payload(model)
+        entry = dict(
+            width=payload["width"], methods=[kind for layer in payload["ffn_layouts"] for kind in layer],
+            state=payload["state"],
+        )
+        if payload["fixed_eval_geometry"]:
+            entry["fixed_eval_geometry"] = True
+        if payload["prior_alpha"]:
+            entry["prior_alpha"] = payload["prior_alpha"]
         if episodic:
             entry["episodic"] = dict(keys=skill.keys, successors=skill.successors)
             schema = BANK_V2
@@ -551,16 +556,12 @@ def load_bank(path):
             emb = entry["state"].get("core.emb.weight")
             if not isinstance(emb, torch.Tensor) or emb.shape != (256, entry["width"]):
                 raise ValueError("snapshot width disagrees with the receiver weights")
-            model = ImportedSkill(entry["width"])
-            methods = iter(entry["methods"])
-            for layer in model.core.layers:
-                for slot in ("fc1", "fc2"):
-                    base = getattr(layer.ffn, slot)
-                    method = next(methods)
-                    if method != "monarch":
-                        weight = torch.zeros(base.out_dim, base.in_dim)
-                        setattr(layer.ffn, slot, CorrectedLinear(base, weight, method))
-            model.load_state_dict(entry["state"], strict=True, assign=True)
+            model = restore_skill_payload(dict(
+                schema=SKILL_SCHEMA, width=entry["width"], state=entry["state"],
+                fixed_eval_geometry=entry.get("fixed_eval_geometry", False),
+                prior_alpha=entry.get("prior_alpha", 0.0),
+                ffn_layouts=[entry["methods"][i:i + 2] for i in range(0, len(entry["methods"]), 2)],
+            ), assign=True)
             if "episodic" in entry:
                 episode = entry["episodic"]
                 if (package["schema"] != BANK_V2 or name == base_name
