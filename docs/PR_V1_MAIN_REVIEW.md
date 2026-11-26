@@ -134,3 +134,29 @@ The scored Linux CPU run recorded 0 guarded donor forwards, 0 edit autograd call
 | 2205 | 4.116732 | 4.788059 | 4.788059 | 4.782175 | 0.000000 | 4.262366 | 4.375644 |
 
 [Preregistration](PHASE9_ASSIMILATE_AND_WEIGHT_EDIT_PREREG.md) · [Unrounded evidence and five-seed diagnostics](../evidence/phase9-weight-edit-and-assimilate-dev-001.json)
+
+## Phase 10B shard streaming and surgical editing DEV review
+
+**Suite A science PASS.** The one-sided eligibility gate accepted the SVD repair in 5/5 seeds. It beat both the faulted skill and the matched random repair on held Python BPB in 5/5. It recovered at least half of the injected Python damage in 5/5 and stayed within the +0.02 BPB held Markdown non-degradation bound in 5/5.
+
+| Seed | Clean Python BPB | Faulted Python BPB | SVD Python BPB | Random Python BPB | SVD recovery | SVD Markdown delta BPB | SVD alpha |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2401 | 3.921085 | 5.947686 | 3.939476 | 5.949308 | 99.09% | -0.940449 | 1.0 |
+| 2402 | 3.997742 | 4.405985 | 4.042999 | 4.401545 | 88.91% | -0.880919 | 1.0 |
+| 2403 | 3.873199 | 4.357072 | 4.103839 | 4.357072 | 52.33% | -0.170764 | 1.0 |
+| 2404 | 4.010902 | 4.946006 | 4.110168 | 4.946006 | 89.38% | -2.330173 | 1.0 |
+| 2405 | 4.039915 | 5.001277 | 4.190823 | 4.936779 | 84.30% | -1.868794 | 1.0 |
+
+**Suite B science PASS.** The Phase 10B stack beat the shuffled donor by at least 0.50 BPB at zero updates in 5/5 seeds. After 64 matched native byte updates it beat both shuffled and scratch in 5/5. The scored stack was implemented from the named techniques because the earlier winning artifact was unavailable.
+
+| Seed | Stack zero | Shuffled zero | Scratch zero | Stack 64 steps | Shuffled 64 steps | Scratch 64 steps |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2401 | 6.624916 | 7.801758 | 8.199890 | 4.259813 | 4.556117 | 4.601938 |
+| 2402 | 7.177815 | 7.728235 | 8.275571 | 4.307707 | 4.510014 | 4.641131 |
+| 2403 | 6.606032 | 7.706646 | 8.244898 | 4.333474 | 4.561784 | 4.617523 |
+| 2404 | 6.676952 | 8.030158 | 8.252018 | 4.360224 | 4.583545 | 4.660551 |
+| 2405 | 6.761800 | 7.796144 | 8.226901 | 4.284863 | 4.465672 | 4.515952 |
+
+The scored Linux CPU run measured a peak of 1 loaded shard per import, 0 guarded donor calls and 0 edit autograd calls. Cold restores were exact in 5/5 Suite A and 5/5 Suite B seeds. The focused regression measured 50/50 exact seeded shard-stream prefix checks. The scored consumer used local mock shards. The real safetensors path was covered at the reader interface with a local double.
+
+[Preregistration](PHASE10B_SHARD_STREAM_AND_EDIT_PREREG.md) · [Unrounded five-seed evidence](../evidence/phase10b-shard-stream-and-edit-dev-001.json)

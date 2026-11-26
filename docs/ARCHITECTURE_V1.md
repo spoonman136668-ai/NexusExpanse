@@ -140,3 +140,15 @@ The inference-only editor derives a direction from the top singular vector of pa
 All 20 SVD candidates lowered Python validation BPB. Every candidate also changed Markdown validation BPB by more than 0.02, so the validation gate rolled back all five seeds. The zero held Markdown drift therefore measures an unchanged faulted model. The injected fault itself increased held Markdown BPB by 0.638–2.077, so the perturbation was local to a projection but its effects crossed domains.
 
 [Preregistration](PHASE9_ASSIMILATE_AND_WEIGHT_EDIT_PREREG.md) · [Unrounded evidence and five-seed diagnostics](../evidence/phase9-weight-edit-and-assimilate-dev-001.json)
+
+## Phase 10B tensor-only shard transport and one-sided editing
+
+The sharded transport reads local safetensors and tokenizer indexes. It reduces requested tensors into a Procrustes-aligned native spectral basis while each shard is open. A shard is released before the next one opens. The recipient uses mined MLP key/value pairs, DirectMonarch projections with low-rank spectral corrections, and a static raw-byte prior derived from token-leading probability mass. An optional Engram byte logit table contributes to this prior. Shard and tokenizer identities, peak loaded shards, donor-call counts, exact prefix parity and cold-archive parity are recorded. The local weights-only mock format uses the same mapping for CPU regression.
+
+The `assimilate-zero-exec` CLI writes the initialization and receipt. Native adaptation blends the static table at alpha 0.25 on the first step and decays its weight linearly to zero over the matched update budget. The one-sided edit gate accepts signed retain BPB changes at or below +0.02 when fault BPB improves and exact checks pass.
+
+**Suite A science PASS.** The one-sided eligibility gate accepted the SVD repair in 5/5 seeds. It beat both the faulted skill and the matched random repair on held Python BPB in 5/5. It recovered at least half of the injected Python damage in 5/5 and stayed within the +0.02 BPB held Markdown non-degradation bound in 5/5.
+
+**Suite B science PASS.** The Phase 10B stack beat the shuffled donor by at least 0.50 BPB at zero updates in 5/5 seeds. After 64 matched native byte updates it beat both shuffled and scratch in 5/5. The scored stack was implemented from the named techniques because the earlier winning artifact was unavailable.
+
+[Preregistration](PHASE10B_SHARD_STREAM_AND_EDIT_PREREG.md) · [Unrounded five-seed evidence](../evidence/phase10b-shard-stream-and-edit-dev-001.json)
