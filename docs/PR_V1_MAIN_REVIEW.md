@@ -106,3 +106,13 @@ The scored Linux CPU run recorded 0/160 false birth flags and 0/20 duplicate bir
 The guarded run measured 0 receiver donor calls and 5/5 exact K=7 and 5/5 exact Suite B restores. False-birth flags were 0/160 in Suite A, 1/80 for the tail detector and 0/80 for the mean detector. The tail detector flagged one held-out Markdown probe in seed 2002, which fails the zero-false-birth engineering gate. Neither detector added a novel slot in any seed, so their zero retention drift measures the unchanged K=4 bank. The combined bare-pytest regression has 532 cases. Windows CUDA and independent acceptance await separate receipts.
 
 [Preregistration](PHASE7_HARD_NOVELTY_SPARSE_K7_PREREG.md) · [Unrounded evidence and per-domain metrics](../evidence/phase7-hard-novelty-sparse-k7-dev-001.json)
+
+## Phase 8 confidence and per-skill novelty DEV review
+
+**Suite A science MIXED.** Confidence-gated routing used 6.891 calls per byte and met the 2.8 budget in 0/5 seeds. Minimum C/D/E answer accuracy was 89.06–96.88%, within the mastery gate in 5/5 seeds. Maximum original-domain drift was 0.00508–0.00647 BPB, within 0.015 BPB in 5/5 seeds. The confidence-gated path used all seven experts on every measured noninitial forecast and matched dense forecasts bit-for-bit in all five seeds.
+
+**Suite B science FAIL.** Per-skill calibration triggered a birth in 0/5 seeds and global mean triggered in 0/5. Per-skill answer accuracy was 7.03–13.28%, and new-slot cold routing was 0.00%. The per-skill arm met the combined birth and answer gate in 0/5 seeds and the 0.02 BPB drift limit in 5/5 seeds. The retained four-slot bank produced zero drift. The closest novel probe in each seed was still 0.291–0.473 BPB below the routed skill's ceiling.
+
+The Linux CPU run recorded 0/160 Suite A false flags and 0/80 per-skill Suite B false flags. The global mean control flagged 0/80. Receiver donor forwards were 0. Warm-to-cold forecasts and calibration identity matched in 5/5 Suite A and 5/5 Suite B seeds. The combined bare regression contains 586 cases. Windows CUDA and independent qualification await separate receipts.
+
+[Preregistration](PHASE8_PER_SKILL_NOVELTY_PREREG.md) · [Unrounded evidence and probe diagnostics](../evidence/phase8-per-skill-novelty-dev-001.json)
