@@ -152,3 +152,15 @@ The `assimilate-zero-exec` CLI writes the initialization and receipt. Native ada
 **Suite B science PASS.** The Phase 10B stack beat the shuffled donor by at least 0.50 BPB at zero updates in 5/5 seeds. After 64 matched native byte updates it beat both shuffled and scratch in 5/5. The scored stack was implemented from the named techniques because the earlier winning artifact was unavailable.
 
 [Preregistration](PHASE10B_SHARD_STREAM_AND_EDIT_PREREG.md) · [Unrounded five-seed evidence](../evidence/phase10b-shard-stream-and-edit-dev-001.json)
+
+## Phase 11 causal SDPA and composed skill archives
+
+Opt-in SDPA projects Q, K and V through the native attention tensors and uses implicit causality. A custom mask still follows the masked attention path. Evaluation uses fixed geometry for exact prefixes. The training CLI records the attention backend and accepts contexts through 4096 when SDPA is selected. The established CPU unified cache runs the same exported tensors with legacy attention.
+
+The composed lifecycle adapts a tensor-only imported skill, verifies an edit on a detached copy, and restores the edited skill as the resident used for Rule C birth. Bank archives reuse the standalone skill reconstruction for structured FFN layouts, fixed evaluation geometry and static-prior tensors. The warm and fresh-process expanded banks are checked for exact states and forecasts. The hierarchical router measures resident retention against the pre-birth bank.
+
+**DEV composition science PASS.** Assimilation beat matched scratch in 5/5 seeds. The SVD repair cleared its held-out recovery, matched-random, and retention gates in 5/5. Rule C birth, answer accuracy, cold routing, and hierarchical retention cleared together in 5/5. All three stages cleared in 5/5.
+
+The run used one shard at a time and measured 0 guarded donor calls and 0 surgical edit autograd calls. It recorded 0/160 resident novelty flags and 5/5 exact lifecycle cold restores. The focused suite tested 50 SDPA and 50 assembled-bank seeds at exact 0.0 prefix difference. CUDA FlashAttention and independent scientific acceptance await separate qualification.
+
+[Preregistration](PHASE11_SDPA_AND_3STAGE_PREREG.md) · [Unrounded profiles and five-seed evidence](../evidence/phase11-sdpa-and-3stage-dev-001.json)

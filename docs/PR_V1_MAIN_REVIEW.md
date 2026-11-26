@@ -160,3 +160,24 @@ The scored Linux CPU run recorded 0 guarded donor forwards, 0 edit autograd call
 The scored Linux CPU run measured a peak of 1 loaded shard per import, 0 guarded donor calls and 0 edit autograd calls. Cold restores were exact in 5/5 Suite A and 5/5 Suite B seeds. The focused regression measured 50/50 exact seeded shard-stream prefix checks. The scored consumer used local mock shards. The real safetensors path was covered at the reader interface with a local double.
 
 [Preregistration](PHASE10B_SHARD_STREAM_AND_EDIT_PREREG.md) · [Unrounded five-seed evidence](../evidence/phase10b-shard-stream-and-edit-dev-001.json)
+
+## Phase 11 SDPA and three-stage lifecycle DEV review
+
+**DEV composition science PASS.** Assimilation beat matched scratch in 5/5 seeds. The SVD repair cleared its held-out recovery, matched-random, and retention gates in 5/5. Rule C birth, answer accuracy, cold routing, and hierarchical retention cleared together in 5/5. All three stages cleared in 5/5.
+
+The run used one shard at a time and measured 0 guarded donor calls and 0 surgical edit autograd calls. It recorded 0/160 resident novelty flags and 5/5 exact lifecycle cold restores. The focused suite tested 50 SDPA and 50 assembled-bank seeds at exact 0.0 prefix difference. CUDA FlashAttention and independent scientific acceptance await separate qualification.
+
+| Context | Legacy forward ms | SDPA forward ms | Legacy backward ms | SDPA backward ms | Legacy peak CPU bytes | SDPA peak CPU bytes | Training logit difference | Native eval logit difference | SDPA prefix difference |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 512 | 12.851 | 11.614 | 19.166 | 16.490 | 14235656 | 12496904 | 0.0 | 1.52587890625e-05 | 0.0 |
+| 1024 | 42.766 | 23.747 | 57.221 | 38.234 | 33382408 | 25483272 | 0.0 | 1.52587890625e-05 | 0.0 |
+
+| Seed | Assimilated BPB | Scratch BPB | SVD Python BPB | Random Python BPB | SVD damage recovered | Rule C accuracy | Cold routing | Max retention drift BPB |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2501 | 4.307342 | 4.583466 | 4.273775 | 5.312965 | 84.99% | 100.00% | 96.88% | 0.007465 |
+| 2502 | 4.316885 | 4.577774 | 4.356621 | 5.697977 | 95.73% | 100.00% | 96.88% | 0.006848 |
+| 2503 | 4.247035 | 4.539935 | 4.112065 | 5.181601 | 96.32% | 100.00% | 96.88% | 0.007183 |
+| 2504 | 4.442791 | 4.674963 | 4.784317 | 5.730679 | 66.03% | 96.88% | 96.88% | 0.008380 |
+| 2505 | 4.516686 | 4.667958 | 4.658300 | 5.185444 | 86.75% | 100.00% | 96.88% | 0.007071 |
+
+[Preregistration](PHASE11_SDPA_AND_3STAGE_PREREG.md) · [Unrounded profiles and five-seed evidence](../evidence/phase11-sdpa-and-3stage-dev-001.json)
