@@ -34,6 +34,7 @@ def skill_snapshot(skill):
         schema=SCHEMA,
         width=skill.readout.in_features,
         fixed_eval_geometry=skill.core.fixed_eval_geometry,
+        prior_alpha=skill.prior_alpha,
         ffn_layouts=[[_ffn_layout(getattr(layer.ffn, name)) for name in FFN_NAMES]
                      for layer in skill.core.layers],
         state={key: value.detach().cpu() for key, value in skill.state_dict().items()},
@@ -46,7 +47,8 @@ def restore_skill(source):
     """Read Phase 9 and legacy import-skill snapshots without a donor."""
     payload = torch.load(BytesIO(source) if isinstance(source, bytes) else Path(source),
                          weights_only=True, map_location="cpu")
-    with torch.random.fork_rng(devices=[]):
+    # Restored parameters remain eligible for a later native adaptation step.
+    with torch.inference_mode(False), torch.no_grad(), torch.random.fork_rng(devices=[]):
         skill = ImportedSkill(payload["width"])
         schema = payload.get("schema")
         if schema == SCHEMA:
@@ -66,7 +68,19 @@ def restore_skill(source):
                 else:
                     continue
                 setattr(layer.ffn, name, replacement)
-        skill.load_state_dict(payload["state"], strict=True)
+        state = payload["state"]
+        alpha = payload.get("prior_alpha", 0.0)
+        prior = state.get("static_byte_prior")
+        if (type(alpha) not in (int, float) or not 0 <= alpha < 1
+                or (alpha and prior is None)):
+            raise ValueError("invalid standalone skill prior alpha")
+        if prior is not None:
+            if (prior.shape != (256, 256) or not prior.is_floating_point()
+                    or not torch.isfinite(prior).all()):
+                raise ValueError("invalid standalone static byte prior")
+            skill.static_byte_prior = torch.empty_like(prior)
+        skill.prior_alpha = alpha
+        skill.load_state_dict(state, strict=True)
     return skill.eval().requires_grad_(False)
 
 
@@ -226,7 +240,10 @@ def verify_skill(skill):
     rebuilt = restore_skill(archive)
     probe = torch.arange(24, dtype=torch.long).unsqueeze(0)
     before, after = skill.state_dict(), rebuilt.state_dict()
-    exact_state = before.keys() == after.keys() and all(torch.equal(before[key], after[key]) for key in before)
+    exact_state = (
+        skill.prior_alpha == rebuilt.prior_alpha and before.keys() == after.keys()
+        and all(torch.equal(before[key], after[key]) for key in before)
+    )
     receipt = dict(
         prefix_probes=16, prefix_max_abs_diff=prefix_diff(skill),
         round_trip_max_abs_diff=_max_diff(skill(probe), rebuilt(probe)),
@@ -242,7 +259,7 @@ def exact_skill_receipt(receipt):
 
 @torch.inference_mode()
 def verified_surgical_edit(skill, edit_fn, fault_eval_fn, retain_eval_fn, max_retain_drift_bpb=0.02):
-    """Commit an edit to a private copy only after exactness and BPB gates pass."""
+    """Gate a private edit on exactness, fault improvement, and retain non-degradation."""
     if not math.isfinite(max_retain_drift_bpb) or max_retain_drift_bpb < 0:
         raise ValueError("retain drift bound must be finite and nonnegative")
     original = deepcopy(skill).cpu().eval().requires_grad_(False)
@@ -256,7 +273,7 @@ def verified_surgical_edit(skill, edit_fn, fault_eval_fn, retain_eval_fn, max_re
     fault_after = float(fault_eval_fn(edited))
     retain_after = float(retain_eval_fn(edited))
     finite = all(math.isfinite(value) for value in (fault_before, fault_after, retain_before, retain_after))
-    drift = abs(retain_after - retain_before) if finite else None
+    drift = retain_after - retain_before if finite else None
     accepted = (finite and exact_skill_receipt(receipt) and fault_after < fault_before
                 and drift <= max_retain_drift_bpb)
     receipt.update(

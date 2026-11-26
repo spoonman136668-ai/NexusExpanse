@@ -278,7 +278,10 @@ def test_editor_disables_grad_and_rolls_back_rejected_change(monkeypatch, single
             inference_only()
             return 5.0 - float(model.core.layers[1].attn.out_proj.bias[0])
 
-        accepted, rolled_back, receipt = verified_surgical_edit(skill, edit, evaluate, evaluate)
+        def degrading_retain(model):
+            return 10.0 - evaluate(model)
+
+        accepted, rolled_back, receipt = verified_surgical_edit(skill, edit, evaluate, degrading_retain)
         assert not accepted and rolled_back is skill
         assert receipt["fault_after_bpb"] < receipt["fault_before_bpb"]
         assert receipt["retain_drift_bpb"] > 0.02

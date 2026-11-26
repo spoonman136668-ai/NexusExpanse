@@ -27,6 +27,7 @@ from nexus_expanse.checkpoint_transport import CONFIG as SKILL_CONFIG, Corrected
 from nexus_expanse.donor_assimilation import forbid_donor_forward
 from nexus_expanse.multi_skill_router import load_bank
 from nexus_expanse.cache_assimilation import assimilate
+from nexus_expanse.shard_stream_assimilation import assimilate_zero_exec
 from nexus_expanse.weight_editing import (
     apply_surgical_edit, exact_skill_receipt, inspect_fault_direction, restore_skill, verify_skill,
 )
@@ -303,6 +304,15 @@ def assimilate_command(args):
     return 0
 
 
+def assimilate_zero_exec_command(args):
+    archive, receipt = assimilate_zero_exec(args.donor_dir, mock_pt=args.mock_pt, seed=args.seed)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    atomic_bytes(args.out, archive)
+    emit(dict(command="assimilate-zero-exec", status="PASS", skill_bytes=len(archive),
+              skill_sha256=hashlib.sha256(archive).hexdigest(), **receipt))
+    return 0
+
+
 @torch.inference_mode()
 def weight_edit_command(args):
     if not math.isfinite(args.alpha):
@@ -445,6 +455,13 @@ def parser():
     assimilation.add_argument("--kl-weight", type=float, default=0.9)
     assimilation.add_argument("--seed", type=int, default=0)
     assimilation.set_defaults(handler=assimilate_command)
+
+    zero_exec = sub.add_parser("assimilate-zero-exec", help="initialize a native skill from static donor shards")
+    zero_exec.add_argument("--donor-dir", type=Path, required=True)
+    zero_exec.add_argument("--out", type=Path, required=True)
+    zero_exec.add_argument("--mock-pt", action="store_true", help="read an offline weights-only test fixture")
+    zero_exec.add_argument("--seed", type=int, default=0)
+    zero_exec.set_defaults(handler=assimilate_zero_exec_command)
 
     edit = sub.add_parser("weight-edit", help="inspect or ablate one attention projection")
     edit.add_argument("--skill", type=Path, required=True)

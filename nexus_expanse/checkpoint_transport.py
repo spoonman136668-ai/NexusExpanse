@@ -65,6 +65,8 @@ class ImportedSkill(nn.Module):
         super().__init__()
         self.core=NexusExpanseByteCore(**dict(CONFIG,dim=width))
         self.readout=nn.Linear(width,256,bias=False)
+        self.register_buffer("static_byte_prior", None)
+        self.prior_alpha = 0.0
 
     def forward(self, raw):
         length = raw.shape[1]
@@ -73,7 +75,14 @@ class ImportedSkill(nn.Module):
                 raise ValueError("input exceeds position embedding length")
             raw = F.pad(raw, (0, self.core.max_seq_len - length))
         hidden = self.core.forward_neural(raw)[1]
-        return self.readout(hidden)[:, :length]
+        logits = self.readout(hidden)
+        if self.static_byte_prior is not None and self.prior_alpha:
+            alpha = self.prior_alpha
+            logits = torch.logaddexp(
+                F.log_softmax(logits, dim=-1) + math.log1p(-alpha),
+                self.static_byte_prior[raw] + math.log(alpha),
+            )
+        return logits[:, :length]
 
 
 class SkillBank(nn.Module):
