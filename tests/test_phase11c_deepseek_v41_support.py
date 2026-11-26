@@ -1,6 +1,7 @@
 """Offline compatibility checks for the DeepSeek-V4.1-Flash checkpoint layout."""
 
 from contextlib import contextmanager
+from io import BytesIO
 import json
 from pathlib import Path
 import shutil
@@ -159,7 +160,7 @@ def test_deepseek_scaled_shards_match_fp32_and_restore_exactly(deepseek_shards, 
         @contextmanager
         def safe_open(path, *, framework, device):
             assert framework == "pt" and device == "cpu"
-            weights = torch.load(path, weights_only=True)
+            weights = torch.load(BytesIO(Path(path).read_bytes()), weights_only=True)
             yield SimpleNamespace(get_tensor=weights.__getitem__)
 
         monkeypatch.setattr(streaming, "_hf_source", lambda _: (download, "a" * 40))

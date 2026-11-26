@@ -12,6 +12,7 @@ import torch
 from torch.nn import functional as F
 
 from nexus_expanse.checkpoint_transport import CorrectedLinear, ImportedSkill
+from nexus_expanse.deepseek_engram import engram_rows
 from nexus_expanse.donor_assimilation import forbid_donor_forward, graft_dense_to_monarch
 from nexus_expanse.donor_cache_io import _decoder_types, token_bytes
 from nexus_expanse.weight_editing import exact_skill_receipt, verify_skill
@@ -19,6 +20,9 @@ from nexus_expanse.weight_editing import exact_skill_receipt, verify_skill
 INITIAL_ALPHA = 0.25
 ROW_CHUNK = 256
 GRAM_MIN_VOCAB = 4096
+STUDENT_DIMS = (32, 64, 128, 256)
+STUDENT_LAYERS = (2, 4, 6)
+ENGRAM_LAYERS = (1, 14)
 LAYER_NUMBER = re.compile(r"(?:^|\.)(?:layers|blocks|h)\.(\d+)\.")
 ATTENTION_WEIGHTS = ("v_proj", "o_proj")
 MLA_WEIGHTS = ("wkv", "wo_a", "wo_b")
@@ -79,10 +83,10 @@ def _repeat_scale(scale, index, axis, block, extent):
     if isinstance(index, slice):
         start, stop, _ = index.indices(extent)
         first, end = start // block, (stop + block - 1) // block
-        return scale.narrow(axis, first, end - first).repeat_interleave(block, dim=axis).narrow(
+        return scale.narrow(axis, first, end - first).float().repeat_interleave(block, dim=axis).narrow(
             axis, start % block, stop - start,
         )
-    return scale.index_select(axis, index // block)
+    return scale.index_select(axis, index // block).float()
 
 
 class _ScaledWeight:
@@ -97,7 +101,6 @@ class _ScaledWeight:
             raise ValueError("invalid quantized weight or scale")
         if scale.dtype == torch.uint8 and quantization.get("scale_fmt") == "ue8m0":
             scale = scale.view(torch.float8_e8m0fnu)
-        scale = _finite(scale)
         self.block = None
         if scale.numel() == 1 and scale.ndim < 2:
             self.scale = scale.reshape(())
@@ -115,6 +118,8 @@ class _ScaledWeight:
                 or any(type(block) is not int or block < 1 for block in configured)
             ):
                 raise ValueError("invalid quantized weight block size")
+            if configured and scale.shape[0] == self.shape[0]:
+                configured = (1, configured[1])
             if configured and tuple(math.ceil(n / b) for n, b in zip(self.shape, configured)) == scale.shape:
                 self.block = configured
             elif configured and any(n % s for n, s in zip(self.shape, scale.shape)):
@@ -138,7 +143,7 @@ class _ScaledWeight:
                 scale = scale[:, None]
         else:
             scale = self.scale
-        return weight * scale
+        return weight * _finite(scale)
 
 
 class ShardStream:
@@ -363,10 +368,10 @@ def _right_project(weight, projection):
     return torch.cat([_finite(weight[i:i + ROW_CHUNK]) @ projection for i in range(0, weight.shape[0], ROW_CHUNK)])
 
 
-def _left_project(weight, projection):
-    if weight.ndim != 2 or weight.shape[0] != projection.shape[0]:
+def _left_project(weight, projection, *, row_start=0):
+    if weight.ndim != 2 or weight.shape[0] != row_start + projection.shape[0]:
         raise ValueError("donor matrix has an invalid output width")
-    return torch.cat([projection.T @ _finite(weight[:, i:i + ROW_CHUNK])
+    return torch.cat([projection.T @ _finite(weight[row_start:, i:i + ROW_CHUNK])
                       for i in range(0, weight.shape[1], ROW_CHUNK)], dim=1)
 
 
@@ -445,10 +450,14 @@ def _shuffle(matrix, rng):
     return matrix[rows][:, cols]
 
 
-def make_student(seed):
+def make_student(seed, *, student_dim=32, student_layers=2):
+    if type(student_dim) is not int or student_dim not in STUDENT_DIMS:
+        raise ValueError(f"student_dim must be one of {STUDENT_DIMS}")
+    if type(student_layers) is not int or student_layers not in STUDENT_LAYERS:
+        raise ValueError(f"student_layers must be one of {STUDENT_LAYERS}")
     with torch.random.fork_rng(devices=[]):
         torch.random.default_generator.manual_seed(seed)
-        student = ImportedSkill()
+        student = ImportedSkill(student_dim, student_layers)
     student.core.fixed_eval_geometry = True
     return student
 
@@ -468,9 +477,12 @@ def _mlp_kv_mine(up, down, count):
     return keys, values
 
 
-def _static_ov_readout(embeddings, projected_head, first_bytes, transport, engram):
+def _static_ov_readout(embeddings, projected_head, first_bytes, transport, engram, *, engram_value=None):
     width = embeddings.shape[-1]
-    context = F.layer_norm(embeddings + embeddings @ transport.T, (width,))
+    context = embeddings + embeddings @ transport.T
+    if engram_value is not None:
+        context = context + INITIAL_ALPHA * engram_value
+    context = F.layer_norm(context, (width,))
     # Sum probability mass over all distinct vocabulary rows that can emit the same byte.
     # Log reductions keep the conversion stable for high-magnitude donor heads.
     log_mass = torch.full((256, 256), -torch.inf, dtype=torch.float64)
@@ -484,7 +496,7 @@ def _static_ov_readout(embeddings, projected_head, first_bytes, transport, engra
 
 
 @torch.no_grad()
-def _transport(student, stream, directory, *, shuffle_seed):
+def _transport(student, stream, directory, *, shuffle_seed, use_engram):
     keys = stream.weight_map
     tokenizer = _local_file(directory, HF_TOKENIZER).read_bytes()
     singles, ids, leading = _lexicon(tokenizer)
@@ -537,12 +549,48 @@ def _transport(student, stream, directory, *, shuffle_seed):
         transforms[pos] = lambda weight: reduced.update(pos=_right_project(weight[:student.core.max_seq_len], basis))
     if final_norm:
         transforms[final_norm] = lambda weight: reduced.update(norm=basis.square().T @ _finite(weight))
-    if engram_key:
+    # None preserves the legacy explicit byte table when older callers omit the option.
+    if engram_key and use_engram is not False:
         def read_engram(weight):
             if weight.shape != (256, 256):
                 raise ValueError("static Engram must be a 256 by 256 byte logit table")
             reduced["engram"] = _shuffle(_finite(weight).clone(), rng)
         transforms[engram_key] = read_engram
+
+    engram_layers = []
+    if use_engram:
+        for index in ENGRAM_LAYERS:
+            embed_name, value_name = (f"layers.{index}.engram.{kind}.weight" for kind in ("embed", "wkv"))
+            if (embed_name in keys) != (value_name in keys):
+                raise ValueError(f"incomplete DeepSeek Engram layer {index}")
+            if embed_name in keys:
+                engram_layers.append((index, embed_name, value_name))
+    lookups = None
+
+    def read_lookup(weight, index):
+        nonlocal lookups
+        if lookups is None:
+            config = read_config()
+            lookups = engram_rows(tokenizer, config.get("text_config", config), singles)
+        if index not in lookups:
+            raise ValueError(f"DeepSeek Engram layer {index} is missing from config.json")
+        rows, shape = lookups[index]
+        if weight.shape != shape:
+            raise ValueError(f"invalid DeepSeek Engram embedding shape in layer {index}")
+        selected = _finite(weight[rows.flatten()]).reshape(256, -1)
+        reduced[index, "engram_embed"] = selected.clone()
+
+    def read_value(weight, index):
+        config = read_config()
+        text = config.get("text_config", config)
+        copies = text.get("hc_mult")
+        if type(copies) is not int or copies < 1:
+            raise ValueError("DeepSeek Engram config requires a positive hc_mult")
+        reduced[index, "engram_value"] = _left_project(weight, basis, row_start=copies * basis.shape[0])
+
+    for index, embed_name, value_name in engram_layers:
+        transforms[embed_name] = lambda weight, index=index: read_lookup(weight, index)
+        transforms[value_name] = lambda weight, index=index: read_value(weight, index)
 
     layers = list(_layer_keys(keys, len(student.core.layers)))
 
@@ -624,32 +672,46 @@ def _transport(student, stream, directory, *, shuffle_seed):
         layer.ffn.fc1 = _spectral_weighted_monarch(layer.ffn.fc1, mined_up)
         layer.ffn.fc2 = _spectral_weighted_monarch(layer.ffn.fc2, mined_down)
         transport += reduced[index, "o_proj"] @ reduced[index, "v_proj"] + mined_down @ mined_up
+    engram_value = None
+    if engram_layers:
+        values = []
+        for index, _, _ in engram_layers:
+            selected = reduced[index, "engram_embed"]
+            projection = reduced[index, "engram_value"]
+            if selected.shape[1] != projection.shape[1]:
+                raise ValueError(f"invalid DeepSeek Engram value geometry in layer {index}")
+            values.append(_shuffle(selected @ projection.T, rng))
+        engram_value = torch.stack(values).mean(0)
     student.static_byte_prior = _static_ov_readout(
         embedded["input"], reduced["head"], leading, transport / (2 * len(layers)), reduced.get("engram"),
+        engram_value=engram_value,
     )
     student.prior_alpha = INITIAL_ALPHA
     return dict(
         tokenizer_sha256=_digest(tokenizer), donor_width=basis.shape[0], donor_vocab_size=len(ids),
         student_width=width, student_vocab_size=256, projected_embedding_singular_values=embedded["spectrum"],
-        selected_layers=len(layers), uses_static_engram="engram" in reduced,
+        selected_layers=len(layers), uses_static_engram="engram" in reduced or bool(engram_layers),
+        engram_layers=[index for index, _, _ in engram_layers],
         local_files_only=stream.hf_repo is None, trust_remote_code=False,
     )
 
 
-def assimilate_zero_exec(directory=None, *, hf_repo=None, mock_pt=False, seed=0, shuffle_seed=None):
+def assimilate_zero_exec(directory=None, *, hf_repo=None, mock_pt=False, seed=0, shuffle_seed=None,
+                         student_dim=32, student_layers=2, use_engram=None):
     """Initialize and verify a standalone skill from local or streamed HF tensor shards."""
     if (directory is None) == (hf_repo is None) or (hf_repo is not None and mock_pt):
         raise ValueError("choose one donor directory or HF repo; mock PT requires a local directory")
+    skill = make_student(seed, student_dim=student_dim, student_layers=student_layers)
     source = TemporaryDirectory(prefix="nexus-hf-") if hf_repo is not None else nullcontext(directory)
     with source as root, forbid_donor_forward() as guard:
         stream = ShardStream(root, mock_pt=mock_pt, hf_repo=hf_repo)
-        skill = make_student(seed)
-        details = _transport(skill, stream, stream.root, shuffle_seed=shuffle_seed)
+        details = _transport(skill, stream, stream.root, shuffle_seed=shuffle_seed, use_engram=use_engram)
         skill.eval()
         archive, checks = verify_skill(skill)
         receipt = dict(**details, **stream.receipt(), **checks, prior_alpha=skill.prior_alpha,
                        donor_forward_calls=guard.donor_forward_calls, seed=seed, shuffle_seed=shuffle_seed)
-        if stream.live or receipt["peak_loaded_shards"] != 1 or not exact_skill_receipt(receipt):
+        if (stream.live or receipt["peak_loaded_shards"] != 1 or receipt.get("peak_disk_shards", 0) > 1
+                or guard.donor_forward_calls or not exact_skill_receipt(receipt)):
             raise ValueError("shard-stream skill failed exact qualification")
     return archive, receipt
 

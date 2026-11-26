@@ -57,13 +57,13 @@ def write_mock_shards(directory, tensors, vocab, merges=()):
     })
 
 
-def produce_cross_width_donor(directory, fit, seed):
+def produce_cross_width_donor(directory, fit, seed, *, dim=64, layers=2, engram=False):
     """Producer process only. The consumer sees three tensor files and tokenizer JSON."""
     started = time.perf_counter()
     spans = [bytes(row) for row in fit.to(torch.uint8).tolist()]
     vocab, encoded, merges = learn_byte_bpe(spans, vocab_size=320)
     torch.manual_seed(seed + 11000)
-    model = DenseTokenDonorLM(vocab_size=320, dim=64, n_layers=2, n_heads=4, ffn_mult=2, max_seq_len=64)
+    model = DenseTokenDonorLM(vocab_size=320, dim=dim, n_layers=layers, n_heads=4, ffn_mult=2, max_seq_len=64)
     optimizer = optim(model)
     rng = torch.Generator().manual_seed(seed + 12000)
     tokens = [torch.tensor(row) for row in encoded]
@@ -86,11 +86,15 @@ def produce_cross_width_donor(directory, fit, seed):
          "model.norm.weight": state["out_norm.weight"], "lm_head.weight": state["readout.weight"]},
         {},
     ]
-    for i in range(2):
+    if engram:
+        pairs = fit[:, :-1].flatten() * 256 + fit[:, 1:].flatten()
+        counts = (torch.bincount(pairs, minlength=256 * 256).reshape(256, 256) + 1).float()
+        shards[1]["engram.weight"] = counts.log() - counts.sum(1, keepdim=True).log()
+    for i in range(layers):
         prefix = f"layers.{i}."
         out = f"model.layers.{i}."
         q, k, v = state[prefix + "attn.in_proj_weight"].chunk(3, dim=0)
-        shards[i + 1].update({
+        shards[1 + i % 2].update({
             out + "self_attn.q_proj.weight": q, out + "self_attn.k_proj.weight": k,
             out + "self_attn.v_proj.weight": v,
             out + "self_attn.o_proj.weight": state[prefix + "attn.out_proj.weight"],
@@ -108,9 +112,9 @@ def produce_cross_width_donor(directory, fit, seed):
 
 
 @torch.no_grad()
-def make_matched_scratch(seed):
+def make_matched_scratch(seed, **geometry):
     """Match trainable spectral residual capacity while keeping the initial random native function."""
-    skill = make_student(seed)
+    skill = make_student(seed, **geometry)
     for layer in skill.core.layers:
         for name in ("fc1", "fc2"):
             base = getattr(layer.ffn, name)

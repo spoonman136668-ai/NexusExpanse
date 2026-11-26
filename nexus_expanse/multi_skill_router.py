@@ -11,7 +11,7 @@ import tempfile
 import torch
 from torch import nn
 
-from nexus_expanse.checkpoint_transport import CONFIG, ImportedSkill
+from nexus_expanse.checkpoint_transport import ImportedSkill
 from nexus_expanse.episodic_born_skill import EpisodicAssistedBornSkill
 from nexus_expanse.weight_editing import SCHEMA as SKILL_SCHEMA, restore_skill_payload, skill_payload
 
@@ -550,7 +550,7 @@ def load_bank(path):
         for name, entry in entries.items():
             if (not isinstance(entry, dict) or type(entry.get("width")) is not int
                     or not isinstance(entry.get("methods"), list)
-                    or len(entry["methods"]) != CONFIG["n_layers"] * 2
+                    or not entry["methods"] or len(entry["methods"]) % 2
                     or not isinstance(entry.get("state"), Mapping)):
                 raise ValueError("invalid skill configuration in bank snapshot")
             emb = entry["state"].get("core.emb.weight")

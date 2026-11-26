@@ -48,7 +48,7 @@ def skill_snapshot(skill):
 
 @torch.inference_mode()
 def restore_skill(source):
-    """Read Phase 9 and legacy import-skill snapshots without a donor."""
+    """Restore a standalone skill with its archived width and depth."""
     payload = torch.load(BytesIO(source) if isinstance(source, bytes) else Path(source),
                          weights_only=True, map_location="cpu")
     return restore_skill_payload(payload)
@@ -58,18 +58,21 @@ def restore_skill_payload(payload, *, assign=False):
     """Rebuild the native skill used by both standalone and bank archives."""
     # Restored parameters remain eligible for a later native adaptation step.
     with torch.inference_mode(False), torch.no_grad(), torch.random.fork_rng(devices=[]):
-        skill = ImportedSkill(payload["width"])
         schema = payload.get("schema")
         if schema == SCHEMA:
             fixed_eval_geometry = payload["fixed_eval_geometry"]
             if type(fixed_eval_geometry) is not bool:
                 raise ValueError("invalid fixed evaluation geometry")
-            skill.core.fixed_eval_geometry = fixed_eval_geometry
             layouts = payload["ffn_layouts"]
+            if not isinstance(layouts, list) or not layouts:
+                raise ValueError("invalid standalone skill depth")
         elif schema is None and "method" in payload:
-            layouts = [[payload["method"]] * len(FFN_NAMES) for _ in skill.core.layers]
+            fixed_eval_geometry = False
+            layouts = [[payload["method"]] * len(FFN_NAMES) for _ in range(2)]
         else:
             raise ValueError("unknown standalone skill snapshot format")
+        skill = ImportedSkill(payload["width"], len(layouts))
+        skill.core.fixed_eval_geometry = fixed_eval_geometry
         for layer, layout in zip(skill.core.layers, layouts, strict=True):
             for name, kind in zip(FFN_NAMES, layout, strict=True):
                 base = getattr(layer.ffn, name)

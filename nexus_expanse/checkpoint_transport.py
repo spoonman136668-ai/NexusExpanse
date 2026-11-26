@@ -61,9 +61,9 @@ class CorrectedLinear(nn.Module):
 
 
 class ImportedSkill(nn.Module):
-    def __init__(self, width=CONFIG['dim']):
+    def __init__(self, width=CONFIG['dim'], n_layers=CONFIG['n_layers']):
         super().__init__()
-        self.core=NexusExpanseByteCore(**dict(CONFIG,dim=width))
+        self.core=NexusExpanseByteCore(**dict(CONFIG,dim=width,n_layers=n_layers))
         self.readout=nn.Linear(width,256,bias=False)
         self.register_buffer("static_byte_prior", None)
         self.prior_alpha = 0.0
