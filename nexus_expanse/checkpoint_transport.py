@@ -67,8 +67,13 @@ class ImportedSkill(nn.Module):
         self.readout=nn.Linear(width,256,bias=False)
 
     def forward(self, raw):
-        hidden=self.core.forward_neural(raw)[1]
-        return self.readout(hidden)
+        length = raw.shape[1]
+        if self.core.fixed_eval_geometry and not self.training:
+            if length > self.core.max_seq_len:
+                raise ValueError("input exceeds position embedding length")
+            raw = F.pad(raw, (0, self.core.max_seq_len - length))
+        hidden = self.core.forward_neural(raw)[1]
+        return self.readout(hidden)[:, :length]
 
 
 class SkillBank(nn.Module):

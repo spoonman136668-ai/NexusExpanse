@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import itertools
 import json
+import math
 from pathlib import Path
 import pickle
 import random
@@ -25,6 +26,10 @@ from nexus_expanse.verifier_agent import VerifierGatedNexusAgent
 from nexus_expanse.checkpoint_transport import CONFIG as SKILL_CONFIG, CorrectedLinear, ImportedSkill, METHODS as SKILL_METHODS, load_skill
 from nexus_expanse.donor_assimilation import forbid_donor_forward
 from nexus_expanse.multi_skill_router import load_bank
+from nexus_expanse.cache_assimilation import assimilate
+from nexus_expanse.weight_editing import (
+    apply_surgical_edit, exact_skill_receipt, inspect_fault_direction, restore_skill, verify_skill,
+)
 
 VERSION = "1.0-rc1"
 TRAIN_OPTIONS = ("device", "dtype", "epoch_limit", "seed", "dim", "context",
@@ -286,6 +291,44 @@ def import_skill_command(args):
     return 0
 
 
+def assimilate_command(args):
+    archive, receipt = assimilate(
+        args.cache_dir, device=args.device, dtype=args.dtype, steps=args.steps,
+        kl_weight=args.kl_weight, seed=args.seed,
+    )
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    atomic_bytes(args.out, archive)
+    emit(dict(command="assimilate", status="PASS", skill_bytes=len(archive),
+              skill_sha256=hashlib.sha256(archive).hexdigest(), **receipt))
+    return 0
+
+
+@torch.inference_mode()
+def weight_edit_command(args):
+    if not math.isfinite(args.alpha):
+        raise ValueError("alpha must be finite")
+    skill = restore_skill(args.skill)
+    skill.core.fixed_eval_geometry = True
+    fault = parsed_hex(args.fault_hex, skill.core.max_seq_len)
+    retain = parsed_hex(args.retain_hex, skill.core.max_seq_len)
+    diagnostics = inspect_fault_direction(
+        skill, torch.tensor([list(fault)]), torch.tensor([list(retain)]), args.layer,
+    )
+    direction = diagnostics["direction_v"]
+    working = skill
+    if args.op == "subspace_ablate":
+        working = apply_surgical_edit(skill, args.layer, "attn.out_proj", args.op, direction, args.alpha)
+    archive, receipt = verify_skill(working)
+    if not exact_skill_receipt(receipt):
+        raise ValueError("weight-edit skill verification failed")
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    atomic_bytes(args.out, archive)
+    emit(dict(command="weight-edit", status="PASS", op=args.op, layer=args.layer, alpha=args.alpha,
+              direction_v=direction.tolist(), layers=diagnostics["layers"],
+              skill_bytes=len(archive), skill_sha256=hashlib.sha256(archive).hexdigest(), **receipt))
+    return 0
+
+
 def route_prefix_check(route, raw, original):
     cut = raw.size(1) // 2
     alternate = raw.clone()
@@ -393,6 +436,26 @@ def parser():
     imp.add_argument("--out", type=Path, required=True)
     imp.set_defaults(handler=import_skill_command)
 
+    assimilation = sub.add_parser("assimilate", help="train a byte skill from static donor-cache shards")
+    assimilation.add_argument("--cache-dir", type=Path, required=True)
+    assimilation.add_argument("--out", type=Path, required=True)
+    assimilation.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
+    assimilation.add_argument("--dtype", choices=("fp32", "bf16"), default="fp32")
+    assimilation.add_argument("--steps", type=int, default=192)
+    assimilation.add_argument("--kl-weight", type=float, default=0.9)
+    assimilation.add_argument("--seed", type=int, default=0)
+    assimilation.set_defaults(handler=assimilate_command)
+
+    edit = sub.add_parser("weight-edit", help="inspect or ablate one attention projection")
+    edit.add_argument("--skill", type=Path, required=True)
+    edit.add_argument("--op", choices=("inspect", "subspace_ablate"), required=True)
+    edit.add_argument("--layer", type=int, required=True)
+    edit.add_argument("--alpha", type=float, default=1.0)
+    edit.add_argument("--fault-hex", default=bytes(range(24)).hex())
+    edit.add_argument("--retain-hex", default=bytes(range(128, 152)).hex())
+    edit.add_argument("--out", type=Path, required=True)
+    edit.set_defaults(handler=weight_edit_command)
+
     route = sub.add_parser("route-stream", help="forecast raw bytes with a saved multi-skill bank")
     route.add_argument("--bank", type=Path, required=True)
     route.add_argument(
@@ -416,7 +479,7 @@ def main(argv=None):
         return args.handler(args)
     except subprocess.CalledProcessError as exc:
         return exc.returncode
-    except (ValueError, OSError, RuntimeError, pickle.UnpicklingError) as exc:
+    except (ValueError, KeyError, OSError, RuntimeError, pickle.UnpicklingError) as exc:
         p.exit(2, f"nexus {args.command}: {exc}\n")
 
 
