@@ -12,8 +12,9 @@ import pytest
 import torch
 
 from benchmarks.phase10b_shard_stream_and_edit import MOCK_FILES, write_mock_shards
+from nexus_expanse.cli import main as cli_main
 from nexus_expanse.donor_assimilation import DenseTokenDonorLM
-from nexus_expanse.shard_stream_assimilation import adapt_skill, assimilate_zero_exec, make_student
+from nexus_expanse.shard_stream_assimilation import _layer_keys, adapt_skill, assimilate_zero_exec, make_student
 from nexus_expanse.weight_editing import (
     apply_surgical_edit, prefix_diff, restore_skill, verified_surgical_edit, verify_skill,
 )
@@ -153,6 +154,122 @@ def test_safetensors_path_uses_local_reader_only(mock_shards, one_thread, monkey
     assert live == receipt["donor_forward_calls"] == 0
     assert receipt["format"] == "safetensors" and receipt["peak_loaded_shards"] == 1
     assert receipt["local_files_only"] and not receipt["trust_remote_code"]
+
+
+def test_single_file_safetensors_discovers_keys_without_index(mock_shards, one_thread, monkeypatch):
+    weights = {}
+    for file in MOCK_FILES:
+        weights.update(torch.load(mock_shards / file, weights_only=True))
+    model = mock_shards / "model.safetensors"
+    model.write_bytes(b"fixture")
+    visits = []
+
+    @contextmanager
+    def safe_open(path, *, framework, device):
+        assert Path(path) == model and framework == "pt" and device == "cpu"
+        visits.append(path)
+        yield SimpleNamespace(keys=weights.keys, get_tensor=weights.__getitem__)
+
+    monkeypatch.setitem(sys.modules, "safetensors", SimpleNamespace(safe_open=safe_open))
+    archive, receipt = assimilate_zero_exec(mock_shards)
+    reference, _ = assimilate_zero_exec(mock_shards, mock_pt=True)
+    assert not (mock_shards / "model.safetensors.index.json").exists()
+    assert len(visits) == 3  # Header discovery, embedding projection, then the remaining reductions.
+    assert receipt["peak_loaded_shards"] == receipt["indexed_shard_count"] == receipt["loaded_shard_count"] == 1
+    assert receipt["exact_round_trip_state"] and receipt["donor_forward_calls"] == 0
+    state = restore_skill(archive).state_dict()
+    for name, tensor in restore_skill(reference).state_dict().items():
+        assert torch.equal(state[name], tensor)
+
+
+@pytest.mark.parametrize("dense", [True, False], ids=["qwen", "deepseek"])
+def test_standard_attention_and_shared_expert_aliases(dense):
+    prefix = "model.layers.0."
+    attention = {f"{part}_proj": prefix + f"self_attn.{part}_proj.weight" for part in "qkvo"}
+    shared = {f"{part}_proj": prefix + f"mlp.shared_experts.{part}_proj.weight" for part in ("up", "down")}
+    routed = [prefix + f"mlp.experts.{i}.{part}_proj.weight" for i in range(2) for part in ("up", "down")]
+    plain = {f"{part}_proj": prefix + f"mlp.{part}_proj.weight" for part in ("up", "down")}
+    keys = [*attention.values(), *shared.values(), *routed]
+    if dense:
+        keys.extend(plain.values())
+    assert list(_layer_keys(keys, 1)) == [{**attention, **(plain if dense else shared)}]
+
+
+@pytest.mark.parametrize("grouped", [False, True], ids=["tied-head", "grouped-query"])
+def test_hf_repo_streams_only_needed_shards_once(mock_shards, tmp_path, one_thread, monkeypatch, capsys, grouped):
+    names = [f"model-{i:05d}.safetensors" for i in range(3)]
+    states = dict(zip(names, [torch.load(mock_shards / file, weights_only=True) for file in MOCK_FILES], strict=True))
+    first, middle, _ = states.values()
+    v_key = "model.layers.0.self_attn.v_proj.weight"
+    first[v_key] = middle.pop(v_key)
+    if grouped:
+        first[v_key] = first[v_key][:32].contiguous()
+        first["lm_head.weight"] = middle.pop("lm_head.weight")
+    else:
+        del middle["lm_head.weight"]
+    weight_map = {key: name for name, state in states.items() for key in state}
+    weight_map["model.layers.2.self_attn.v_proj.weight"] = "unused.safetensors"
+    index = "model.safetensors.index.json"
+    metadata = {
+        index: json.dumps({"weight_map": weight_map}).encode(),
+        "tokenizer.json": (mock_shards / "tokenizer.json").read_bytes(),
+        "config.json": b'{"num_attention_heads": 4, "num_key_value_heads": 2}',
+    }
+    calls = []
+    paths = []
+    live = 0
+    revision = "a" * 40
+
+    def download(*, repo_id, filename, revision, local_dir):
+        assert repo_id == "example/donor" and revision == "a" * 40
+        calls.append(filename)
+        path = local_dir / filename
+        if filename in metadata:
+            path.write_bytes(metadata[filename])
+        else:
+            assert filename in states and live == 0
+            assert all(not previous.exists() for previous in paths)
+            path.write_bytes(filename.encode())
+            paths.append(path)
+        return str(path)
+
+    def hub_url(repo, name):
+        assert (repo, name) == ("example/donor", index)
+        return "index-url"
+
+    def hub_metadata(url):
+        assert url == "index-url" and not calls
+        return SimpleNamespace(commit_hash=revision)
+
+    @contextmanager
+    def safe_open(path, *, framework, device):
+        nonlocal live
+        path = Path(path)
+        assert path == paths[-1] and framework == "pt" and device == "cpu"
+        assert live == 0 and list(path.parent.parent.glob("shard-*/*.safetensors")) == [path]
+        live += 1
+        try:
+            yield SimpleNamespace(get_tensor=states[path.name].__getitem__)
+        finally:
+            live -= 1
+
+    monkeypatch.setitem(sys.modules, "huggingface_hub", SimpleNamespace(
+        hf_hub_download=download, hf_hub_url=hub_url, get_hf_file_metadata=hub_metadata,
+    ))
+    monkeypatch.setitem(sys.modules, "huggingface_hub.errors", SimpleNamespace(HfHubHTTPError=OSError))
+    monkeypatch.setitem(sys.modules, "safetensors", SimpleNamespace(safe_open=safe_open))
+    monkeypatch.setattr(torch, "use_deterministic_algorithms", lambda _: None)
+    out = tmp_path / "student.pt"
+    assert cli_main(["assimilate-zero-exec", "--hf-repo", "example/donor", "--out", str(out)]) == 0
+    receipt = json.loads(capsys.readouterr().out)
+    assert calls == [index, "tokenizer.json", names[0], *(["config.json"] if grouped else []), *names[1:]]
+    assert receipt["hf_revision"] == revision and receipt["hf_repo"] == "example/donor"
+    assert receipt["peak_loaded_shards"] == receipt["peak_disk_shards"] == 1
+    assert receipt["loaded_shard_count"] == receipt["shard_visits"] == 3
+    assert receipt["indexed_shard_count"] == 4
+    assert receipt["donor_forward_calls"] == live == 0
+    assert all(not path.parent.parent.exists() for path in paths)
+    assert receipt["exact_round_trip_state"] and restore_skill(out).prior_alpha == 0.25
 
 
 def test_reject_nonlocal_shard_before_loading(mock_shards, one_thread, monkeypatch):

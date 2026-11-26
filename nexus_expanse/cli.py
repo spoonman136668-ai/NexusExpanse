@@ -307,7 +307,7 @@ def assimilate_command(args):
 
 
 def assimilate_zero_exec_command(args):
-    archive, receipt = assimilate_zero_exec(args.donor_dir, mock_pt=args.mock_pt, seed=args.seed)
+    archive, receipt = assimilate_zero_exec(args.donor_dir, hf_repo=args.hf_repo, mock_pt=args.mock_pt, seed=args.seed)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     atomic_bytes(args.out, archive)
     emit(dict(command="assimilate-zero-exec", status="PASS", skill_bytes=len(archive),
@@ -460,7 +460,9 @@ def parser():
     assimilation.set_defaults(handler=assimilate_command)
 
     zero_exec = sub.add_parser("assimilate-zero-exec", help="initialize a native skill from static donor shards")
-    zero_exec.add_argument("--donor-dir", type=Path, required=True)
+    donor_source = zero_exec.add_mutually_exclusive_group(required=True)
+    donor_source.add_argument("--donor-dir", type=Path)
+    donor_source.add_argument("--hf-repo", metavar="ORG/MODEL", help="stream indexed HF safetensors from a pinned revision")
     zero_exec.add_argument("--out", type=Path, required=True)
     zero_exec.add_argument("--mock-pt", action="store_true", help="read an offline weights-only test fixture")
     zero_exec.add_argument("--seed", type=int, default=0)

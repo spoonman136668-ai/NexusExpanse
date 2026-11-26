@@ -11,6 +11,7 @@ import torch
 from torch import nn
 
 from benchmarks.checkpoint_transfer_study import setup_donor, source_pack
+from nexus_expanse import donor_cache_io
 from nexus_expanse.cache_assimilation import assimilate
 from nexus_expanse.checkpoint_transport import CorrectedLinear, ImportedSkill
 from nexus_expanse.donor_cache_io import (
@@ -21,6 +22,7 @@ from nexus_expanse.weight_editing import (
     apply_surgical_edit, inspect_fault_direction, prefix_diff, restore_skill, verified_surgical_edit,
     verify_skill,
 )
+from scripts import export_donor_cache as export_cli
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -138,6 +140,89 @@ def test_dense_bpe_checkpoint_uses_only_observed_prefix(tmp_path, single_thread)
     prefix = _compact_windows([b"abc", b"abz"], encode, first, forward)
     assert torch.equal(prefix["indices"][0], prefix["indices"][1])
     assert torch.equal(prefix["probs"][0], prefix["probs"][1])
+
+
+@pytest.mark.parametrize(("device", "dtype", "expected"), [
+    ("auto", "fp32", torch.float32),
+    ("cpu", "fp16", torch.float16),
+    ("cpu", "bf16", torch.bfloat16),
+])
+def test_hf_export_dispatches_on_cpu(tmp_path, monkeypatch, single_thread, device, dtype, expected):
+    model = nn.Linear(1, 256)
+
+    def load(path, *, dtype):
+        assert path == tmp_path and dtype == expected
+
+        def forward(batch):
+            assert batch.device == model.weight.device == torch.device("cpu")
+            assert model.weight.dtype == expected
+            assert batch.dtype == torch.long
+            return nn.functional.one_hot(batch, 256).to(expected)
+
+        return model, tuple, torch.arange(256), forward
+
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+    monkeypatch.setattr(donor_cache_io, "load_hf_donor", load)
+    out = tmp_path / "export"
+    donor_cache_io.export_donor_cache(out, [b"abc"], backend="hf", checkpoint=tmp_path, device=device, dtype=dtype)
+    cache, _ = read_cache(out)
+    assert cache["indices"][0, :, 0].tolist() == [ord("a"), ord("b")]
+    assert cache["raw"].dtype == cache["indices"].dtype == torch.uint8
+    assert cache["probs"].dtype == torch.float16
+
+
+def test_hf_export_rejects_explicit_unavailable_cuda(tmp_path, monkeypatch):
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+    with pytest.raises(ValueError, match="CUDA is unavailable"):
+        donor_cache_io.export_donor_cache(
+            tmp_path / "export", [b"abc"], backend="hf", checkpoint=tmp_path, device="cuda",
+        )
+
+
+@pytest.mark.parametrize(("device", "dtype", "precision"), [
+    ("auto", "fp16", torch.float16),
+    ("cuda", "bf16", torch.bfloat16),
+])
+def test_hf_export_routes_cuda_device_without_gpu(tmp_path, monkeypatch, device, dtype, precision):
+    moves = []
+
+    def load(path, *, dtype):
+        assert dtype == precision
+        model = SimpleNamespace(to=lambda **kwargs: moves.append(kwargs))
+        return model, tuple, torch.arange(256), lambda batch: batch
+
+    def compact(windows, encode, first, forward, *, device):
+        assert device == "cuda" and moves == [{"device": "cuda", "dtype": precision}]
+        return {}
+
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+    monkeypatch.setattr(torch.cuda, "is_bf16_supported", lambda *, including_emulation: not including_emulation)
+    monkeypatch.setattr(donor_cache_io, "load_hf_donor", load)
+    monkeypatch.setattr(donor_cache_io, "_compact_windows", compact)
+    donor_cache_io.export_donor_cache(
+        tmp_path / "export", [b"ab"], backend="hf", checkpoint=tmp_path, device=device, dtype=dtype,
+    )
+
+
+def test_export_cli_passes_device_dtype_flags(tmp_path, monkeypatch, capsys):
+    raw = tmp_path / "raw.bin"
+    raw.write_bytes(b"abcd")
+
+    def export(out, windows, **settings):
+        assert out == tmp_path / "export"
+        assert windows == [b"ab", b"cd"]
+        assert settings["device"] == "cuda" and settings["dtype"] == "fp16"
+        return {"windows": len(windows)}
+
+    monkeypatch.setattr(export_cli, "export_donor_cache", export)
+    monkeypatch.setattr(torch, "set_num_threads", lambda _: None)
+    monkeypatch.setattr(torch, "use_deterministic_algorithms", lambda _: None)
+    monkeypatch.delenv("CUBLAS_WORKSPACE_CONFIG", raising=False)
+    export_cli.main([
+        "--backend", "hf", "--model", str(tmp_path), "--input", str(raw),
+        "--out-dir", str(tmp_path / "export"), "--window-bytes", "2", "--device", "cuda", "--dtype", "fp16",
+    ])
+    assert json.loads(capsys.readouterr().out) == {"windows": 2}
 
 
 @pytest.fixture

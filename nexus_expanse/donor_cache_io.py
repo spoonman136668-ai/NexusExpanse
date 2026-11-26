@@ -16,6 +16,7 @@ from nexus_expanse.donor_assimilation import DenseTokenDonorLM, canonical_byte_b
 SCHEMA = "nexus.donor-byte-cache.v1"
 MANIFEST = "cache_manifest.json"
 TOP_K = 32
+EXPORT_DTYPES = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}
 
 
 def _gpt2_decoder():
@@ -104,7 +105,7 @@ def _require_safetensors(directory):
         raise ValueError("Hugging Face safetensors index references missing or nonlocal weights")
 
 
-def load_hf_donor(path):
+def load_hf_donor(path, *, dtype=None):
     directory = path.resolve(strict=True)
     _require_safetensors(directory)
     config = json.loads((directory / "tokenizer.json").read_bytes())
@@ -122,8 +123,9 @@ def load_hf_donor(path):
         raise ValueError("the Hugging Face backend requires local transformers and tokenizers") from exc
 
     tokenizer = Tokenizer.from_file(str(directory / "tokenizer.json"))
+    precision = {"torch_dtype": dtype} if dtype is not None else {}
     model = AutoModelForCausalLM.from_pretrained(
-        str(directory), local_files_only=True, trust_remote_code=False, use_safetensors=True,
+        str(directory), local_files_only=True, trust_remote_code=False, use_safetensors=True, **precision,
     ).eval().requires_grad_(False)
     size = model.get_output_embeddings().weight.shape[0]
     spellings = {}
@@ -179,7 +181,7 @@ def load_hf_donor(path):
 
 
 @torch.inference_mode()
-def _compact_windows(windows, encode, first_bytes, forward):
+def _compact_windows(windows, encode, first_bytes, forward, *, device="cpu"):
     # Each query encodes only its observed byte prefix. Vocabulary rows with the
     # same leading byte share probability mass. Special tokens are excluded.
     queries = [encode(window[:t]) for window in windows for t in range(1, len(window))]
@@ -193,9 +195,11 @@ def _compact_windows(windows, encode, first_bytes, forward):
     for start in range(0, len(unique), 64):
         group = unique[start:start + 64]
         width = max(map(len, group))
-        padded = torch.tensor([ids + (0,) * (width - len(ids)) for ids in group])
-        last = torch.tensor([len(ids) - 1 for ids in group])
-        logits = forward(padded)[torch.arange(len(group)), last].double()[:, valid]
+        padded = torch.tensor([ids + (0,) * (width - len(ids)) for ids in group], device=device)
+        last = torch.tensor([len(ids) - 1 for ids in group], device=device)
+        selected = forward(padded)[torch.arange(len(group), device=device), last]
+        # Move only the queried rows across devices. Accumulate byte mass on CPU in FP64.
+        logits = selected.cpu().double()[:, valid]
         if not torch.isfinite(logits).all():
             raise ValueError("donor emitted nonfinite logits")
         probs = logits.softmax(-1)
@@ -213,21 +217,33 @@ def _compact_windows(windows, encode, first_bytes, forward):
     }
 
 
-def export_cache(directory, windows, *, backend, checkpoint, shard_windows=16, n_heads=4):
+def export_donor_cache(directory, windows, *, backend, checkpoint, shard_windows=16, n_heads=4,
+                       device="auto", dtype="fp32"):
     """Publish a complete cache directory only after all shards have been written."""
     if directory.exists() or directory.is_symlink():
         raise FileExistsError(directory)
     if (not windows or not 2 <= len(windows[0]) <= 64 or shard_windows < 1
             or any(type(window) is not bytes or len(window) != len(windows[0]) for window in windows)):
         raise ValueError("expected nonempty equal-size raw windows of 2–64 bytes and positive shard size")
+    if device not in ("auto", "cpu", "cuda") or dtype not in EXPORT_DTYPES:
+        raise ValueError("invalid donor export device or dtype")
+    if device == "auto":
+        device = "cuda" if backend == "hf" and torch.cuda.is_available() else "cpu"
+    if device == "cuda":
+        if not torch.cuda.is_available():
+            raise ValueError("CUDA is unavailable")
+        if dtype == "bf16" and not torch.cuda.is_bf16_supported(including_emulation=False):
+            raise ValueError("the CUDA device lacks native BF16 support")
+    precision = EXPORT_DTYPES[dtype]
     if backend == "nexus_donor":
         donor, encode, first, forward = load_nexus_donor(checkpoint, n_heads)
         if len(windows[0]) - 1 > donor.pos_emb.num_embeddings:
             raise ValueError("raw window can exceed the dense donor context")
     elif backend == "hf":
-        _, encode, first, forward = load_hf_donor(checkpoint)
+        donor, encode, first, forward = load_hf_donor(checkpoint, dtype=precision)
     else:
         raise ValueError("unknown donor backend")
+    donor.to(device=device, dtype=precision)
 
     manifest = dict(schema=SCHEMA, backend=backend, top_k=TOP_K, window_bytes=len(windows[0]), shards=[])
     directory.parent.mkdir(parents=True, exist_ok=True)
@@ -237,7 +253,7 @@ def export_cache(directory, windows, *, backend, checkpoint, shard_windows=16, n
         for start in range(0, len(windows), shard_windows):
             group = windows[start:start + shard_windows]
             path = stage / f"shard-{len(manifest['shards']):06d}.pt"
-            torch.save(_compact_windows(group, encode, first, forward), path)
+            torch.save(_compact_windows(group, encode, first, forward, device=device), path)
             data = path.read_bytes()
             manifest["shards"].append(dict(file=path.name, bytes=len(data), sha256=sha256(data), windows=len(group)))
         manifest["windows"] = len(windows)
@@ -245,6 +261,9 @@ def export_cache(directory, windows, *, backend, checkpoint, shard_windows=16, n
         (stage / MANIFEST).write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         stage.rename(directory)
     return manifest
+
+
+export_cache = export_donor_cache
 
 
 def read_cache(directory):

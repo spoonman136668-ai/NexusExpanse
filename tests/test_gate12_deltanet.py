@@ -1,11 +1,57 @@
+import errno
 import json
+import os
 
 import pytest
 import torch
 
 from benchmarks.gate12_deltanet_dev import DELTA, decision, parity, setup
-from benchmarks.gate_custody import EpochRun
+from benchmarks.dev_artifacts import atomic_bytes
+from benchmarks.gate_custody import EpochRun, atomic, save_pt
 from nexus_expanse.deltanet import DeltaNetMonarchByteCore, GatedDeltaNetLayer
+
+
+@pytest.mark.parametrize("error", [errno.EPERM, errno.EXDEV, errno.ENOTSUP])
+def test_immutable_artifacts_publish_without_hard_links(tmp_path, monkeypatch, error):
+    def unsupported(*args):
+        raise OSError(error, "hard links unavailable")
+
+    monkeypatch.setattr(os, "link", unsupported)
+    receipt, checkpoint, output = (tmp_path / name for name in ("run.json", "run.pt", "skill.pt"))
+    atomic(receipt, {"epoch": 1})
+    save_pt(checkpoint, {"step": torch.tensor(1)})
+    atomic_bytes(output, b"skill")
+    assert json.loads(receipt.read_bytes()) == {"epoch": 1}
+    assert torch.load(checkpoint, weights_only=True)["step"].item() == 1
+    assert output.read_bytes() == b"skill"
+    assert not list(tmp_path.glob("*.partial"))
+    with pytest.raises(FileExistsError):
+        atomic_bytes(output, b"overwrite")
+    assert output.read_bytes() == b"skill"
+
+
+def test_immutable_fallback_refuses_destination_created_during_link(tmp_path, monkeypatch):
+    target = tmp_path / "result.json"
+
+    def unsupported(partial, dest):
+        dest.write_bytes(b"existing")
+        raise PermissionError(errno.EPERM, "hard links unavailable")
+
+    monkeypatch.setattr(os, "link", unsupported)
+    with pytest.raises(FileExistsError):
+        atomic(target, {"epoch": 1})
+    assert target.read_bytes() == b"existing"
+
+
+def test_immutable_fallback_propagates_unexpected_link_errors(tmp_path, monkeypatch):
+    def failed(*args):
+        raise OSError(errno.EIO, "disk error")
+
+    target = tmp_path / "result.json"
+    monkeypatch.setattr(os, "link", failed)
+    with pytest.raises(OSError, match="disk error"):
+        atomic(target, {"epoch": 1})
+    assert not target.exists()
 
 
 def test_delta_rule_lookup_and_overwrite():

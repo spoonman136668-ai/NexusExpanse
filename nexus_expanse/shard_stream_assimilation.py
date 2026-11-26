@@ -1,11 +1,12 @@
 """One-shard-at-a-time checkpoint transport into a native raw-byte skill."""
 
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import hashlib
 import json
 import math
 from pathlib import Path
 import re
+from tempfile import TemporaryDirectory
 
 import torch
 from torch.nn import functional as F
@@ -18,8 +19,11 @@ from nexus_expanse.weight_editing import exact_skill_receipt, verify_skill
 INITIAL_ALPHA = 0.25
 ROW_CHUNK = 256
 LAYER_NUMBER = re.compile(r"(?:^|\.)(?:layers|blocks|h)\.(\d+)\.")
-LAYER_WEIGHTS = ("v_proj", "o_proj", "up_proj", "down_proj")
+ATTENTION_WEIGHTS = ("v_proj", "o_proj")
+MLP_WEIGHTS = ("up_proj", "down_proj")
 OPTIONAL_WEIGHTS = ("q_proj", "k_proj", "input_layernorm", "post_attention_layernorm")
+HF_INDEX = "model.safetensors.index.json"
+HF_TOKENIZER = "tokenizer.json"
 
 
 def _digest(data):
@@ -33,34 +37,95 @@ def _local_file(root, name):
     return path
 
 
+def _safetensor_reader(path):
+    try:
+        from safetensors import safe_open
+    except ImportError as exc:
+        raise ValueError("the safetensors backend requires the local safetensors package") from exc
+    return safe_open(str(path), framework="pt", device="cpu")
+
+
+def _hf_source(repo):
+    try:
+        from huggingface_hub import get_hf_file_metadata, hf_hub_download, hf_hub_url
+        from huggingface_hub.errors import HfHubHTTPError
+    except ImportError as exc:
+        raise ValueError("--hf-repo requires the huggingface_hub package") from exc
+
+    try:
+        revision = get_hf_file_metadata(hf_hub_url(repo, HF_INDEX)).commit_hash
+    except HfHubHTTPError as exc:
+        raise ValueError(f"could not resolve {HF_INDEX} for {repo}") from exc
+    if not revision or not re.fullmatch(r"[a-f0-9]{40}", revision):
+        raise ValueError(f"Hugging Face did not report an immutable revision for {repo}")
+
+    def download(name, directory):
+        try:
+            hf_hub_download(repo_id=repo, filename=name, revision=revision, local_dir=directory)
+        except HfHubHTTPError as exc:
+            raise ValueError(f"could not download {name} from {repo}") from exc
+        return _local_file(directory, name)
+
+    return download, revision
+
+
 class ShardStream:
     """Map checkpoint keys and expose tensors only within the open shard's lifetime."""
 
-    def __init__(self, directory, *, mock_pt=False):
+    def __init__(self, directory, *, mock_pt=False, hf_repo=None):
         self.root = Path(directory).resolve(strict=True)
         self.mock_pt = mock_pt
-        index = "model.pt.index.json" if mock_pt else "model.safetensors.index.json"
-        data = _local_file(self.root, index).read_bytes()
+        self.hf_repo = hf_repo
+        if hf_repo is not None:
+            self.download, self.revision = _hf_source(hf_repo)
+            for name in (HF_INDEX, HF_TOKENIZER):
+                self.download(name, self.root)
+        index = "model.pt.index.json" if mock_pt else HF_INDEX
+        index_path = self.root / index
+        if not mock_pt and not index_path.exists() and not index_path.is_symlink():
+            name = "model.safetensors"
+            with _safetensor_reader(_local_file(self.root, name)) as reader:
+                weight_map = dict.fromkeys(reader.keys(), name)
+            data = json.dumps({"weight_map": weight_map}, sort_keys=True).encode()
+        else:
+            data = _local_file(self.root, index).read_bytes()
+            weight_map = json.loads(data)["weight_map"]
         self.index_sha256 = _digest(data)
-        index = json.loads(data)
-        self.weight_map = index["weight_map"]
+        self.weight_map = weight_map
         suffix = ".pt" if mock_pt else ".safetensors"
         if not isinstance(self.weight_map, dict) or not self.weight_map:
             raise ValueError("checkpoint index must map tensor names to shards")
         if any(not isinstance(key, str) or not isinstance(name, str) or not name.endswith(suffix)
                for key, name in self.weight_map.items()):
             raise ValueError("checkpoint index contains invalid tensor or shard names")
-        self.paths = {name: _local_file(self.root, name) for name in set(self.weight_map.values())}
+        self.shard_names = set(self.weight_map.values())
+        if hf_repo is None:
+            self.paths = {name: _local_file(self.root, name) for name in self.shard_names}
+        elif any(Path(name).name != name or "\\" in name or ":" in name for name in self.shard_names):
+            raise ValueError("checkpoint index references a nonlocal shard name")
         self.live = 0
         self.peak = 0
+        self.peak_disk = 0
         self.visits = 0
         self.files = {}
 
     @contextmanager
-    def _open(self, name):
+    def _shard_path(self, name):
+        if self.hf_repo is None:
+            yield self.paths[name]
+            return
+        # local_dir bypasses the Hub blob cache. Each lease also removes its download metadata.
+        with TemporaryDirectory(dir=self.root, prefix="shard-") as directory:
+            path = self.download(name, Path(directory))
+            self.peak_disk = max(self.peak_disk, sum(1 for _ in self.root.glob("shard-*/*.safetensors")))
+            if self.peak_disk != 1:
+                raise RuntimeError("expected exactly one downloaded donor shard on disk")
+            yield path
+
+    @contextmanager
+    def _open(self, name, path):
         if self.live:
             raise RuntimeError("attempt to load a second donor shard")
-        path = self.paths[name]
         self.live += 1
         self.visits += 1
         self.peak = max(self.peak, self.live)
@@ -75,11 +140,7 @@ class ShardStream:
                     raise ValueError("mock shard must contain a tensor dictionary")
                 yield state.__getitem__
             else:
-                try:
-                    from safetensors import safe_open
-                except ImportError as exc:
-                    raise ValueError("the safetensors backend requires the local safetensors package") from exc
-                with safe_open(str(path), framework="pt", device="cpu") as reader:
+                with _safetensor_reader(path) as reader:
                     yield reader.get_tensor
         finally:
             self.live -= 1
@@ -89,22 +150,29 @@ class ShardStream:
         for key, transform in transforms.items():
             grouped.setdefault(self.weight_map[key], []).append((key, transform))
         for name, entries in grouped.items():
-            with self._open(name) as read:
-                for key, transform in entries:
-                    raw = read(key)
-                    if not isinstance(raw, torch.Tensor) or not raw.is_floating_point():
-                        raise ValueError(f"expected a floating-point tensor at {key}")
-                    transform(raw)
-                    del raw
-            # The mock getter owns its loaded dict. Drop it before opening another file.
-            del read
+            with self._shard_path(name) as path, self._open(name, path) as read:
+                try:
+                    for key, transform in entries:
+                        raw = read(key)
+                        try:
+                            if not isinstance(raw, torch.Tensor) or not raw.is_floating_point():
+                                raise ValueError(f"expected a floating-point tensor at {key}")
+                            transform(raw)
+                        finally:
+                            del raw
+                finally:
+                    # Release the getter before closing the shard and deleting its backing file.
+                    del read
 
     def receipt(self):
-        return dict(
+        receipt = dict(
             format="mock_pt" if self.mock_pt else "safetensors", index_sha256=self.index_sha256,
             peak_loaded_shards=self.peak, loaded_shard_count=len(self.files),
-            indexed_shard_count=len(self.paths), shard_visits=self.visits, shards=self.files,
+            indexed_shard_count=len(self.shard_names), shard_visits=self.visits, shards=self.files,
         )
+        if self.hf_repo is not None:
+            receipt.update(hf_repo=self.hf_repo, hf_revision=self.revision, peak_disk_shards=self.peak_disk)
+        return receipt
 
 
 def _lexicon(data):
@@ -165,10 +233,20 @@ def _layer_keys(keys, depth):
     if len(groups) < depth:
         raise ValueError("checkpoint has insufficient donor layers")
     for index in sorted(groups)[:depth]:
-        yield {
-            name: key for name in (*LAYER_WEIGHTS, *OPTIONAL_WEIGHTS)
-            if (key := _find(groups[index], f"{name}.weight", required=name in LAYER_WEIGHTS))
+        candidates = [key for key in groups[index] if ".experts." not in key and ".shared_experts." not in key]
+        mlp = {name: _find(candidates, f"{name}.weight") for name in MLP_WEIGHTS}
+        if not any(mlp.values()):
+            mlp = {
+                name: _find(groups[index], f"mlp.shared_experts.{name}.weight", required=True)
+                for name in MLP_WEIGHTS
+            }
+        if not all(mlp.values()):
+            raise ValueError(f"checkpoint layer {index} needs paired MLP up/down projections")
+        attention = {name: _find(candidates, f"{name}.weight", required=True) for name in ATTENTION_WEIGHTS}
+        optional = {
+            name: key for name in OPTIONAL_WEIGHTS if (key := _find(candidates, f"{name}.weight"))
         }
+        yield {**attention, **mlp, **optional}
 
 
 def _finite(x):
@@ -200,10 +278,11 @@ def _aligned_basis(embeddings, reference):
     return basis @ (u @ vh), singular[:width].tolist()
 
 
-def _attention_project(weight, basis, config):
+def _attention_project(weight, basis, read_config):
     query_width, _ = basis.shape
     result = _right_project(weight, basis)
     if result.shape[0] != query_width:
+        config = read_config()
         heads = config.get("num_attention_heads")
         kv_heads = config.get("num_key_value_heads")
         if (type(heads) is not int or type(kv_heads) is not int or kv_heads < 1
@@ -264,27 +343,37 @@ def _static_ov_readout(embeddings, projected_head, first_bytes, transport, engra
 @torch.no_grad()
 def _transport(student, stream, directory, *, shuffle_seed):
     keys = stream.weight_map
-    tokenizer = _local_file(directory, "tokenizer.json").read_bytes()
+    tokenizer = _local_file(directory, HF_TOKENIZER).read_bytes()
     singles, ids, leading = _lexicon(tokenizer)
     embed_key = _find(keys, "embed_tokens.weight", required=True)
     head_key = _find(keys, "lm_head.weight")
     config_path = directory / "config.json"
-    config = json.loads(_local_file(directory, "config.json").read_bytes()) if config_path.exists() else {}
+    config = None
+    if stream.hf_repo is None:
+        config = json.loads(_local_file(directory, "config.json").read_bytes()) if config_path.exists() else {}
+
+    def read_config():
+        nonlocal config
+        if config is None:
+            # Only grouped-query geometry needs this additional metadata.
+            path = stream.download("config.json", directory)
+            config = json.loads(path.read_bytes())
+        return config
+
     width = student.readout.in_features
     transforms = {}
     reduced = {}
     rng = None if shuffle_seed is None else torch.Generator().manual_seed(shuffle_seed)
     embedded = {}
+    basis = None
 
     def embed(weight):
+        nonlocal basis
         if weight.ndim != 2 or weight.shape[0] <= ids.max().item():
             raise ValueError("embedding tensor is missing tokenizer rows")
         rows = _finite(weight[singles])
         basis, spectrum = _aligned_basis(rows, student.core.emb.weight)
-        embedded.update(basis=basis, spectrum=spectrum, input=_shuffle(rows @ basis, rng))
-
-    stream.consume({embed_key: embed})
-    basis = embedded["basis"]
+        embedded.update(spectrum=spectrum, input=_shuffle(rows @ basis, rng))
 
     def read_head(weight):
         if weight.ndim != 2 or weight.shape[0] <= ids.max().item():
@@ -311,7 +400,7 @@ def _transport(student, stream, directory, *, shuffle_seed):
 
     def project(weight, name):
         if name in ("q_proj", "k_proj", "v_proj"):
-            matrix = _attention_project(weight, basis, config)
+            matrix = _attention_project(weight, basis, read_config)
         elif name == "o_proj":
             matrix = basis.T @ _right_project(weight, basis)
         elif name == "up_proj":
@@ -327,7 +416,18 @@ def _transport(student, stream, directory, *, shuffle_seed):
             def collect(weight, index=index, name=name):
                 reduced[index, name] = project(weight, name)
             transforms[key] = collect
-    stream.consume(transforms)
+    if stream.hf_repo is None:
+        stream.consume({embed_key: embed})
+        stream.consume(transforms)
+    else:
+        def embed_first(weight):
+            embed(weight)
+            if head_key is None:
+                read_head(weight)
+
+        if head_key is None:
+            del transforms[embed_key]
+        stream.consume({embed_key: embed_first, **transforms})
 
     student.core.emb.weight.copy_(embedded["input"])
     if "pos" in reduced:
@@ -362,14 +462,17 @@ def _transport(student, stream, directory, *, shuffle_seed):
         tokenizer_sha256=_digest(tokenizer), donor_width=basis.shape[0], donor_vocab_size=len(ids),
         student_width=width, student_vocab_size=256, projected_embedding_singular_values=embedded["spectrum"],
         selected_layers=len(layers), uses_static_engram="engram" in reduced,
-        local_files_only=True, trust_remote_code=False,
+        local_files_only=stream.hf_repo is None, trust_remote_code=False,
     )
 
 
-def assimilate_zero_exec(directory, *, mock_pt=False, seed=0, shuffle_seed=None):
-    """Initialize and verify a standalone skill from local tensor shards."""
-    with forbid_donor_forward() as guard:
-        stream = ShardStream(directory, mock_pt=mock_pt)
+def assimilate_zero_exec(directory=None, *, hf_repo=None, mock_pt=False, seed=0, shuffle_seed=None):
+    """Initialize and verify a standalone skill from local or streamed HF tensor shards."""
+    if (directory is None) == (hf_repo is None) or (hf_repo is not None and mock_pt):
+        raise ValueError("choose one donor directory or HF repo; mock PT requires a local directory")
+    source = TemporaryDirectory(prefix="nexus-hf-") if hf_repo is not None else nullcontext(directory)
+    with source as root, forbid_donor_forward() as guard:
+        stream = ShardStream(root, mock_pt=mock_pt, hf_repo=hf_repo)
         skill = make_student(seed)
         details = _transport(skill, stream, stream.root, shuffle_seed=shuffle_seed)
         skill.eval()

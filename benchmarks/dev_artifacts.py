@@ -1,9 +1,24 @@
 """Portable file publication for the resumable DEV benchmarks."""
+import errno
 import hashlib
 import json
 import os
 
 import torch
+
+
+def _publish(partial, path):
+    try:
+        os.link(partial, path)
+    except OSError as exc:
+        if not isinstance(exc, PermissionError) and exc.errno not in {errno.EPERM, errno.EXDEV, errno.ENOTSUP}:
+            raise
+        # The exclusively created partial still reserves the write during fallback.
+        if os.path.lexists(path):
+            raise FileExistsError(path) from exc
+        os.replace(partial, path)
+    else:
+        partial.unlink()
 
 
 def digest(path):
@@ -12,7 +27,7 @@ def digest(path):
 
 
 def atomic(path, value):
-    if path.exists():
+    if os.path.lexists(path):
         raise FileExistsError(path)
     partial = path.with_suffix(path.suffix + ".partial")
     with partial.open("x") as out:
@@ -20,29 +35,29 @@ def atomic(path, value):
         out.write("\n")
         out.flush()
         os.fsync(out.fileno())
-    os.link(partial, path)
-    partial.unlink()
+    _publish(partial, path)
 
 
 def save_pt(path, value):
-    partial = path.with_suffix(".partial")
-    if path.exists():
+    partial = path.with_suffix(path.suffix + ".partial")
+    if os.path.lexists(path):
         raise FileExistsError(path)
+    legacy_partial = path.with_suffix(".partial")
+    if os.path.lexists(legacy_partial):
+        raise FileExistsError(legacy_partial)
     with partial.open("xb") as out:
         torch.save(value, out)
         out.flush()
         os.fsync(out.fileno())
-    os.link(partial, path)
-    partial.unlink()
+    _publish(partial, path)
 
 
 def atomic_bytes(path, payload):
-    if path.exists():
+    if os.path.lexists(path):
         raise FileExistsError(path)
     partial = path.with_suffix(path.suffix + ".partial")
     with partial.open("xb") as out:
         out.write(payload)
         out.flush()
         os.fsync(out.fileno())
-    os.link(partial, path)
-    partial.unlink()
+    _publish(partial, path)
