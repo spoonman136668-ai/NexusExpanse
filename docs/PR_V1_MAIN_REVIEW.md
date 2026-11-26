@@ -116,3 +116,21 @@ The guarded run measured 0 receiver donor calls and 5/5 exact K=7 and 5/5 exact 
 The Linux CPU run recorded 0/160 Suite A false flags and 0/80 per-skill Suite B false flags. The global mean control flagged 0/80. Receiver donor forwards were 0. Warm-to-cold forecasts and calibration identity matched in 5/5 Suite A and 5/5 Suite B seeds. The combined bare regression contains 586 cases. Windows CUDA and independent qualification await separate receipts.
 
 [Preregistration](PHASE8_PER_SKILL_NOVELTY_PREREG.md) · [Unrounded evidence and probe diagnostics](../evidence/phase8-per-skill-novelty-dev-001.json)
+
+## Phase 9 offline assimilation and surgical editing DEV review
+
+**DEV science FAIL.** On held-out Python bytes, the SVD edit beat both the matched random edit and faulted baseline in 0/5 seeds. It passed validation in 0/5 and recovered at least half the injected damage in 0/5. Absolute held-out Markdown drift stayed within 0.02 BPB in 5/5. The static-cache student beat its matched CE-only control on combined held-out BPB in 5/5.
+
+All 20 SVD candidates lowered Python validation BPB. Every candidate also changed Markdown validation BPB by more than 0.02, so the validation gate rolled back all five seeds. The zero held Markdown drift therefore measures an unchanged faulted model. The injected fault itself increased held Markdown BPB by 0.638–2.077, so the perturbation was local to a projection but its effects crossed domains.
+
+The scored Linux CPU run recorded 0 guarded donor forwards, 0 edit autograd calls and 5/5 exact cold restores. The focused regression checked 50/50 edited and 50/50 assimilated seeds at exact 0.0 prefix difference. The experiment used a controlled rank-one fault. Independent acceptance, a real local Hugging Face donor and CUDA await separate qualification.
+
+| Seed | Clean Python BPB | Faulted Python BPB | SVD Python BPB | Random Python BPB | SVD Markdown drift BPB | Assimilated BPB | CE-only BPB |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2201 | 4.089749 | 4.983994 | 4.983994 | 4.983994 | 0.000000 | 4.060603 | 4.142310 |
+| 2202 | 3.948360 | 4.836868 | 4.836868 | 4.836868 | 0.000000 | 4.024095 | 4.076162 |
+| 2203 | 4.052474 | 4.840283 | 4.840283 | 4.842054 | 0.000000 | 4.208807 | 4.274201 |
+| 2204 | 3.844440 | 4.694911 | 4.694911 | 4.694911 | 0.000000 | 4.125413 | 4.181183 |
+| 2205 | 4.116732 | 4.788059 | 4.788059 | 4.782175 | 0.000000 | 4.262366 | 4.375644 |
+
+[Preregistration](PHASE9_ASSIMILATE_AND_WEIGHT_EDIT_PREREG.md) · [Unrounded evidence and five-seed diagnostics](../evidence/phase9-weight-edit-and-assimilate-dev-001.json)

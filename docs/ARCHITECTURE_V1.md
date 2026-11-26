@@ -128,3 +128,15 @@ Confidence gating saves an empirical byte NLL limit per skill in the snapshot an
 The Linux CPU run recorded 0/160 Suite A false flags and 0/80 per-skill Suite B false flags. The global mean control flagged 0/80. Receiver donor forwards were 0. Warm-to-cold forecasts and calibration identity matched in 5/5 Suite A and 5/5 Suite B seeds.
 
 [Preregistration](PHASE8_PER_SKILL_NOVELTY_PREREG.md) · [Unrounded evidence and probe diagnostics](../evidence/phase8-per-skill-novelty-dev-001.json)
+
+## Phase 9 static donor caches and surgical editing
+
+The local exporter partitions fixed-length raw windows into checksummed shards. Each observed prefix supplies a top-32 next-byte distribution, stored as unsigned byte IDs and normalized FP16 probabilities alongside the original bytes. The DenseTokenDonorLM backend reads weights-only checkpoints. The optional Hugging Face backend resolves local safetensors and tokenizer.json, then decodes GPT-2 byte-level or SentencePiece spellings. The exporter is the only inference path that loads a donor. The native `assimilate` CLI verifies shard byte counts and SHA-256 hashes, trains with cross-entropy and optional cached KL, and writes a standalone skill with exact CPU prefix and cold-archive checks.
+
+The inference-only editor derives a direction from the top singular vector of paired differences in per-window mean attention contexts. It supports subspace ablation, rank-one steering and bias shifts. An edit to a structured FFN layer materializes just that target affine in the exported skill. The verified-edit API gates a copy on exact prefix and archive parity, lower fault BPB, and bounded retain BPB drift. The `weight-edit` CLI provides attention inspection and ablation with an exactness receipt. Its `--fault-hex` and `--retain-hex` options take equal-length observed byte windows.
+
+**DEV science FAIL.** On held-out Python bytes, the SVD edit beat both the matched random edit and faulted baseline in 0/5 seeds. It passed validation in 0/5 and recovered at least half the injected damage in 0/5. Absolute held-out Markdown drift stayed within 0.02 BPB in 5/5. The static-cache student beat its matched CE-only control on combined held-out BPB in 5/5.
+
+All 20 SVD candidates lowered Python validation BPB. Every candidate also changed Markdown validation BPB by more than 0.02, so the validation gate rolled back all five seeds. The zero held Markdown drift therefore measures an unchanged faulted model. The injected fault itself increased held Markdown BPB by 0.638–2.077, so the perturbation was local to a projection but its effects crossed domains.
+
+[Preregistration](PHASE9_ASSIMILATE_AND_WEIGHT_EDIT_PREREG.md) · [Unrounded evidence and five-seed diagnostics](../evidence/phase9-weight-edit-and-assimilate-dev-001.json)
