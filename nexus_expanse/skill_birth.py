@@ -34,6 +34,66 @@ class TailSurpriseCalibration:
     window: int
 
 
+def _routed_window(bank, raw, window):
+    raw, _ = bank._prepare(raw, include_next=True)
+    if raw.size(1) <= window:
+        return raw, None, None
+    logp, weights = bank.forward_hmm_bma_hierarchical(raw)
+    nll = -logp[:, -window:].gather(-1, raw[:, -window:].unsqueeze(-1)).squeeze(-1).double()
+    active = weights[:, -window:].argmax(-1)
+    dominant = F.one_hot(active, num_classes=len(bank.skills)).sum(1).argmax(-1)
+    return raw, nll.mean(1) / math.log(2), dominant
+
+
+@dataclass(frozen=True)
+class PerSkillNoveltyDetector:
+    """Frozen validation-window BPB limits keyed to the dominant routed skill."""
+
+    skill_names: tuple[str, ...]
+    max_val_bpb: tuple[float, ...]
+    mean_val_bpb: tuple[float, ...]
+    std_val_bpb: tuple[float, ...]
+    window: int
+    min_margin_bpb: float
+    std_multiplier: float
+
+    @classmethod
+    @torch.inference_mode()
+    def calibrate(cls, bank, validation, *, window=NOVELTY_WINDOW, min_margin_bpb=0.35, std_multiplier=3.0):
+        if type(window) is not int or window < 1:
+            raise ValueError("novelty window must be a positive integer")
+        if any(not math.isfinite(value) or value < 0 for value in (min_margin_bpb, std_multiplier)):
+            raise ValueError("novelty margins must be finite and nonnegative")
+        names = bank.skill_names
+        if set(validation) != set(names):
+            raise ValueError("validation must cover each skill exactly once")
+        maxima, means, spreads = [], [], []
+        for name in names:
+            _, bpb, _ = _routed_window(bank, validation[name], window)
+            if bpb is None or not bool(bpb.isfinite().all()):
+                raise ValueError(f"validation for {name} requires finite BPB from a complete window")
+            maxima.append(bpb.max().item())
+            means.append(bpb.mean().item())
+            spreads.append(bpb.std(correction=0).item())
+        return cls(names, tuple(maxima), tuple(means), tuple(spreads), window, min_margin_bpb, std_multiplier)
+
+    @property
+    def ceilings_bpb(self):
+        return tuple(limit + max(self.min_margin_bpb, self.std_multiplier * spread)
+                     for limit, spread in zip(self.max_val_bpb, self.std_val_bpb, strict=True))
+
+    @torch.inference_mode()
+    def assess(self, bank, raw):
+        """Return flags and the observed-window BPB, dominant skill index and ceiling."""
+        if bank.skill_names != self.skill_names:
+            raise ValueError("per-skill calibration belongs to a different skill roster")
+        raw, bpb, dominant = _routed_window(bank, raw, self.window)
+        if bpb is None:
+            return raw.new_zeros(raw.size(0), dtype=torch.bool), None, None, None
+        ceiling = bpb.new_tensor(self.ceilings_bpb)[dominant]
+        return bpb > ceiling, bpb, dominant, ceiling
+
+
 def adapt_skill(skill, raw, steps):
     """Fit one receiver on consecutive observed bytes with bounded context."""
     if type(steps) is not int or steps < 1:
@@ -117,8 +177,12 @@ class OpenWorldSkillBank(nn.Module):
         return TailSurpriseCalibration(names, tuple(limits), quantile, window)
 
     @torch.inference_mode()
-    def detect_novelty(self, raw, min_bpb_threshold=NOVELTY_THRESHOLD_BPB, *, window=NOVELTY_WINDOW, tail=None):
+    def detect_novelty(self, raw, min_bpb_threshold=NOVELTY_THRESHOLD_BPB, *, window=NOVELTY_WINDOW, tail=None, per_skill=None):
         """Return one flag per stream using only the last completed observation window."""
+        if per_skill is not None:
+            if tail is not None:
+                raise ValueError("choose one novelty calibration")
+            return per_skill.assess(self.bank, raw)[0]
         if tail is not None:
             if tail.skill_names != self.bank.skill_names:
                 raise ValueError("tail calibration belongs to a different skill roster")
@@ -135,13 +199,13 @@ class OpenWorldSkillBank(nn.Module):
         return (nll.mean(1) / math.log(2)).min(-1).values > min_bpb_threshold
 
     def observe(self, name, raw_stream, *, min_bpb_threshold=NOVELTY_THRESHOLD_BPB,
-                window=NOVELTY_WINDOW, steps=None, mode=PHASE4_BIRTH, tail=None):
+                window=NOVELTY_WINDOW, steps=None, mode=PHASE4_BIRTH, tail=None, per_skill=None):
         """Register a skill only when one ordered, already observed stream is novel."""
         if raw_stream.ndim != 2 or raw_stream.size(0) != 1:
             raise ValueError("online birth requires one observed byte stream")
         with self._birth_lock:
             if name in self.bank.skills or not bool(
-                self.detect_novelty(raw_stream, min_bpb_threshold, window=window, tail=tail)
+                self.detect_novelty(raw_stream, min_bpb_threshold, window=window, tail=tail, per_skill=per_skill)
             ):
                 return None
             return self.spawn_and_adapt_skill(name, raw_stream, steps=steps, mode=mode)

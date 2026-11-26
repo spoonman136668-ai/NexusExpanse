@@ -397,7 +397,8 @@ def parser():
     route.add_argument("--bank", type=Path, required=True)
     route.add_argument(
         "--router", choices=("bayes_bma", "bayes_argmax", "surprise_sparse", "hmm_bma",
-                             "hmm_sparse", "hmm_bma_hierarchical", "hmm_sparse_hierarchical"),
+                             "hmm_sparse", "hmm_bma_hierarchical", "hmm_sparse_hierarchical",
+                             "hmm_conf_sparse_hierarchical"),
         required=True,
     )
     route.add_argument("--input-hex", action="append", help="repeat for chunks, or send hex lines on stdin")

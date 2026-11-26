@@ -53,6 +53,7 @@ class MultiSkillBank(nn.Module):
         base_name: str = "base_python", gamma: float = 0.85,
         surprise_threshold_bits: float = 3.5, probe_interval: int = 16,
         resident_names: tuple[str, ...] | list[str] | None = None,
+        byte_nll_q99: Mapping[str, float] | None = None,
     ):
         super().__init__()
         if base_name in skills:
@@ -75,6 +76,13 @@ class MultiSkillBank(nn.Module):
         self._resident_names = tuple(resident_names)
         self.skills = nn.ModuleDict(modules)
         self.base_name = base_name
+        limits = {} if byte_nll_q99 is None else byte_nll_q99
+        if not isinstance(limits, Mapping) or any(
+            name not in modules or type(value) not in (int, float)
+            or not math.isfinite(value) or value < 0 for name, value in limits.items()
+        ):
+            raise ValueError("invalid per-skill byte NLL calibration")
+        self._byte_nll_q99 = {name: float(value) for name, value in limits.items()}
         self.context = min(skill.core.max_seq_len for skill in self.skills.values())
         if self.context < 2:
             raise ValueError("a bank requires a context of at least two bytes")
@@ -96,6 +104,30 @@ class MultiSkillBank(nn.Module):
     def resident_names(self):
         """The original group retained across births."""
         return self._resident_names
+
+    @property
+    def byte_nll_q99(self):
+        return dict(self._byte_nll_q99)
+
+    @torch.inference_mode()
+    def calibrate_byte_nll_q99(self, validation):
+        """Fit one empirical 99th-percentile byte NLL limit per validation domain."""
+        names = self.skill_names
+        if set(validation) != set(names):
+            raise ValueError("validation must cover each skill exactly once")
+        limits = {}
+        for index, name in enumerate(names):
+            raw, steps = self._prepare(validation[name], include_next=False)
+            if steps < 2:
+                raise ValueError(f"bytes for {name} need a conditional forecast")
+            logp = self.component_log_probs(raw, selected=raw.new_full(raw.shape, index))
+            nll = -logp.gather(-1, raw.unsqueeze(-1))[:, 1:].flatten().double()
+            limit = nll.kthvalue(math.ceil(0.99 * nll.numel())).values.item()
+            if not math.isfinite(limit) or limit < 0:
+                raise ValueError(f"invalid validation NLL for {name}")
+            limits[name] = limit
+        self._byte_nll_q99 = limits
+        return self.byte_nll_q99
 
     @staticmethod
     def _discount(gamma):
@@ -383,6 +415,88 @@ class MultiSkillBank(nn.Module):
         return torch.stack(forecasts, dim=1), torch.stack(weights, dim=1), calls / (batch * steps)
 
 
+    @torch.inference_mode()
+    def forward_hmm_conf_sparse_hierarchical(
+        self, raw, switch_prob=0.05, born_prior_mass=0.02, born_switch_share=0.10,
+        conf_threshold=0.95, probe_interval=32, *, include_next=False,
+    ):
+        """Mix all experts when uncertain and use one on trusted stretches.
+
+        A non-anomalous sparse observation retains its admitted state for the
+        next transition. On return to dense mode, re-evaluate the last sparse
+        observation from its saved prior using the causal penultimate output.
+        """
+        _validate_probability(conf_threshold, "conf_threshold")
+        if type(probe_interval) is not int or probe_interval < 1:
+            raise ValueError("probe_interval must be a positive integer")
+        raw, steps = self._prepare(raw, include_next)
+        names = self.skill_names
+        k = len(names)
+        if any(name not in self._byte_nll_q99 for name in names):
+            logp, weights = self.forward_hmm_bma_hierarchical(
+                raw, switch_prob, born_prior_mass, born_switch_share, include_next=include_next,
+            )
+            return logp, weights, k * (steps - 1) / steps
+
+        batch = raw.size(0)
+        first = self._prior(raw)
+        prior, transition = self._hierarchical_prior(first, switch_prob, born_prior_mass, born_switch_share)
+        transition_probs = transition.exp()
+        limits = first.new_tensor([self._byte_nll_q99[name] for name in names])
+        forecasts = [(first.unsqueeze(1) + prior.unsqueeze(-1)).logsumexp(1)]
+        weights = [prior.exp()]
+        components = first.unsqueeze(1).expand(-1, k, -1)
+        was_sparse = torch.zeros(batch, dtype=torch.bool, device=raw.device)
+        active = prior.argmax(-1)
+        ages = raw.new_zeros(batch)
+        calls = 0
+
+        for t in range(1, steps):
+            previous_prior = prior
+            observed = raw[:, t - 1:t]
+            emission = components.gather(-1, observed.unsqueeze(1).expand(-1, k, 1)).squeeze(-1)
+            posterior = (previous_prior + emission).log_softmax(-1)
+            filtered = _hmm_predict(posterior, transition)
+            prior = torch.where(was_sparse[:, None], transition[active], filtered)
+            anomaly = was_sparse & (-forecasts[-1].gather(-1, observed).squeeze(-1) > limits[active])
+            # Compare the transition probabilities directly at the diagonal ceiling.
+            predictive = torch.where(was_sparse[:, None], transition_probs[active], posterior.exp() @ transition_probs)
+            confident = predictive.max(-1).values >= conf_threshold
+            dense = ~confident | anomaly | (ages + 1 >= probe_interval)
+            replay = dense & was_sparse
+            replay_needed = bool(replay.any())
+            active = prior.argmax(-1)
+            prefix = self._prefix(raw, t)
+            components = first.new_zeros(batch, k, 256)
+            recent = first.new_empty(batch, k) if replay_needed else None
+            forecast = torch.empty_like(first)
+
+            for slot, model in enumerate(self.skills.values()):
+                selected = ~dense & (active == slot)
+                rows = dense | selected
+                if not bool(rows.any()):
+                    continue
+                output = model(prefix[rows])
+                if replay_needed:
+                    recent[replay, slot] = output[replay[rows], -2].float().log_softmax(-1).gather(
+                        -1, observed[replay],
+                    ).squeeze(-1)
+                logp = output[:, -1].float().log_softmax(-1)
+                components[rows, slot] = logp
+                forecast[selected] = logp[selected[rows]]
+
+            if replay_needed:
+                prior[replay] = _hmm_update(previous_prior[replay], recent[replay], transition)
+            forecast[dense] = (components[dense] + prior[dense].unsqueeze(-1)).logsumexp(-2)
+            forecasts.append(forecast)
+            weights.append(prior.exp())
+            was_sparse = ~dense
+            ages = torch.where(dense, 0, ages + 1)
+            calls += batch + (k - 1) * int(dense.sum().item())
+
+        return torch.stack(forecasts, dim=1), torch.stack(weights, dim=1), calls / (batch * steps)
+
+
 def save_bank(bank: MultiSkillBank, path):
     """Atomically save tensor-only receiver data and every routing default."""
     entries = {}
@@ -402,7 +516,7 @@ def save_bank(bank: MultiSkillBank, path):
     package = dict(
         schema=schema, base_name=bank.base_name, entries=entries, resident_names=list(bank.resident_names),
         gamma=bank.gamma, surprise_threshold_bits=bank.surprise_threshold_bits,
-        probe_interval=bank.probe_interval,
+        probe_interval=bank.probe_interval, byte_nll_q99=bank.byte_nll_q99,
     )
     path = Path(path)
     with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as out:
@@ -458,5 +572,5 @@ def load_bank(path):
         skills.pop(base_name), skills, base_name=base_name,
         gamma=package.get("gamma", float("nan")),
         surprise_threshold_bits=package.get("surprise_threshold_bits", float("nan")),
-        probe_interval=package.get("probe_interval"), resident_names=package.get("resident_names"),
+        probe_interval=package.get("probe_interval"), resident_names=package.get("resident_names"), byte_nll_q99=package.get("byte_nll_q99"),
     )
