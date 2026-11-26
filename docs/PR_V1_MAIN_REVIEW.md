@@ -181,3 +181,21 @@ The run used one shard at a time and measured 0 guarded donor calls and 0 surgic
 | 2505 | 4.516686 | 4.667958 | 4.658300 | 5.185444 | 86.75% | 100.00% | 96.88% | 0.007071 |
 
 [Preregistration](PHASE11_SDPA_AND_3STAGE_PREREG.md) · [Unrounded profiles and five-seed evidence](../evidence/phase11-sdpa-and-3stage-dev-001.json)
+
+## Phase 12 scaled zero-execution assimilation DEV review
+
+**DEV science PASS.** Both 64-wide arms beat shuffled and scratch at zero updates and after 64 updates in 5/5 seeds. Both beat the 32-wide baseline after 64 updates in 5/5. The FIT-only Engram table also beat the plain 64-wide arm in 5/5 seeds at zero updates and 3/5 after adaptation.
+
+Each cell shows pooled held BPB at zero updates / after 64 updates. Lower is better. The unrounded pooled and per-domain measurements are in the receipt.
+
+| Seed | `dim32_2L` | `dim64_4L` | `dim64_4L_engram` | `shuffled_dim64_4L` | `scratch_dim64_4L` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 2601 | 6.944510 / 4.277123 | 6.762182 / 4.140774 | 5.578699 / 4.133806 | 7.932692 / 4.315995 | 8.374768 / 4.352581 |
+| 2602 | 7.148229 / 4.232898 | 6.627929 / 4.007728 | 5.562346 / 4.000514 | 7.924918 / 4.207919 | 8.211660 / 4.237839 |
+| 2603 | 7.049916 / 4.334888 | 6.958176 / 4.218433 | 5.704439 / 4.224567 | 7.909214 / 4.318840 | 8.321999 / 4.351705 |
+| 2604 | 7.149258 / 4.429328 | 6.951027 / 4.353798 | 5.820578 / 4.336148 | 7.857234 / 4.418397 | 8.347664 / 4.413068 |
+| 2605 | 6.892848 / 4.341284 | 6.646161 / 4.320726 | 5.660547 / 4.325634 | 7.749088 / 4.339640 | 8.151367 / 4.399695 |
+
+The preregistered run at `b639c99a88a8955a3c0afb399f15c4a219bc2660` measured one peak loaded shard, zero downloaded shards, zero consumer donor forwards, and 0.0 maximum prefix difference across 50 probe seeds per arm and stage. All ten archives per seed restored exact states and forecasts in a fresh process, for 5/5 exact seeds. The offline mocked Hub test reached one peak downloaded shard with Engram enabled. The scored Linux CPU run took 135.98 seconds with peak RSS of 331,196 KiB. Independent scientific qualification and real-checkpoint Colab validation remain open.
+
+[Preregistration](PHASE12_SCALED_ZERO_EXEC_PREREG.md) · [Unrounded five-seed receipt](../evidence/phase12-scaled-zero-exec-dev-001.json)

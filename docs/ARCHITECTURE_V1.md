@@ -164,3 +164,15 @@ The composed lifecycle adapts a tensor-only imported skill, verifies an edit on 
 The run used one shard at a time and measured 0 guarded donor calls and 0 surgical edit autograd calls. It recorded 0/160 resident novelty flags and 5/5 exact lifecycle cold restores. The focused suite tested 50 SDPA and 50 assembled-bank seeds at exact 0.0 prefix difference. CUDA FlashAttention and independent scientific acceptance await separate qualification.
 
 [Preregistration](PHASE11_SDPA_AND_3STAGE_PREREG.md) · [Unrounded profiles and five-seed evidence](../evidence/phase11-sdpa-and-3stage-dev-001.json)
+
+## Phase 12 configurable shard transport and static Engram
+
+The native importer accepts `--student-dim` values 32, 64, 128 and 256 and `--student-layers` values 2, 4 and 6. Defaults are 32 and two. Standalone and bank archives reconstruct depth from their FFN layouts. Large vocabularies still use a row-chunked FP32 Gram matrix for the shared embedding and readout basis.
+
+`--use-engram` opts into indexed DeepSeek text Engram pairs at layers 1 and 14. The importer hashes each standalone byte token with padded history, reads and dequantizes only the selected table rows, and projects the shared value slice of `wkv` into the student basis. A quarter of the mean projected value is added before the static prior is normalized. The native skill carries only the resulting byte prior. Existing checkpoints with an explicit `engram.weight` byte table retain their previous default behavior.
+
+The public DeepSeek-V4.1-Flash-1017 headers at `08c8657f02291e11b6f6b63e0e16014f8e748518` put the two Engram tables on separate shards of about 101.5 GB each. The Hub route releases a shard before downloading the next. Engram mode needs free space for the largest selected shard. The offline fixture verified bounding the stream to one shard. Live checkpoint import and memory use on Colab remain unverified. [DeepSeek Engram reference](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017/blob/08c8657f02291e11b6f6b63e0e16014f8e748518/inference/engram.py)
+
+**DEV science PASS.** Both 64-wide arms beat both same-width controls on both stages in 5/5 seeds and beat the 32-wide baseline after adaptation in 5/5. The experiment used a local BPE donor and a FIT-only byte table. Independent scientific qualification remains open.
+
+[Preregistration](PHASE12_SCALED_ZERO_EXEC_PREREG.md) · [Five-seed BPB tables](PR_V1_MAIN_REVIEW.md#phase-12-scaled-zero-execution-assimilation-dev-review) · [Unrounded receipt](../evidence/phase12-scaled-zero-exec-dev-001.json)
