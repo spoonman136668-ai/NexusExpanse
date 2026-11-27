@@ -85,7 +85,9 @@ class NexusExpanseUnified:
     """
 
     MEMORY_BUDGET = 40_000
-    SNAPSHOT_LIMIT = 32_000_000
+    # Eight dense FP32 layers at width 512 and 4096 learned positions fit.
+    SNAPSHOT_LIMIT = 80_000_000
+    LEGACY_SNAPSHOT_LIMIT = 32_000_000
     SNAPSHOT_VERSION = "nexus-unified-dev-v1"
 
     def __init__(self, backbone, counts, *, memory=None, sleep_budget=False, fast_decode=False):
@@ -184,6 +186,13 @@ class NexusExpanseUnified:
                                   max_seq_len=model.max_seq_len, schedule=model.schedule)
         return "delta", dict(shape, n_heads=layer.n_heads)
 
+    @classmethod
+    def _snapshot_limit(cls, kind, config):
+        if (kind == "attention" and 32 <= config["dim"] <= 512 and 2 <= config["n_layers"] <= 8
+                and 8 <= config["max_seq_len"] <= 4096 and config["ffn_mult"] == 2):
+            return cls.SNAPSHOT_LIMIT
+        return cls.LEGACY_SNAPSHOT_LIMIT
+
     def snapshot(self):
         """Serialize model, adaptive memories, and the in-flight stream cursor."""
         kind, config = self._config()
@@ -204,7 +213,7 @@ class NexusExpanseUnified:
             payload["sleep_budget"] = True
         output = io.BytesIO()
         torch.save(payload, output)
-        if output.tell() > self.SNAPSHOT_LIMIT:
+        if output.tell() > self._snapshot_limit(kind, config):
             raise ValueError("whole-system checkpoint exceeds DEV limit")
         return output.getvalue()
 
@@ -215,6 +224,8 @@ class NexusExpanseUnified:
         saved = torch.load(io.BytesIO(payload), weights_only=True, map_location="cpu")
         if saved["version"] != cls.SNAPSHOT_VERSION:
             raise ValueError("unsupported unified checkpoint version")
+        if len(payload) > cls.LEGACY_SNAPSHOT_LIMIT and len(payload) > cls._snapshot_limit(saved["kind"], saved["config"]):
+            raise ValueError("whole-system checkpoint exceeds DEV limit for its geometry")
         with torch.random.fork_rng(devices=[]):
             if saved["kind"] == "attention":
                 backbone = NexusExpanseByteCore(**saved["config"], dropout=0.0, enable_skip=True)

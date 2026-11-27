@@ -1,5 +1,6 @@
 """Nexus Expanse v1.0-rc1 raw-byte developer CLI."""
 import argparse
+from collections import deque
 import hashlib
 import itertools
 import json
@@ -36,9 +37,10 @@ from nexus_expanse.weight_editing import (
 
 VERSION = "1.0-rc1"
 TRAIN_OPTIONS = ("device", "dtype", "epoch_limit", "seed", "dim", "context",
-                 "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks", "layers")
+                 "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks", "layers", "lr", "lr_schedule")
 EXPRESSION_LIBRARY = dict(zip(b"amdrvX", EXPRESSIONS, strict=True))
 MAX_STREAM_CHUNK = 4096
+MAX_REPEAT_WINDOW = 512
 
 
 def emit(obj):
@@ -125,20 +127,51 @@ def raw_chunks(args):
             yield parsed_hex(line, MAX_STREAM_CHUNK)
 
 
-def continuation(model, forecast, length, *, adapt=False, temperature=0.0, top_p=1.0, seed=42):
+def parse_repetition_penalty(text):
+    penalty = float(text)
+    if not math.isfinite(penalty) or penalty < 1.0:
+        raise argparse.ArgumentTypeError("repetition penalty must be finite and at least 1.0")
+    return penalty
+
+
+def repetition_adjusted_logs(probabilities, recent, penalty):
+    logs = probabilities.log()
+    if recent:
+        indices = sorted(set(recent))
+        repeated = logs[indices]
+        logs[indices] = repeated * penalty
+        if torch.isneginf(logs.max()):
+            # All positive-mass bytes were penalized and multiplication
+            # overflowed. A common shift preserves their relative scores.
+            logs[indices] = (repeated - repeated.max()) * penalty
+    return logs
+
+
+def continuation(model, forecast, length, *, adapt=False, temperature=0.0, top_p=1.0, seed=42,
+                 repetition_penalty=1.0, repeat_window=64, prompt=b""):
+    if not math.isfinite(repetition_penalty) or repetition_penalty < 1.0:
+        raise ValueError("repetition penalty must be finite and at least 1.0")
+    if type(repeat_window) is not int or not 1 <= repeat_window <= MAX_REPEAT_WINDOW:
+        raise ValueError("repeat window must be between 1 and 512 bytes")
+    recent = deque(prompt[-repeat_window:], maxlen=repeat_window) if repetition_penalty > 1.0 else None
     generator = torch.Generator().manual_seed(seed) if temperature else None
     output = bytearray()
     for _ in range(length):
         if generator is None:
-            byte = int(forecast.mixed.argmax())
+            scores = (forecast.mixed if recent is None else
+                      repetition_adjusted_logs(forecast.mixed, recent, repetition_penalty))
+            byte = int(scores.argmax())
         else:
-            logs = forecast.mixed.log()
+            logs = (forecast.mixed.log() if recent is None else
+                    repetition_adjusted_logs(forecast.mixed, recent, repetition_penalty))
             probabilities = ((logs - logs.max()) / temperature).softmax(0)
             sorted_probs, ids = probabilities.sort(descending=True, stable=True)
             keep = sorted_probs.cumsum(0) - sorted_probs < top_p
             selected = torch.multinomial(sorted_probs * keep, 1, generator=generator)
             byte = int(ids[selected].item())
         output.append(byte)
+        if recent is not None:
+            recent.append(byte)
         forecast = model.step(byte, adapt=adapt)
     return bytes(output)
 
@@ -189,13 +222,15 @@ def generate_command(args):
         prefill_elapsed = time.perf_counter() - start
         start = time.perf_counter()
         generated = continuation(model, forecast, args.max_bytes, adapt=args.adapt,
-                                 temperature=args.temperature, top_p=args.top_p, seed=args.seed)
+                                 temperature=args.temperature, top_p=args.top_p, seed=args.seed, prompt=prompt,
+                                 repetition_penalty=args.repetition_penalty, repeat_window=args.repeat_window)
         elapsed = time.perf_counter() - start
         emit(dict(
             command="generate", prompt_bytes=len(prompt), generated_bytes=len(generated),
             generated_hex=generated.hex(), generated_text=generated.decode("utf-8", errors="replace"),
             device=device.type, prefill_ms=prefill_elapsed * 1000,
             ms_per_byte=elapsed * 1000 / len(generated), snapshot_sha256=hashlib.sha256(data).hexdigest(),
+            repetition_penalty=args.repetition_penalty, repeat_window=args.repeat_window,
             donor_forward_calls=guard.donor_forward_calls,
         ))
 
@@ -469,9 +504,11 @@ def parser():
     train.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
     train.add_argument("--dtype", choices=("fp32", "bf16"), default="fp32")
     train.add_argument("--epoch-limit", type=int, choices=range(1, 9), default=1)
-    for name in TRAIN_OPTIONS[3:-1]:
+    for name in ("seed", "context", "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks"):
         train.add_argument("--" + name.replace("_", "-"), type=int)
-    train.add_argument("--layers", type=int, choices=(2, 4, 6))
+    train.add_argument("--dim", type=int, choices=scaling.TRAIN_DIMS, metavar="{32,64,...,512}")
+    train.add_argument("--layers", type=int, choices=scaling.TRAIN_LAYERS)
+    scaling.add_lr_arguments(train)
     train.add_argument("--init-skill", type=Path, help="start from a verified local standalone byte skill")
     train.add_argument("--skill-backbone", action="store_true", help="match a warm-start model from scratch")
     train.add_argument("--use-sdpa", action="store_true", help="causal SDPA training up to 4096 bytes")
@@ -500,6 +537,9 @@ def parser():
     generate.add_argument("--temperature", type=float, default=0.0)
     generate.add_argument("--top-p", type=float, default=0.9)
     generate.add_argument("--seed", type=int, default=42)
+    generate.add_argument("--repetition-penalty", type=parse_repetition_penalty, default=1.0)
+    generate.add_argument("--repeat-window", type=int, choices=range(1, MAX_REPEAT_WINDOW + 1), default=64,
+                          metavar="1..512")
     generate.add_argument("--adapt", action="store_true", help="adapt online memory in the restored session")
     generate.set_defaults(handler=generate_command)
 

@@ -33,6 +33,13 @@ from nexus_expanse.weight_editing import _affine_parameters, restore_skill
 DOMAINS = ("math", "code", "prose")
 GATE15 = ROOT / "evidence/gate15-hybrid-dev-001.json"
 PHASE1 = "57eded620df922f250495dbb7eeaa280630b1881"
+DEFAULT_LR = 0.003
+LR_SCHEDULES = ("constant", "cosine")
+TRAIN_DIMS = range(32, 513, 32)
+TRAIN_LAYERS = (2, 4, 6, 8)
+MAX_STEPS_PER_EPOCH = 1024
+MAX_BATCH_PER_DOMAIN = 32
+INIT_SKILL_LIMIT = 32_000_000
 
 
 @dataclass(frozen=True)
@@ -53,6 +60,29 @@ SMOKE = Geometry(seed=42, dim=32, context=32, epochs=2, steps_per_epoch=2,
 
 def git(*args):
     return subprocess.check_output(["git", *args], cwd=ROOT)
+
+
+def positive_lr(text):
+    value = float(text)
+    if not math.isfinite(value) or value <= 0:
+        raise argparse.ArgumentTypeError("learning rate must be finite and positive")
+    return value
+
+
+def add_lr_arguments(parser):
+    parser.add_argument("--lr", type=positive_lr, default=DEFAULT_LR, help="positive base learning rate")
+    parser.add_argument("--lr-schedule", choices=LR_SCHEDULES, default="constant")
+
+
+def cosine_lr(global_step, total_steps, base_lr):
+    """Rate applied to a one-based optimizer update."""
+    if global_step == total_steps:
+        return 0.1 * base_lr
+    warmup = max(1, total_steps // 20)
+    if global_step <= warmup:
+        return base_lr * (global_step / warmup)
+    progress = (global_step - warmup) / (total_steps - warmup)
+    return base_lr * (0.1 + 0.45 * (1 + math.cos(math.pi * progress)))
 
 
 def load_corpora(args):
@@ -123,8 +153,8 @@ def model_for(geometry, backbone, device, *, use_sdpa=False):
 
 def read_init_skill(path):
     with path.open("rb") as source:
-        payload = source.read(NexusExpanseUnified.SNAPSHOT_LIMIT + 1)
-    if not 0 < len(payload) <= NexusExpanseUnified.SNAPSHOT_LIMIT:
+        payload = source.read(INIT_SKILL_LIMIT + 1)
+    if not 0 < len(payload) <= INIT_SKILL_LIMIT:
         raise ValueError("initial skill is empty or exceeds the snapshot size limit")
     return restore_skill(payload), hashlib.sha256(payload).hexdigest()
 
@@ -290,6 +320,9 @@ def experiment_identity(args, geometry, backbone, manifest, device, *, init_skil
         identity["skill_backbone"] = True
     if init_skill_sha256 is not None:
         identity["init_skill_sha256"] = init_skill_sha256
+    # The legacy identity already means a constant rate of 0.003.
+    if args.lr != DEFAULT_LR or args.lr_schedule != "constant":
+        identity.update(lr=args.lr, lr_schedule=args.lr_schedule)
     return identity
 
 
@@ -304,7 +337,9 @@ def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None
         if skill.prior_alpha:
             prior = skill.static_byte_prior.to(device)
             prior_alpha = skill.prior_alpha
-    optimizer = torch.optim.AdamW(model.parameters(), lr=.003, weight_decay=.01)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=.01)
+    scheduled = args.lr_schedule == "cosine"
+    total_steps = geometry.epochs * geometry.steps_per_epoch
     epoch_trace = {}
     cold_report = {}
 
@@ -317,10 +352,16 @@ def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None
             raise ValueError("optimizer step counter does not match the epoch cursor")
         losses = []
         alphas = []
+        rates = []
         for index in range(first, first + geometry.steps_per_epoch):
             rows = training_rows(train, geometry, index)
             batch, keep, valid = make_batch(rows, geometry.context, device)
             optimizer.zero_grad(set_to_none=True)
+            if scheduled:
+                lr = cosine_lr(index + 1, total_steps, args.lr)
+                for group in optimizer.param_groups:
+                    group["lr"] = lr
+                rates.append(lr)
             remaining = geometry.steps_per_epoch - 1 - index
             alpha = prior_alpha * remaining / (geometry.steps_per_epoch - 1) if number == 1 and remaining > 0 else 0.0
             alphas.append(alpha)
@@ -331,6 +372,8 @@ def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None
                            end_model_hash=state_hash(model), optimizer_steps_at_start=first)
         if skill is not None:
             epoch_trace["prior_alpha_schedule"] = alphas
+        if scheduled:
+            epoch_trace["learning_rates"] = rates
         return losses
 
     def metrics(number, seconds):
@@ -391,16 +434,17 @@ def main(argv=None):
     p.add_argument("--smoke", action="store_true")
     p.add_argument("--use-sdpa", action="store_true")
     p.add_argument("--init-skill", type=Path, help="initialize from a local standalone byte skill")
-    p.add_argument("--layers", type=int, choices=(2, 4, 6))
+    p.add_argument("--layers", type=int, choices=TRAIN_LAYERS)
     p.add_argument("--skill-backbone", action="store_true", help="use dense FFNs and an untied readout from scratch")
     p.add_argument("--epoch-limit", type=int, default=1, choices=range(1, 9))
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--dim", type=int, default=64, choices=range(32, 257, 32), metavar="{32,64,...,256}")
+    p.add_argument("--dim", type=int, default=64, choices=TRAIN_DIMS, metavar="{32,64,...,512}")
     p.add_argument("--context", type=int, default=128)
     p.add_argument("--epochs", type=int, default=20)
     p.add_argument("--steps-per-epoch", type=int, default=32)
     p.add_argument("--batch-per-domain", type=int, default=2)
     p.add_argument("--eval-blocks", type=int, default=16)
+    add_lr_arguments(p)
     for split in ("train", "eval"):
         for domain in DOMAINS:
             p.add_argument(f"--{split}-{domain}", type=Path)
@@ -410,6 +454,8 @@ def main(argv=None):
     action.add_argument("--smoke-evidence", type=Path)
     action.add_argument("--cold", type=Path, help=argparse.SUPPRESS)
     args = p.parse_args(argv)
+    if args.smoke and (args.lr != DEFAULT_LR or args.lr_schedule != "constant"):
+        p.error("the frozen smoke profile uses its original constant learning rate")
     # Set CUDA's deterministic cuBLAS configuration before initializing CUDA.
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     torch.set_num_threads(1)
@@ -420,7 +466,8 @@ def main(argv=None):
     )
     max_context = 4096 if args.use_sdpa else 512
     if not (8 <= geometry.context <= max_context and 1 <= geometry.epochs <= 5000
-            and 1 <= geometry.steps_per_epoch <= 64 and 1 <= geometry.batch_per_domain <= 8
+            and 1 <= geometry.steps_per_epoch <= MAX_STEPS_PER_EPOCH
+            and 1 <= geometry.batch_per_domain <= MAX_BATCH_PER_DOMAIN
             and 1 <= geometry.eval_blocks <= 128):
         p.error("invalid context, epoch, step, batch or evaluation size")
     if args.until_complete:
@@ -442,6 +489,8 @@ def main(argv=None):
             if skill is not None:
                 if args.layers is None:
                     geometry = replace(geometry, layers=len(skill.core.layers))
+                if geometry.layers not in TRAIN_LAYERS:
+                    raise ValueError(f"initial skill depth must be one of {TRAIN_LAYERS}")
                 if geometry.dim != skill.readout.in_features or geometry.layers != len(skill.core.layers):
                     raise ValueError("initial skill width or depth does not match training geometry")
         except ValueError as exc:
