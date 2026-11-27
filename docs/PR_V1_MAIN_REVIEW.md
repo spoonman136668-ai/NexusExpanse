@@ -1,6 +1,14 @@
-# Nexus Expanse v1.0-rc1 owner PR review
+# Nexus Expanse owner release review
 
 ## Release-candidate qualification
+
+**v1.1.0-rc1 engineering.** The candidate combines Phase 13 native skill warm-start, Phase 14 cached CPU/CUDA generation and real-text corpus packaging, and the Phase 14B splitter fix. The Linux CPU run passed **688/688** bare pytest cases with zero failures, skips or warnings and the prefix benchmark had **0/100** failures. A local offline fixture exercised 5,000 Hub-like records with shared prefixes and local code with shared imports. It finished in under five seconds with six files of at least 50,000 bytes and zero exact 32-byte windows shared across train and eval.
+
+**Owner-executed Colab receipts.** The owner reported exact snapshot verification for warm-start and scratch training on the Phase 14 base. One matched 200-byte greedy prompt from the warm-start snapshot produced identical CPU and T4 CUDA bytes, with 47.87 and 4.33 ms/byte decode respectively. The Phase 14B fix still awaits live TinyStories and wikitext runs. Independent scientific qualification, multi-GB GPU pretraining and live DeepSeek Engram extraction remain open. [Phase 13 DEV evidence](../evidence/phase13-warmstart-train-dev-001.json) · [Phase 14 CPU evidence](../evidence/phase14-fast-generate-dev-001.json) · [Owner Colab receipts](LIVE_COLAB_RECEIPTS.md)
+
+**Release custody.** The branch is `dev/v1.1-release-candidate`, based on `d9b79f014edc96c7d4558debcef72283383da62a`. Protected `main` and the `v1.0.0` tag both resolve to `bbdc3c3ae4f43e4677d111ba38bb7bccf4b3de9b`. Merge review remains with the owner.
+
+## Historical v1.0-rc1 qualification
 
 **Engineering.** The local Linux CPU release-candidate check used PyTorch 2.10 and bare `pytest -q`. It passed **672/672** tests with zero failures, skips or warnings. The separate prefix check reported **0/100** failures. The expected base for the proposed PR is protected `main` at `bb21fbe53c0299d432e866eb4d016c25b81ee6eb`.
 

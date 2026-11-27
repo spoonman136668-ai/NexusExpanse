@@ -1,6 +1,7 @@
 """Pack whole local or opt-in Hub documents into six leakage-checked byte files."""
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 import math
@@ -17,6 +18,8 @@ from scripts.prepare_gpu_corpus import DOMAINS, GRAM_BYTES, assert_disjoint, gra
 
 MIN_BYTES = 50_000
 SPLIT_ATTEMPTS = 24
+MAX_GRAPH_DOCUMENTS = 256
+RANKED_SPLIT_ATTEMPTS = 4
 MAX_HUB_RECORDS = 50_000
 SUFFIXES = {"prose": {".md", ".txt", ".rst"}, "math": {".md", ".txt", ".rst", ".tex"},
             "code": {".py", ".js", ".ts", ".go", ".rs", ".c", ".cpp", ".java", ".sh"}}
@@ -133,7 +136,7 @@ def synthetic_math(seed, cap, fraction):
 
 
 def conflict_graph(documents):
-    rows = [(domain, doc) for domain in DOMAINS for doc in documents[domain]]
+    rows = [(domain, doc) for domain in DOMAINS for doc in documents.get(domain, ())]
     owners = {}
     conflicts = [1 << i for i in range(len(rows))]
     for i, (_, doc) in enumerate(rows):
@@ -199,6 +202,34 @@ def conflict_aware_holdout(graph, targets, caps, seed):
     return held, candidates
 
 
+def holdout_scores(documents):
+    """Rank by shared windows without materializing document pairs."""
+    frequencies = Counter()
+    for docs in documents.values():
+        for doc in docs:
+            frequencies.update(set(grams(doc)))
+    scores = {}
+    for docs in documents.values():
+        for doc in docs:
+            highest = total = 0
+            for gram in grams(doc):
+                shared = frequencies[gram] - 1
+                highest = max(highest, shared)
+                total += shared
+            scores[doc] = highest, total / max(1, len(doc) - GRAM_BYTES + 1)
+    return scores
+
+
+def split_payloads(held, candidates, caps):
+    evaluation = {domain: b"".join(held[domain]) for domain in DOMAINS}
+    held_grams = {gram for raw in evaluation.values() for gram in grams(raw)}
+    result = {}
+    for domain, raw in evaluation.items():
+        result["train", domain] = train_documents(candidates[domain], caps[domain] - len(raw), held_grams)
+        result["eval", domain] = raw, len(held[domain])
+    return result
+
+
 def split_corpus(documents, seed, fraction, caps, *, fixed_math=None):
     available = {domain: sum(map(len, documents[domain])) for domain in DOMAINS}
     for domain in DOMAINS:
@@ -206,36 +237,52 @@ def split_corpus(documents, seed, fraction, caps, *, fixed_math=None):
             continue
         if available[domain] < 2 * MIN_BYTES or len(documents[domain]) < 2:
             raise ValueError(f"{domain} needs enough distinct whole documents for two {MIN_BYTES:,}-byte files")
-    graph = None
+    active = {d: documents[d] if d != "math" or fixed_math is None else [] for d in DOMAINS}
+    large = sum(map(len, active.values())) > MAX_GRAPH_DOCUMENTS
+    scores = holdout_scores(active) if large else None
     targets = {d: (0 if d == "math" and fixed_math is not None else eval_target(caps[d], available[d], fraction))
                for d in DOMAINS}
-    for attempt in range(SPLIT_ATTEMPTS):
-        if attempt < 4:
+    graph = None
+    repairs = {}
+    for attempt in range(RANKED_SPLIT_ATTEMPTS if large else SPLIT_ATTEMPTS):
+        if large or attempt < 4:
             held, candidates = {}, {}
             for domain in DOMAINS:
-                order = list(documents[domain])
+                order = list(active[domain])
                 random.Random(f"real-corpus:{seed}:{domain}:{attempt}").shuffle(order)
+                if scores is not None:
+                    # Penalize a ubiquitous prefix first, then try average
+                    # collision frequency for corpora with many short fragments.
+                    primary = int(attempt >= RANKED_SPLIT_ATTEMPTS // 2)
+                    order.sort(key=lambda doc: (scores[doc][primary], scores[doc][1 - primary]))
                 held[domain], candidates[domain] = eval_documents(order, caps[domain] - MIN_BYTES, targets[domain])
         else:
             if graph is None:
-                graph = conflict_graph({d: documents[d] if targets[d] else [] for d in DOMAINS})
+                graph = conflict_graph(active)
             selected = conflict_aware_holdout(graph, targets, caps, f"real-corpus:{seed}:{attempt}")
             if selected is None:
                 continue
             held, candidates = selected
         if fixed_math is not None:
             held["math"], candidates["math"] = fixed_math["eval"], fixed_math["train"]
-        evaluation = {domain: b"".join(held[domain]) for domain in DOMAINS}
-        if any(len(raw) < MIN_BYTES for raw in evaluation.values()):
-            continue
-        held_grams = {gram for raw in evaluation.values() for gram in grams(raw)}
-        result = {}
-        for domain in DOMAINS:
-            raw, count = train_documents(candidates[domain], caps[domain] - len(evaluation[domain]), held_grams)
-            result["train", domain] = raw, count
-            result["eval", domain] = evaluation[domain], len(held[domain])
-        if all(len(value) >= MIN_BYTES for value, _ in result.values()):
+        result = split_payloads(held, candidates, caps)
+        short = tuple(d for d in DOMAINS if any(len(result[s, d][0]) < MIN_BYTES for s in ("train", "eval")))
+        if not short:
             return result
+        if large and all(active[d] for d in short) and sum(len(active[d]) for d in short) <= MAX_GRAPH_DOCUMENTS:
+            # A hard local split can be retried without adding a large Hub domain
+            # to the graph. The rebuilt payload still checks against every holdout.
+            repair_targets = {d: targets[d] if d in short else 0 for d in DOMAINS}
+            if short not in repairs:
+                repairs[short] = conflict_graph({d: active[d] for d in short})
+            selected = conflict_aware_holdout(repairs[short], repair_targets, caps, f"real-corpus:repair:{seed}:{attempt}")
+            if selected is not None:
+                new_held, new_candidates = selected
+                for domain in short:
+                    held[domain], candidates[domain] = new_held[domain], new_candidates[domain]
+                result = split_payloads(held, candidates, caps)
+                if all(len(raw) >= MIN_BYTES for raw, _ in result.values()):
+                    return result
     raise ValueError(f"could not form six leakage-free whole-document files of {MIN_BYTES:,} bytes within the cap")
 
 

@@ -8,6 +8,7 @@ from pathlib import Path
 import random
 import subprocess
 import sys
+from time import perf_counter
 
 import numpy as np
 import pytest
@@ -18,6 +19,7 @@ from nexus_expanse.cli import main
 from nexus_expanse.patching import CompactBigram
 from nexus_expanse.shard_stream_assimilation import make_student
 from nexus_expanse.unified import NexusExpanseUnified
+from scripts import prepare_real_corpus
 from scripts.prepare_real_corpus import MIN_BYTES, prepare
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -155,6 +157,53 @@ def test_whole_documents_and_duplicate_paragraphs_pack_deterministically(tmp_pat
     with pytest.raises(FileExistsError):
         prepare(a, **settings)
     assert manifest == json.loads((a / "corpus_manifest.json").read_bytes())
+
+
+def test_hub_like_holdout_with_shared_prefixes_finishes_under_five_seconds(tmp_path, monkeypatch):
+    code = tmp_path / "code"
+    code.mkdir()
+    rng = random.Random(14)
+    alphabet = b"abcdefghijklmnopqrstuvwxyz0123456789"
+    # Ranking mixes the first two import groups and leaves too little training
+    # code. The bounded repair can reserve the middle group for training.
+    for group, count, size in (("a", 3, 12_500), ("b", 4, 14_000), ("c", 5, 6_000)):
+        imports = f"from {group * 32} import prepare_many_cases\n".encode("ascii")
+        for index in range(count):
+            (code / f"{group}-{index:02}.py").write_bytes(imports + bytes(rng.choices(alphabet, k=size)))
+
+    streamed = 0
+
+    def hub_records(spec, field):
+        nonlocal streamed
+        assert (spec, field) == ("offline/story-fixture:raw", "text")
+        rng = random.Random(14)
+        for index in range(5_000):
+            streamed += 1
+            # Mixing the two prefix groups in eval blocks every train story.
+            start = (b"Once upon a time, there was a little " if index < 4_400
+                     else b"At sunrise the village shutters opened on ")
+            yield start + bytes(rng.choices(alphabet, k=112 - len(start)))
+
+    original_graph = prepare_real_corpus.conflict_graph
+    graph_sizes = []
+
+    def check_graph(documents):
+        assert set(documents) == {"code"}, "Hub records must stay out of the conflict graph"
+        graph_sizes.append(len(documents["code"]))
+        return original_graph(documents)
+
+    monkeypatch.setattr(prepare_real_corpus, "hub_documents", hub_records)
+    monkeypatch.setattr(prepare_real_corpus, "conflict_graph", check_graph)
+    out = tmp_path / "packed"
+    start = perf_counter()
+    manifest = prepare(out, local={"code": code}, hub={"prose": "offline/story-fixture:raw"},
+                       limit=900_000, math_fallback=True)
+    elapsed = perf_counter() - start
+    assert elapsed < 5, f"5,000-document corpus took {elapsed:.3f}s"
+    assert streamed == 5_000
+    assert graph_sizes == [12]
+    assert manifest["sources"] == {"math": "synthetic", "code": "local", "prose": "hf"}
+    check_pack(out, manifest, {"code": code})
 
 
 def test_real_corpus_cli_feeds_training(tmp_path, sources):

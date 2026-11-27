@@ -1,4 +1,4 @@
-# Nexus Expanse v1.0-rc1
+# Nexus Expanse v1.1.0-rc1
 
 Nexus Expanse is an independent raw-byte research prototype. The release candidate includes a CPU streaming runtime, a bounded expression solver, resumable training and checkpoint assimilation. [Architecture](docs/ARCHITECTURE_V1.md) · [Checkpoint transfer findings](docs/CHECKPOINT_TRANSFER_FINDINGS.md) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
 
@@ -57,9 +57,11 @@ Generation defaults to CPU. Use `--device auto` for CUDA when available. The JSO
 
 Use the packaged directory as `train --corpus-dir`. The packager keeps input files or dataset records whole, separates train and eval, and verifies zero shared 32-byte windows across the six outputs. It records document counts, byte counts and SHA-256 digests in `corpus_manifest.json`. Supply `--math-dir` for real math text. The explicit fallback uses deterministic arithmetic records when local math is missing or insufficient. The optional `--hf-prose`, `--hf-code` and `--hf-math` flags accept `repo[:config]` and require the `datasets` package.
 
+Phase 14B selects holdout documents from large pools using a seeded ranking based on shared 32-byte windows. A smaller pool can use a bounded search when ranking leaves too few bytes. Each candidate is a whole document, and publication requires an exact overlap check across all train and eval files. The offline regression covers 5,000 Hub-like records with repeated story prefixes and local files with shared imports.
+
 ## Release-candidate evidence
 
-The local Linux CPU run using bare `pytest -q` passed **672/672** tests with zero failures, skips or warnings. The separate prefix benchmark reported **0/100** failures. The owner-executed Colab log covers bounded T4 training, writes to Google Drive FUSE, and Qwen and DeepSeek checkpoint imports at the recorded source revisions. Multi-GB GPU pretraining, live Engram extraction from approximately 101.5 GB shards, and independent scientific qualification remain open. [Release review](docs/PR_V1_MAIN_REVIEW.md#release-candidate-qualification) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
+The local Linux CPU run using bare `pytest -q` passed **688/688** tests with zero failures, skips or warnings. The separate prefix benchmark reported **0/100** failures. The owner reported identical greedy output on CPU and T4 CUDA for one matched Phase 14 prompt, with 11.1× faster CUDA decode on that prompt. Owner verification of the Phase 14B Hub fix on Colab, multi-GB GPU pretraining, live Engram extraction from approximately 101.5 GB shards, and independent scientific qualification remain open. [Release review](docs/PR_V1_MAIN_REVIEW.md#release-candidate-qualification) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
 
 ## Windows consumer-GPU launch
 

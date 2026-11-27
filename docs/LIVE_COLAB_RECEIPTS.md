@@ -69,6 +69,23 @@ The 64-step adaptation used `RESEARCH.md`. The table records the supplied BPB va
 | After 64 updates | Markdown | 4.6386 | 5.1550 | -0.5165 |
 | After 64 updates | Python | 5.9888 | 6.4030 | -0.4142 |
 
+## Phase 13 DeepSeek warm-start and CPU generation on Colab
+
+On a Colab Tesla T4 runtime at `bf39629efb44397c24d5d7a10a9b6fd853c0f3c5`, the owner used a synthetic 4 MB corpus and a 128-wide, four-layer DeepSeek warm-start. CPU generation took 38.13–56.76 ms/byte with `donor_forward_calls: 0`. The reported `snapshot_sha256` was `d89919248527090dc4dd3d7a9672c0cc2a696722b1105890a62e18eda862ecb4`.
+
+## Phase 14 real-text training, verification and T4 CUDA generation
+
+At `d9b79f014edc96c7d4558debcef72283383da62a`, the owner trained on a corpus of 821,018 bytes from local repository prose and code plus math, with `global_overlap_32b: 0`. The matched warm-start and scratch runs used width 128, four layers, context 512, `--use-sdpa`, 16 epochs of 64 steps, and 3,138,649 target bytes each.
+
+| Run | Snapshot bytes | `neural_state_sha256` | `snapshot_sha256` |
+| --- | ---: | --- | --- |
+| Warm-start with `--init-skill deepseek_v41_128x4.pt` | 2,843,357 | `3d974e39ba6cee54c736bfdfa8461f811a9a321c9a74f6dd2b495265297321d0` | `e2bd9b30bc84f9568fb989ed1e6d95bbd007be1b50a72658415540efa0a6879c` |
+| Scratch with `--skill-backbone` | 2,843,357 | `225c62487c9b373f4d0f362f75b8cae9000929296f4ee7864e31e6d0ac3c3bae` | `ceb9219ba8c0a7240b0d2c68404f3c9079ae1b5ef75978514887298f75a04bc2` |
+
+Both runs reported `cold_equal: true`, `exact_state: true`, `donor_forward_calls: 0` and `0.0` for all four parity checks and the snapshot round-trip. For 200 greedy bytes on a matched story prompt from the warm-start snapshot, CPU decode took 47.87 ms/byte with 112.38 ms prefill. T4 CUDA decode took 4.33 ms/byte with 303.79 ms prefill. The owner reported an **11.1× decode speedup** and identical `generated_hex`. Across all CUDA prompts the reported range was 4.16–5.07 ms/byte, with zero donor forward calls.
+
+Owner runs streaming `roneneldan/TinyStories` at 12 MB and `Salesforce/wikitext:wikitext-103-raw-v1` at 3 MB stalled in the Phase 14 corpus splitter. Phase 14B covers the fix with an offline stream fixture. Live Hub streaming on Colab awaits the owner's rerun.
+
 ## Open qualification
 
-Multi-GB GPU pretraining and live DeepSeek Engram extraction from the approximately 101.5 GB Engram shards remain open. The DeepSeek BPB values above are owner-run measurements at the stated revisions. The preregistered Phase 12 comparison used a local BPE donor and a FIT-only static byte table. [Phase 12 evidence](../evidence/phase12-scaled-zero-exec-dev-001.json)
+Independent scientific qualification, multi-GB GPU pretraining and live DeepSeek Engram extraction from the approximately 101.5 GB Engram shards remain open. The DeepSeek BPB values above are owner-run measurements at the stated revisions. The preregistered Phase 12 comparison used a local BPE donor and a FIT-only static byte table. [Phase 12 evidence](../evidence/phase12-scaled-zero-exec-dev-001.json)
