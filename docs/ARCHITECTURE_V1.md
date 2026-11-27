@@ -176,3 +176,21 @@ The public DeepSeek-V4.1-Flash-1017 headers at `08c8657f02291e11b6f6b63e0e16014f
 **DEV science PASS.** Both 64-wide arms beat both same-width controls on both stages in 5/5 seeds and beat the 32-wide baseline after adaptation in 5/5. The experiment used a local BPE donor and a FIT-only byte table. Independent scientific qualification remains open.
 
 [Preregistration](PHASE12_SCALED_ZERO_EXEC_PREREG.md) · [Five-seed BPB tables](PR_V1_MAIN_REVIEW.md#phase-12-scaled-zero-execution-assimilation-dev-review) · [Unrounded receipt](../evidence/phase12-scaled-zero-exec-dev-001.json)
+
+## Phase 13 native warm-start training and generation
+
+`train --init-skill` restores a local standalone skill and verifies its width and depth against the training geometry. It retains the untied byte readout and materializes corrected FFN weights into native affine layers. Matching position rows transfer from the skill. Any remaining target rows use the seeded training initialization. The run and every epoch intent bind the initial skill's SHA-256. A stored byte prior contributes to the first epoch with a linear decay to zero. Export uses a regular unified snapshot with the trained native dense FFNs and untied readout.
+
+`generate` feeds UTF-8 or hex prompt bytes through a fresh unified snapshot restore, then emits greedy or seeded nucleus-sampled continuation bytes. The cached and batch paths share the same readout. Hex represents every output byte exactly. Text decoding replaces malformed UTF-8. The optional `--adapt` flag applies online adaptation within the restored session.
+
+**DEV science PASS.** With matched native geometry and 64 update steps, warm-start beat both scratch and shuffled on pooled held-out BPB in 5/5 seeds. It beat both controls in code and prose in 5/5 and in math in 2/5.
+
+| Seed | Warm-start pooled BPB | Scratch pooled BPB | Shuffled pooled BPB |
+| --- | ---: | ---: | ---: |
+| 2701 | 4.554312 | 4.709394 | 4.844375 |
+| 2702 | 4.351882 | 4.897314 | 4.567026 |
+| 2703 | 4.617996 | 4.635069 | 4.766564 |
+| 2704 | 4.507034 | 4.693228 | 4.591118 |
+| 2705 | 4.331808 | 4.701732 | 4.889546 |
+
+The frozen Linux CPU run recorded exact cold resume and restore, 0.0 unified parity and bit-exact greedy continuation in 5/5 seeds, with zero consumer donor forwards. Independent scientific qualification and GPU testing remain open. [Preregistration](PHASE13_WARMSTART_AND_GENERATE_PREREG.md) · [Unrounded pooled and per-domain results](../evidence/phase13-warmstart-train-dev-001.json)

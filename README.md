@@ -22,15 +22,29 @@ Run `python -m nexus_expanse.cli <command> --help` for arguments and defaults.
 
 | Command | What it does |
 | --- | --- |
-| `train` | Trains on local byte files, resumes from immutable epoch checkpoints and can export a verified unified snapshot. |
+| `train` | Trains or warm-starts from a local skill, resumes from immutable epoch checkpoints and can export a verified unified snapshot. |
 | `verify` | Checks prefix, streaming and snapshot round-trip parity. Accepts a snapshot and optional SHA-256. |
 | `stream` | Observes raw hex byte chunks, reports next-byte candidates and optionally generates a continuation. |
+| `generate` | Generates raw bytes from a unified snapshot with greedy or seeded temperature and top-p decoding. |
 | `solve` | Searches a bounded expression library and checks the output against the target bytes. |
 | `import-skill` | Converts a compatible static donor checkpoint into a verified native skill. |
 | `route-stream` | Forecasts from a saved multi-skill bank using the selected router. |
 | `assimilate` | Trains a native byte skill from static donor-cache shards. |
 | `assimilate-zero-exec` | Initializes a native skill from local or streamed safetensors without running the donor. Offers configurable student width and depth. |
 | `weight-edit` | Inspects or ablates an attention subspace in a saved skill. |
+
+## Phase 13 warm-start and generation
+
+```sh
+python -m nexus_expanse.cli train --device cpu --corpus-dir ./data --directory ../nexus-warm --init-skill ../skill.pt --dim 64 --layers 4 --context 64 --until-complete --save-snapshot ../nexus-warm/unified.pt
+python -m nexus_expanse.cli generate --snapshot ../nexus-warm/unified.pt --prompt-text "Hello" --max-bytes 128 --temperature 0.0 --top-p 0.9 --seed 42
+```
+
+Resume with the same initialization archive and training settings. The run binds the archive SHA-256 in epoch custody. Any stored static prior decays to zero during the first epoch. The exported unified snapshot contains the native model and its native memory state.
+
+Use `--prompt-hex` for arbitrary bytes or `--prompt-text` for UTF-8. Generation returns JSON with exact output bytes in hex and a UTF-8 display string. Use a positive temperature for seeded nucleus sampling. Online adaptation is opt-in with `--adapt`. For up to 32 output bytes, default greedy generation matches `stream --no-adapt --continuation` from the same snapshot and prompt.
+
+In the preregistered CPU DEV comparison, warm-start beat both scratch and shuffled initialization on pooled held-out BPB in 5/5 seeds. Independent scientific qualification remains open. [Preregistration](docs/PHASE13_WARMSTART_AND_GENERATE_PREREG.md) · [Unrounded results](evidence/phase13-warmstart-train-dev-001.json)
 
 ## Release-candidate evidence
 
