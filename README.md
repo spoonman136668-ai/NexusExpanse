@@ -25,7 +25,7 @@ Run `python -m nexus_expanse.cli <command> --help` for arguments and defaults.
 | `train` | Trains or warm-starts from a local skill, resumes from immutable epoch checkpoints and can export a verified unified snapshot. |
 | `verify` | Checks prefix, streaming and snapshot round-trip parity. Accepts a snapshot and optional SHA-256. |
 | `stream` | Observes raw hex byte chunks, reports next-byte candidates and optionally generates a continuation. |
-| `generate` | Generates raw bytes from a unified snapshot with greedy or seeded temperature and top-p decoding. |
+| `generate` | Generates raw bytes from a unified snapshot with greedy or seeded top-p decoding on `cpu`, `cuda`, or `auto`. |
 | `solve` | Searches a bounded expression library and checks the output against the target bytes. |
 | `import-skill` | Converts a compatible static donor checkpoint into a verified native skill. |
 | `route-stream` | Forecasts from a saved multi-skill bank using the selected router. |
@@ -45,6 +45,17 @@ Resume with the same initialization archive and training settings. The run binds
 Use `--prompt-hex` for arbitrary bytes or `--prompt-text` for UTF-8. Generation returns JSON with exact output bytes in hex and a UTF-8 display string. Use a positive temperature for seeded nucleus sampling. Online adaptation is opt-in with `--adapt`. For up to 32 output bytes, default greedy generation matches `stream --no-adapt --continuation` from the same snapshot and prompt.
 
 In the preregistered CPU DEV comparison, warm-start beat both scratch and shuffled initialization on pooled held-out BPB in 5/5 seeds. Independent scientific qualification remains open. [Preregistration](docs/PHASE13_WARMSTART_AND_GENERATE_PREREG.md) · [Unrounded results](evidence/phase13-warmstart-train-dev-001.json)
+
+## Phase 14 fast generation and real corpus packaging
+
+```sh
+python -m nexus_expanse.cli generate --snapshot ../nexus-warm/unified.pt --prompt-text "Hello" --device cpu --max-bytes 128
+python scripts/prepare_real_corpus.py --prose-dir docs --code-dir . --math-fallback-synthetic --size-mb 1.5 --out-dir ../nexus-real-corpus
+```
+
+Generation defaults to CPU. Use `--device auto` for CUDA when available. The JSON includes the selected device, prompt prefill time and decode time per byte. CPU greedy output matched `stream --no-adapt` in all five scored profiles. Decode was 18.71× faster at the median for those CPU rollover profiles. [Preregistration](docs/PHASE14_FAST_GENERATE_AND_REAL_CORPUS_PREREG.md) · [Unrounded results](evidence/phase14-fast-generate-dev-001.json)
+
+Use the packaged directory as `train --corpus-dir`. The packager keeps input files or dataset records whole, separates train and eval, and verifies zero shared 32-byte windows across the six outputs. It records document counts, byte counts and SHA-256 digests in `corpus_manifest.json`. Supply `--math-dir` for real math text. The explicit fallback uses deterministic arithmetic records when local math is missing or insufficient. The optional `--hf-prose`, `--hf-code` and `--hf-math` flags accept `repo[:config]` and require the `datasets` package.
 
 ## Release-candidate evidence
 

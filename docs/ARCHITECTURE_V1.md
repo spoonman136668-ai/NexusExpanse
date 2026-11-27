@@ -194,3 +194,21 @@ The public DeepSeek-V4.1-Flash-1017 headers at `08c8657f02291e11b6f6b63e0e16014f
 | 2705 | 4.331808 | 4.701732 | 4.889546 |
 
 The frozen Linux CPU run recorded exact cold resume and restore, 0.0 unified parity and bit-exact greedy continuation in 5/5 seeds, with zero consumer donor forwards. Independent scientific qualification and GPU testing remain open. [Preregistration](PHASE13_WARMSTART_AND_GENERATE_PREREG.md) · [Unrounded pooled and per-domain results](../evidence/phase13-warmstart-train-dev-001.json)
+
+## Phase 14 batched decode and document-level corpus packing
+
+For fixed-memory generation, the patch reader records the prompt events and computes a forecast from the final retained window. Rollover rebuilds attention keys, values and feed-forward cursors at their rebased absolute positions in one batch. Adapted generation still observes each byte and uses the same batched rollover. CPU remains the default. CUDA moves the decode backbone and cache to the selected device while patch counts, episodic memory and arbitration remain on CPU.
+
+The five CPU rollover profiles had zero byte mismatches against `stream --no-adapt` and zero donor forwards. Median decode speedup was 18.71×. Timings cover decode after prefill and exclude snapshot restore. Real CUDA performance remains unverified.
+
+| Seed | Prompt bytes | Legacy ms per byte | Batched ms per byte | Speedup |
+| --- | ---: | ---: | ---: | ---: |
+| 2801 | 8 | 5.382 | 0.825 | 6.53× |
+| 2802 | 26 | 23.434 | 1.572 | 14.91× |
+| 2803 | 65 | 23.595 | 1.261 | 18.71× |
+| 2804 | 148 | 68.527 | 2.297 | 29.83× |
+| 2805 | 111 | 29.710 | 1.244 | 23.89× |
+
+`scripts/prepare_real_corpus.py` packs whole documents under a total output cap with a 50,000-byte minimum per file. Selection discards documents that would introduce cross-split overlap. The final exact check includes windows spanning document boundaries and checks all training files against all evaluation files before publication. Files use the FUSE-safe immutable publisher, with the manifest written last. The frozen repo pack contained 798,670 bytes across six files with zero exact 32-byte overlap. Its math domain used the opt-in synthetic fallback. Live Hub streaming remains unverified. [Preregistration](PHASE14_FAST_GENERATE_AND_REAL_CORPUS_PREREG.md) · [Unrounded timings and corpus manifest](../evidence/phase14-fast-generate-dev-001.json)
+
+The initial candidate at `b0aa482b76707c8df56679ed6bd575be21b8e625` had 686 passing tests and one failure. Editing `patching.py` changed the frozen Gate 9 corpus digest. The final candidate keeps that file and its Gate 9 fixtures byte-identical to the Phase 13 base. The corrected implementation was frozen and scored once against the same protocol. The first run's 16.14× score is preserved separately (receipt SHA-256 `2e0d8f7c5f68c4d0051ba3d2f101f130f88280e1ae5302b9de4327770ba51661`).
