@@ -84,8 +84,18 @@ At `d9b79f014edc96c7d4558debcef72283383da62a`, the owner trained on a corpus of 
 
 Both runs reported `cold_equal: true`, `exact_state: true`, `donor_forward_calls: 0` and `0.0` for all four parity checks and the snapshot round-trip. For 200 greedy bytes on a matched story prompt from the warm-start snapshot, CPU decode took 47.87 ms/byte with 112.38 ms prefill. T4 CUDA decode took 4.33 ms/byte with 303.79 ms prefill. The owner reported an **11.1× decode speedup** and identical `generated_hex`. Across all CUDA prompts the reported range was 4.16–5.07 ms/byte, with zero donor forward calls.
 
-Owner runs streaming `roneneldan/TinyStories` at 12 MB and `Salesforce/wikitext:wikitext-103-raw-v1` at 3 MB stalled in the Phase 14 corpus splitter. Phase 14B covers the fix with an offline stream fixture. Live Hub streaming on Colab awaits the owner's rerun.
+Owner runs streaming `roneneldan/TinyStories` at 12 MB and `Salesforce/wikitext:wikitext-103-raw-v1` at 3 MB stalled in the Phase 14 corpus splitter. The owner later reran TinyStories on the Phase 14B release. The wikitext rerun remains open.
+
+## Phase 14B TinyStories Hub streaming and CUDA decode
+
+On the `v1.1.0-rc1` checkout at `e124207417be94c3ea242a8c5042067860ac23f5`, the owner streamed TinyStories from the Hub and trained a 128-wide, four-layer model for 16 epochs of 64 steps on Colab. CUDA decode took 0.71–4.61 ms/byte. The run reported `donor_forward_calls: 0` and snapshot SHA-256 `3be436c6e81047e1c2dd3a434906648638ecf237635e9f14a573b63064f912cd`.
+
+## Phase 15 cosine training and always-awake generation
+
+At `6d23046834673c338298348e21c21e92f809629b`, the owner trained a 128-wide, four-layer TinyStories model for 4,096 steps with cosine learning-rate scheduling on Colab. The run reported `donor_forward_calls: 0`. Its snapshot, `v12_ts_128x4_4096steps.pt`, had SHA-256 `152c21d8cc969f6855f6b2415d3262897d1c55d71c0c262257f229e97f672c2e`.
+
+On that snapshot, the owner reproduced a repeated-space loop under the default `BytePatchReader` gate. Setting the restored reader's `minimum_probability` to `2.0` before generation kept the neural path active and cleared the loop on all four supplied prompts, which covered prose greedy and nucleus decoding and Python greedy decoding. This manual setting is the behavior exposed by `generate --always-wake` in Phase 15B.
 
 ## Open qualification
 
-Independent scientific qualification, multi-GB GPU pretraining and live DeepSeek Engram extraction from the approximately 101.5 GB Engram shards remain open. The DeepSeek BPB values above are owner-run measurements at the stated revisions. The preregistered Phase 12 comparison used a local BPE donor and a FIT-only static byte table. [Phase 12 evidence](../evidence/phase12-scaled-zero-exec-dev-001.json)
+Independent scientific qualification, multi-GB GPU pretraining, full-scale 256×6 and 512×8 training on L4/A100 GPUs, and live DeepSeek Engram extraction from the approximately 101.5 GB Engram shards remain open. The DeepSeek BPB values above are owner-run measurements at the stated revisions. The preregistered Phase 12 comparison used a local BPE donor and a FIT-only static byte table. [Phase 12 evidence](../evidence/phase12-scaled-zero-exec-dev-001.json)

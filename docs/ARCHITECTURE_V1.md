@@ -1,4 +1,4 @@
-# Nexus Expanse v1.0-rc1 architecture and DEV scorecard
+# Nexus Expanse v1.2.0-rc1 architecture and DEV scorecard
 
 **Verified and kept.** The default RC training route uses causal attention and DirectMonarch. The CPU unified stream uses the exact KV path, a 5,128-byte compact BytePatchReader, bounded ConsolidatingMemory and ReliabilityArbitrator. The Gate 14 unified snapshot measured 442,344 bytes. HopfieldVSAMemory uses fixed 128 KiB codebooks and remains a decoupled relation store. NexusActiveAgent, its PO mode, VerifierGatedNexusAgent and Quine Sleep remain opt-in. The Gate 17 harness owns corpus training, resume and telemetry. The CLI exposes these pieces through train, stream, solve and verify.
 
@@ -199,7 +199,7 @@ The frozen Linux CPU run recorded exact cold resume and restore, 0.0 unified par
 
 For fixed-memory generation, the patch reader records the prompt events and computes a forecast from the final retained window. Rollover rebuilds attention keys, values and feed-forward cursors at their rebased absolute positions in one batch. Adapted generation still observes each byte and uses the same batched rollover. CPU remains the default. CUDA moves the decode backbone and cache to the selected device while patch counts, episodic memory and arbitration remain on CPU.
 
-The five CPU rollover profiles had zero byte mismatches against `stream --no-adapt` and zero donor forwards. Median decode speedup was 18.71×. Timings cover decode after prefill and exclude snapshot restore. Real CUDA performance remains unverified.
+The five CPU rollover profiles had zero byte mismatches against `stream --no-adapt` and zero donor forwards. Median decode speedup was 18.71×. Timings cover decode after prefill and exclude snapshot restore. The owner measured T4 CUDA decode on a separate Colab workload. [Owner Colab receipt](LIVE_COLAB_RECEIPTS.md#phase-14-real-text-training-verification-and-t4-cuda-generation)
 
 | Seed | Prompt bytes | Legacy ms per byte | Batched ms per byte | Speedup |
 | --- | ---: | ---: | ---: | ---: |
@@ -209,7 +209,7 @@ The five CPU rollover profiles had zero byte mismatches against `stream --no-ada
 | 2804 | 148 | 68.527 | 2.297 | 29.83× |
 | 2805 | 111 | 29.710 | 1.244 | 23.89× |
 
-`scripts/prepare_real_corpus.py` packs whole documents under a total output cap with a 50,000-byte minimum per file. Selection discards documents that would introduce cross-split overlap. The final exact check includes windows spanning document boundaries and checks all training files against all evaluation files before publication. Files use the FUSE-safe immutable publisher, with the manifest written last. The frozen repo pack contained 798,670 bytes across six files with zero exact 32-byte overlap. Its math domain used the opt-in synthetic fallback. Live Hub streaming remains unverified. [Preregistration](PHASE14_FAST_GENERATE_AND_REAL_CORPUS_PREREG.md) · [Unrounded timings and corpus manifest](../evidence/phase14-fast-generate-dev-001.json)
+`scripts/prepare_real_corpus.py` packs whole documents under a total output cap with a 50,000-byte minimum per file. Selection discards documents that would introduce cross-split overlap. The final exact check includes windows spanning document boundaries and checks all training files against all evaluation files before publication. Files use the FUSE-safe immutable publisher, with the manifest written last. The frozen repo pack contained 798,670 bytes across six files with zero exact 32-byte overlap. Its math domain used the opt-in synthetic fallback. The owner later verified TinyStories streaming on the Phase 14B release. [Preregistration](PHASE14_FAST_GENERATE_AND_REAL_CORPUS_PREREG.md) · [Unrounded timings and corpus manifest](../evidence/phase14-fast-generate-dev-001.json) · [Owner Colab receipt](LIVE_COLAB_RECEIPTS.md#phase-14b-tinystories-hub-streaming-and-cuda-decode)
 
 The initial candidate at `b0aa482b76707c8df56679ed6bd575be21b8e625` had 686 passing tests and one failure. Editing `patching.py` changed the frozen Gate 9 corpus digest. The final candidate keeps that file and its Gate 9 fixtures byte-identical to the Phase 13 base. The corrected implementation was frozen and scored once against the same protocol. The first run's 16.14× score is preserved separately (receipt SHA-256 `2e0d8f7c5f68c4d0051ba3d2f101f130f88280e1ae5302b9de4327770ba51661`).
 
@@ -232,3 +232,9 @@ With a penalty above `1.0`, generation multiplies the log score of each distinct
 | 2905 | 4.659382 | 4.631987 |
 
 Both arms matched uninterrupted training at every epoch in all five seeds, including optimizer and RNG checkpoint hashes. Cold restore and unified verification were exact, and donor forward calls were zero. The disabled penalty matched `stream --no-adapt` in 5/5 seeds. Penalty `2.0` broke the controlled repeated-space loop in 5/5 seeds, and seeded sampling repeated exactly. Independent scientific qualification and full-scale GPU training remain open. [Preregistration](PHASE15_COSINE_LR_AND_SAMPLING_PREREG.md) · [Unrounded pooled and per-domain evidence](../evidence/phase15-cosine-lr-dev-001.json)
+
+## Phase 15B always-awake generation
+
+`BytePatchReader` wakes for the first byte and when the smoothed probability of the observed transition falls below its default `2^-4` threshold. A likely transition can keep autoregressive generation on the compact bigram fallback. In particular, repeatedly choosing a space can keep the reader asleep.
+
+`generate --always-wake` sets the restored reader's threshold to `2.0` before prefill, above every valid transition probability. Both batched and adaptive prefill treat each prompt byte as a wake event, and each generated byte advances the neural path. The option applies to the current generation session. Seeded sampling stays deterministic in the offline test, and the default greedy path still matches `stream --no-adapt` exactly. The owner reported that the same threshold cleared the repeated-space loop on four Colab prompts. [Owner Colab receipt](LIVE_COLAB_RECEIPTS.md#phase-15-cosine-training-and-always-awake-generation)

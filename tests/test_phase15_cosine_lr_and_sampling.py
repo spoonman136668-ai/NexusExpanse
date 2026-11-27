@@ -149,6 +149,7 @@ def test_generate_penalty_one_matches_stream_and_breaks_space_collapse(tmp_path)
     disabled = call_cli(*args, "--repetition-penalty", 1.0)
     streamed = call_cli("stream", "--snapshot", path, "--input-hex", prompt, "--no-adapt", "--continuation", 16)
     assert disabled["generated_hex"] == streamed["continuation_hex"] == (b" " * 16).hex()
+    assert disabled["always_wake"] is False
     assert disabled["repeat_window"] == 64 and disabled["repetition_penalty"] == 1.0
     enabled = (*args, "--repetition-penalty", 2.0, "--repeat-window", 1)
     broken = call_cli(*enabled)
@@ -158,6 +159,50 @@ def test_generate_penalty_one_matches_stream_and_breaks_space_collapse(tmp_path)
     a, b = call_cli(*stochastic), call_cli(*stochastic)
     assert a["generated_hex"] == b["generated_hex"] != disabled["generated_hex"]
     assert all(row["donor_forward_calls"] == 0 for row in (disabled, broken, a, b))
+
+
+@pytest.mark.parametrize("adapt", [False, True], ids=["batched-prefill", "adaptive-prefill"])
+def test_generate_always_wake_observes_every_byte_and_is_seeded(tmp_path, monkeypatch, adapt):
+    path = tmp_path / "space.pt"
+    payload = space_snapshot(2901)
+    path.write_bytes(payload)
+    prompt = b"    "
+    length = 40
+    runs = []
+    prefill = NexusExpanseUnified.prefill
+    step = NexusExpanseUnified.step
+
+    def checked_prefill(model, raw, *, adapt=False):
+        assert raw == prompt
+        reader = model.reader
+        space = ord(" ")
+        assert (reader.counts[space, space] + 1.) / reader.totals[space] >= 2. ** -4
+        assert reader.minimum_probability == 2.0
+        start = reader.deep_calls
+        forecast = prefill(model, raw, adapt=adapt)
+        assert reader.deep_calls == start + len(raw) and reader.pending is None
+        runs.append((reader, start))
+        return forecast
+
+    def checked_step(model, observed, *, adapt=True):
+        start = model.reader.deep_calls
+        forecast = step(model, observed, adapt=adapt)
+        assert model.reader.deep_calls == start + 1 and model.reader.pending is None
+        return forecast
+
+    monkeypatch.setattr(NexusExpanseUnified, "prefill", checked_prefill)
+    monkeypatch.setattr(NexusExpanseUnified, "step", checked_step)
+    args = ["generate", "--snapshot", path, "--prompt-text", prompt.decode(), "--max-bytes", length,
+            "--seed", 2901, "--temperature", 0.7, "--top-p", 0.9, "--always-wake"]
+    if adapt:
+        args.append("--adapt")
+    first, second = call_cli(*args), call_cli(*args)
+    assert first["generated_hex"] == second["generated_hex"]
+    assert all(report["always_wake"] is True and report["generated_bytes"] == length
+               and report["donor_forward_calls"] == 0 for report in (first, second))
+    assert len(runs) == 2
+    assert all(reader.deep_calls == start + len(prompt) + length for reader, start in runs)
+    assert path.read_bytes() == payload
 
 
 @pytest.mark.parametrize("flag,value", [("--repetition-penalty", "0.9"), ("--repetition-penalty", "inf"),

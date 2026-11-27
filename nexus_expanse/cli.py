@@ -1,4 +1,4 @@
-"""Nexus Expanse v1.0-rc1 raw-byte developer CLI."""
+"""Nexus Expanse raw-byte developer CLI."""
 import argparse
 from collections import deque
 import hashlib
@@ -35,7 +35,7 @@ from nexus_expanse.weight_editing import (
     apply_surgical_edit, exact_skill_receipt, inspect_fault_direction, restore_skill, verify_skill,
 )
 
-VERSION = "1.0-rc1"
+VERSION = "1.2.0-rc1"
 TRAIN_OPTIONS = ("device", "dtype", "epoch_limit", "seed", "dim", "context",
                  "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks", "layers", "lr", "lr_schedule")
 EXPRESSION_LIBRARY = dict(zip(b"amdrvX", EXPRESSIONS, strict=True))
@@ -217,6 +217,8 @@ def generate_command(args):
         device = scaling.device_for(args.device, "fp32")
         data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT, args.snapshot_sha256)
         model = NexusExpanseUnified.restore(data, fast_decode=True, decode_device=device)
+        if args.always_wake:
+            model.reader.minimum_probability = 2.0
         start = time.perf_counter()
         forecast = model.prefill(prompt, adapt=args.adapt)
         prefill_elapsed = time.perf_counter() - start
@@ -231,6 +233,7 @@ def generate_command(args):
             device=device.type, prefill_ms=prefill_elapsed * 1000,
             ms_per_byte=elapsed * 1000 / len(generated), snapshot_sha256=hashlib.sha256(data).hexdigest(),
             repetition_penalty=args.repetition_penalty, repeat_window=args.repeat_window,
+            always_wake=bool(args.always_wake),
             donor_forward_calls=guard.donor_forward_calls,
         ))
 
@@ -540,6 +543,7 @@ def parser():
     generate.add_argument("--repetition-penalty", type=parse_repetition_penalty, default=1.0)
     generate.add_argument("--repeat-window", type=int, choices=range(1, MAX_REPEAT_WINDOW + 1), default=64,
                           metavar="1..512")
+    generate.add_argument("--always-wake", action="store_true", help="keep every observed byte on the neural path")
     generate.add_argument("--adapt", action="store_true", help="adapt online memory in the restored session")
     generate.set_defaults(handler=generate_command)
 
