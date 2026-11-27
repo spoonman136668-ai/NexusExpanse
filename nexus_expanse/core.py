@@ -119,6 +119,7 @@ class NexusExpanseByteCore(nn.Module):
         ffn_kind: str = "monarch",
         fixed_eval_geometry: bool = False,
         use_sdpa: bool = False,
+        untied_readout: bool = False,
     ) -> None:
         super().__init__()
         self.dim = dim
@@ -147,6 +148,7 @@ class NexusExpanseByteCore(nn.Module):
             ]
         )
         self.out_norm = nn.LayerNorm(dim)
+        self.readout = nn.Linear(dim, 256, bias=False) if untied_readout else None
 
         # Decoupled memory & test-time Hebbian scratchpad
         self.episodic = EpisodicByteMemory(max_order=memory_max_order)
@@ -156,6 +158,10 @@ class NexusExpanseByteCore(nn.Module):
         """Create an opt-in independent CPU inference stream for frozen weights."""
         from nexus_expanse.kv_cache import CausalKVCache
         return CausalKVCache(self)
+
+    @property
+    def readout_weight(self):
+        return self.emb.weight if self.readout is None else self.readout.weight
 
     def _backbone_inputs(self, tokens):
         # Exact short-prefix comparisons require the same kernel geometry.
@@ -187,12 +193,12 @@ class NexusExpanseByteCore(nn.Module):
             if (self.fixed_eval_geometry or self.use_sdpa) and not self.training and not layer.ffn.enable_skip:
                 # Always-on FFNs also keep the same matrix shapes for a short prefix.
                 valid_length = x.shape[1]
-            x, aux, sk = layer(x, mask, self.out_norm, self.emb.weight, targets=targets, valid_length=valid_length)
+            x, aux, sk = layer(x, mask, self.out_norm, self.readout_weight, targets=targets, valid_length=valid_length)
             total_aux = total_aux + aux
             skips.append(sk)
 
         h_out = self.out_norm(x)
-        logits = F.linear(h_out, self.emb.weight)
+        logits = F.linear(h_out, self.readout_weight)
         return logits[:, :length], h_out[:, :length], total_aux / float(len(self.layers)), skips
 
     @torch.inference_mode()

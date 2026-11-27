@@ -9,6 +9,7 @@ import pickle
 import random
 import subprocess
 import sys
+import time
 from types import SimpleNamespace
 
 import numpy as np
@@ -34,7 +35,7 @@ from nexus_expanse.weight_editing import (
 
 VERSION = "1.0-rc1"
 TRAIN_OPTIONS = ("device", "dtype", "epoch_limit", "seed", "dim", "context",
-                 "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks")
+                 "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks", "layers")
 EXPRESSION_LIBRARY = dict(zip(b"amdrvX", EXPRESSIONS, strict=True))
 MAX_STREAM_CHUNK = 4096
 
@@ -123,6 +124,24 @@ def raw_chunks(args):
             yield parsed_hex(line, MAX_STREAM_CHUNK)
 
 
+def continuation(model, forecast, length, *, adapt=False, temperature=0.0, top_p=1.0, seed=42):
+    generator = torch.Generator().manual_seed(seed) if temperature else None
+    output = bytearray()
+    for _ in range(length):
+        if generator is None:
+            byte = int(forecast.mixed.argmax())
+        else:
+            logs = forecast.mixed.log()
+            probabilities = ((logs - logs.max()) / temperature).softmax(0)
+            sorted_probs, ids = probabilities.sort(descending=True, stable=True)
+            keep = sorted_probs.cumsum(0) - sorted_probs < top_p
+            selected = torch.multinomial(sorted_probs * keep, 1, generator=generator)
+            byte = int(ids[selected].item())
+        output.append(byte)
+        forecast = model.step(byte, adapt=adapt)
+    return bytes(output)
+
+
 def stream_command(args):
     data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT, args.snapshot_sha256)
     snapshot_checks(NexusExpanseUnified.restore(data))
@@ -130,18 +149,14 @@ def stream_command(args):
     observed = 0
     for chunk in raw_chunks(args):
         for byte in chunk:
-            forecast = model.step(byte)
+            forecast = model.step(byte, adapt=not args.no_adapt)
         observed += len(chunk)
         indices = torch.argsort(forecast.mixed, descending=True, stable=True)[:5]
         predicted = [dict(byte=int(b), probability=float(forecast.mixed[b])) for b in indices]
-        speculative = bytearray()
+        speculative = b""
         if args.continuation:
             shadow = NexusExpanseUnified.restore(model.snapshot())
-            output = forecast
-            for _ in range(args.continuation):
-                selected = int(output.mixed.argmax())
-                speculative.append(selected)
-                output = shadow.step(selected, adapt=False)
+            speculative = continuation(shadow, forecast, args.continuation)
         emit(dict(command="stream", observed_hex=chunk.hex(), next=predicted,
                   continuation_hex=speculative.hex(), arbitration_updates=model.arbitrator.updates))
     if not observed:
@@ -151,6 +166,33 @@ def stream_command(args):
         atomic_bytes(args.save_snapshot, snapshot)
         emit(dict(command="stream", saved_snapshot=str(args.save_snapshot),
                   snapshot_sha256=hashlib.sha256(snapshot).hexdigest(), **report))
+
+
+def generate_command(args):
+    if (not math.isfinite(args.temperature) or args.temperature < 0
+            or not math.isfinite(args.top_p) or not 0 < args.top_p <= 1):
+        raise ValueError("temperature must be finite and nonnegative and top-p must be in (0, 1]")
+    if args.prompt_text is not None:
+        prompt = args.prompt_text.encode("utf-8")
+        if not 1 <= len(prompt) <= MAX_STREAM_CHUNK:
+            raise ValueError(f"expected between 1 and {MAX_STREAM_CHUNK} prompt bytes")
+    else:
+        prompt = parsed_hex(args.prompt_hex, MAX_STREAM_CHUNK)
+    with forbid_donor_forward() as guard:
+        data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT, args.snapshot_sha256)
+        model = NexusExpanseUnified.restore(data)
+        for byte in prompt:
+            forecast = model.step(byte, adapt=args.adapt)
+        start = time.perf_counter()
+        generated = continuation(model, forecast, args.max_bytes, adapt=args.adapt,
+                                 temperature=args.temperature, top_p=args.top_p, seed=args.seed)
+        elapsed = time.perf_counter() - start
+        emit(dict(
+            command="generate", prompt_bytes=len(prompt), generated_bytes=len(generated),
+            generated_hex=generated.hex(), generated_text=generated.decode("utf-8", errors="replace"),
+            ms_per_byte=elapsed * 1000 / len(generated), snapshot_sha256=hashlib.sha256(data).hexdigest(),
+            donor_forward_calls=guard.donor_forward_calls,
+        ))
 
 
 def corpus_paths(directory):
@@ -165,7 +207,9 @@ def export_trained_snapshot(directory, paths, target):
     if (scaling.git("status", "--porcelain")
             or identity["source_sha"] != scaling.git("rev-parse", "HEAD").decode().strip()
             or identity["tree"] != scaling.git("rev-parse", "HEAD^{tree}").decode().strip()
-            or identity["backbone"] != scaling.selected_backbone(use_sdpa=identity.get("use_sdpa", False))
+            or identity["backbone"] != scaling.selected_backbone(
+                use_sdpa=identity.get("use_sdpa", False), skill_backbone=identity.get("skill_backbone", False),
+            )
             or identity["gate15_sha256"] != digest(scaling.GATE15)):
         raise ValueError("training result does not bind the current committed source")
     train, _, manifest = scaling.load_corpora(SimpleNamespace(smoke=False, **paths))
@@ -183,7 +227,8 @@ def export_trained_snapshot(directory, paths, target):
     snapshot, checks = snapshot_checks(scaling.build_unified(model, train))
     atomic_bytes(target, snapshot)
     emit(dict(command="train", saved_snapshot=str(target), neural_state_sha256=verified["final_hash"],
-              snapshot_sha256=hashlib.sha256(snapshot).hexdigest(), **checks))
+              snapshot_sha256=hashlib.sha256(snapshot).hexdigest(),
+              donor_forward_calls=verified.get("donor_forward_calls", 0), **checks))
 
 
 def train_command(args):
@@ -202,6 +247,10 @@ def train_command(args):
         command.extend(("--" + name.replace("_", "-"), str(path)))
     if args.use_sdpa:
         command.append("--use-sdpa")
+    if args.init_skill:
+        command.extend(("--init-skill", str(args.init_skill)))
+    if args.skill_backbone:
+        command.append("--skill-backbone")
     if args.until_complete:
         command.append("--until-complete")
     scaling.main(command)
@@ -415,8 +464,11 @@ def parser():
     train.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
     train.add_argument("--dtype", choices=("fp32", "bf16"), default="fp32")
     train.add_argument("--epoch-limit", type=int, choices=range(1, 9), default=1)
-    for name in TRAIN_OPTIONS[3:]:
+    for name in TRAIN_OPTIONS[3:-1]:
         train.add_argument("--" + name.replace("_", "-"), type=int)
+    train.add_argument("--layers", type=int, choices=(2, 4, 6))
+    train.add_argument("--init-skill", type=Path, help="start from a verified local standalone byte skill")
+    train.add_argument("--skill-backbone", action="store_true", help="match a warm-start model from scratch")
     train.add_argument("--use-sdpa", action="store_true", help="causal SDPA training up to 4096 bytes")
     train.add_argument("--until-complete", action="store_true")
     train.add_argument("--save-snapshot", type=Path, help="export an exact checked unified snapshot on completion")
@@ -427,8 +479,23 @@ def parser():
     stream.add_argument("--snapshot-sha256")
     stream.add_argument("--input-hex", action="append", help="repeat for multiple chunks, or send hex lines on stdin")
     stream.add_argument("--continuation", default=0, type=int, choices=range(33), metavar="0..32")
+    stream.add_argument("--no-adapt", action="store_true", help="freeze online memory while observing the prompt")
     stream.add_argument("--save-snapshot", type=Path)
     stream.set_defaults(handler=stream_command)
+
+    generate = sub.add_parser("generate", help="generate UTF-8 text and raw bytes from a unified snapshot")
+    generate.add_argument("--snapshot", type=Path, required=True)
+    generate.add_argument("--snapshot-sha256")
+    prompt = generate.add_mutually_exclusive_group(required=True)
+    prompt.add_argument("--prompt-text")
+    prompt.add_argument("--prompt-hex")
+    generate.add_argument("--max-bytes", type=int, choices=range(1, MAX_STREAM_CHUNK + 1), default=128,
+                          metavar="1..4096")
+    generate.add_argument("--temperature", type=float, default=0.0)
+    generate.add_argument("--top-p", type=float, default=0.9)
+    generate.add_argument("--seed", type=int, default=42)
+    generate.add_argument("--adapt", action="store_true", help="adapt online memory in the restored session")
+    generate.set_defaults(handler=generate_command)
 
     solve = sub.add_parser("solve", help="search the bounded expression library")
     solve.add_argument("--source-hex", required=True)

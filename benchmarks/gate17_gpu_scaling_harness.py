@@ -1,6 +1,6 @@
 """Bounded raw-byte corpus training and unified-runtime qualification."""
 import argparse
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 import math
@@ -23,10 +23,12 @@ from benchmarks.dev_artifacts import atomic, digest
 from benchmarks.gate_custody import EpochRun, peak_rss, prepare_directory, update
 from benchmarks.unified_checks import exactness
 from nexus_expanse.core import NexusExpanseByteCore
+from nexus_expanse.donor_assimilation import forbid_donor_forward
 from nexus_expanse.hybrid_backbone import HybridDeltaAttentionCore
 from nexus_expanse.jepa import state_hash
 from nexus_expanse.patching import CompactBigram
 from nexus_expanse.unified import NexusExpanseUnified
+from nexus_expanse.weight_editing import _affine_parameters, restore_skill
 
 DOMAINS = ("math", "code", "prose")
 GATE15 = ROOT / "evidence/gate15-hybrid-dev-001.json"
@@ -42,6 +44,7 @@ class Geometry:
     steps_per_epoch: int
     batch_per_domain: int
     eval_blocks: int
+    layers: int = 2
 
 
 SMOKE = Geometry(seed=42, dim=32, context=32, epochs=2, steps_per_epoch=2,
@@ -92,16 +95,16 @@ def device_for(requested, dtype):
     return torch.device(requested)
 
 
-def selected_backbone(*, use_sdpa=False):
+def selected_backbone(*, use_sdpa=False, skill_backbone=False):
     prior = json.loads(GATE15.read_text())
     if prior["schema"] != "nexus-gate15-hybrid-dev-v1" or prior["status"] not in ("PASS", "MIXED", "FAIL"):
         raise ValueError("invalid Gate 15 evidence")
     if prior["status"] == "PASS":
         if not all((prior["parity"]["passed"], prior["reasoning_bar"], prior["speed_cache_bar"])):
             raise ValueError("Gate 15 PASS is inconsistent with its raw criteria")
-        if not use_sdpa:
+        if not use_sdpa and not skill_backbone:
             return "hybrid"
-    return "causal_attention_monarch"
+    return "causal_attention_skill" if skill_backbone else "causal_attention_monarch"
 
 
 def model_for(geometry, backbone, device, *, use_sdpa=False):
@@ -110,10 +113,46 @@ def model_for(geometry, backbone, device, *, use_sdpa=False):
     if backbone == "hybrid":
         model = HybridDeltaAttentionCore(**common)
     else:
+        skill_shape = backbone == "causal_attention_skill"
         model = NexusExpanseByteCore(
-            **common, n_layers=2, dropout=0.0, enable_skip=False, use_sdpa=use_sdpa,
+            **common, n_layers=geometry.layers, dropout=0.0, enable_skip=False, use_sdpa=use_sdpa,
+            ffn_kind="dense" if skill_shape else "monarch", untied_readout=skill_shape,
         )
     return model.to(device)
+
+
+def read_init_skill(path):
+    with path.open("rb") as source:
+        payload = source.read(NexusExpanseUnified.SNAPSHOT_LIMIT + 1)
+    if not 0 < len(payload) <= NexusExpanseUnified.SNAPSHOT_LIMIT:
+        raise ValueError("initial skill is empty or exceeds the snapshot size limit")
+    return restore_skill(payload), hashlib.sha256(payload).hexdigest()
+
+
+@torch.no_grad()
+def initialize_from_skill(model, skill):
+    if model.dim != skill.readout.in_features or len(model.layers) != len(skill.core.layers):
+        raise ValueError("initial skill width or depth does not match training geometry")
+    # Materialize each correction once into the native affine layout.
+    target = model.state_dict()
+    for name, tensor in skill.core.state_dict().items():
+        if ".ffn.fc1." in name or ".ffn.fc2." in name:
+            continue
+        if name == "pos_emb.weight":
+            length = min(len(tensor), len(target[name]))
+            target[name][:length].copy_(tensor[:length])
+        else:
+            target[name].copy_(tensor)
+    model.readout.weight.copy_(skill.readout.weight)
+    for layer, imported in zip(model.layers, skill.core.layers, strict=True):
+        for name in ("fc1", "fc2"):
+            weight, bias = _affine_parameters(getattr(imported.ffn, name))
+            native = getattr(layer.ffn, name)
+            native.weight.copy_(weight)
+            if bias is None:
+                native.bias.zero_()
+            else:
+                native.bias.copy_(bias)
 
 
 def block_count(data, context):
@@ -152,9 +191,13 @@ def training_rows(data, geometry, step):
     return rows
 
 
-def loss_for(model, batch, keep, dtype, device, *, reduction="mean"):
+def loss_for(model, batch, keep, dtype, device, *, reduction="mean", prior=None, alpha=0.0):
     with torch.autocast(device.type, dtype=torch.bfloat16, enabled=dtype == "bf16"):
         out = model.forward_neural(batch[:, :-1])[0]
+        if alpha:
+            log_native = out[keep].float().log_softmax(-1) + math.log1p(-alpha)
+            log_prior = prior[batch[:, :-1][keep]] + math.log(alpha)
+            return F.nll_loss(torch.logaddexp(log_native, log_prior), batch[:, 1:][keep], reduction=reduction)
         return F.cross_entropy(out[keep], batch[:, 1:][keep], reduction=reduction)
 
 
@@ -228,7 +271,7 @@ def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
                 unified_initial_serialized_bytes=len(checkpoint), parity_bytes=len(raw), **gpu)
 
 
-def experiment_identity(args, geometry, backbone, manifest, device):
+def experiment_identity(args, geometry, backbone, manifest, device, *, init_skill_sha256=None):
     if git("status", "--porcelain"):
         raise ValueError("train from a clean committed checkout")
     cuda = None if device.type == "cpu" else dict(
@@ -243,11 +286,24 @@ def experiment_identity(args, geometry, backbone, manifest, device):
                 python=sys.version)
     if args.use_sdpa:
         identity["use_sdpa"] = True
+    if backbone == "causal_attention_skill":
+        identity["skill_backbone"] = True
+    if init_skill_sha256 is not None:
+        identity["init_skill_sha256"] = init_skill_sha256
     return identity
 
 
-def run_slice(spec, args, geometry, backbone, train, device, argv):
-    model = model_for(geometry, backbone, device, use_sdpa=args.use_sdpa)
+def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None, guard):
+    model = model_for(geometry, backbone, torch.device("cpu") if skill is not None else device,
+                      use_sdpa=args.use_sdpa)
+    prior = None
+    prior_alpha = 0.0
+    if skill is not None:
+        initialize_from_skill(model, skill)
+        model.to(device)
+        if skill.prior_alpha:
+            prior = skill.static_byte_prior.to(device)
+            prior_alpha = skill.prior_alpha
     optimizer = torch.optim.AdamW(model.parameters(), lr=.003, weight_decay=.01)
     epoch_trace = {}
     cold_report = {}
@@ -260,14 +316,21 @@ def run_slice(spec, args, geometry, backbone, train, device, argv):
         if steps != ([first] if first else []):
             raise ValueError("optimizer step counter does not match the epoch cursor")
         losses = []
+        alphas = []
         for index in range(first, first + geometry.steps_per_epoch):
             rows = training_rows(train, geometry, index)
             batch, keep, valid = make_batch(rows, geometry.context, device)
             optimizer.zero_grad(set_to_none=True)
-            losses.append(update(model, optimizer, loss_for(model, batch, keep, args.dtype, device)))
+            remaining = geometry.steps_per_epoch - 1 - index
+            alpha = prior_alpha * remaining / (geometry.steps_per_epoch - 1) if number == 1 and remaining > 0 else 0.0
+            alphas.append(alpha)
+            losses.append(update(model, optimizer, loss_for(model, batch, keep, args.dtype, device,
+                                                           prior=prior, alpha=alpha)))
             epoch_bytes += valid
         epoch_trace.update(target_bytes=epoch_bytes, start_model_hash=start_hash,
                            end_model_hash=state_hash(model), optimizer_steps_at_start=first)
+        if skill is not None:
+            epoch_trace["prior_alpha_schedule"] = alphas
         return losses
 
     def metrics(number, seconds):
@@ -289,7 +352,8 @@ def run_slice(spec, args, geometry, backbone, train, device, argv):
         return cold_report["state_hash"], cold_report["restore_seconds"], cold_report["peak_rss_bytes"]
 
     record = spec.advance(model, optimizer, args.epoch_limit, epoch, cold,
-                          lambda: dict(fresh_evaluation=cold_report), state_hash(model),
+                          lambda: dict(fresh_evaluation=cold_report, donor_forward_calls=guard.donor_forward_calls),
+                          state_hash(model),
                           epoch_metrics=metrics)
     if record:
         print(json.dumps(dict(completed_epochs=len(record["epochs"]), target_bytes=sum(
@@ -326,6 +390,9 @@ def main(argv=None):
     p.add_argument("--dtype", choices=("fp32", "bf16"), default="fp32")
     p.add_argument("--smoke", action="store_true")
     p.add_argument("--use-sdpa", action="store_true")
+    p.add_argument("--init-skill", type=Path, help="initialize from a local standalone byte skill")
+    p.add_argument("--layers", type=int, choices=(2, 4, 6))
+    p.add_argument("--skill-backbone", action="store_true", help="use dense FFNs and an untied readout from scratch")
     p.add_argument("--epoch-limit", type=int, default=1, choices=range(1, 9))
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--dim", type=int, default=64, choices=range(32, 257, 32), metavar="{32,64,...,256}")
@@ -349,7 +416,7 @@ def main(argv=None):
     torch.use_deterministic_algorithms(True)
     geometry = SMOKE if args.smoke else Geometry(
         args.seed, args.dim, args.context, args.epochs, args.steps_per_epoch, args.batch_per_domain,
-        args.eval_blocks,
+        args.eval_blocks, args.layers or 2,
     )
     max_context = 4096 if args.use_sdpa else 512
     if not (8 <= geometry.context <= max_context and 1 <= geometry.epochs <= 5000
@@ -365,24 +432,35 @@ def main(argv=None):
             if (directory / "gate17.json").exists():
                 return
         raise RuntimeError("bounded slices ended without a final receipt")
-    try:
-        device = device_for(args.device, args.dtype)
-        train, evaluation, manifest = load_corpora(args)
-    except ValueError as exc:
-        p.error(str(exc))
+    with forbid_donor_forward() as guard:
+        try:
+            if args.smoke and (args.init_skill or args.layers or args.skill_backbone):
+                raise ValueError("the frozen smoke profile uses its original training architecture")
+            device = device_for(args.device, args.dtype)
+            train, evaluation, manifest = load_corpora(args)
+            skill, skill_sha = read_init_skill(args.init_skill) if args.init_skill else (None, None)
+            if skill is not None:
+                if args.layers is None:
+                    geometry = replace(geometry, layers=len(skill.core.layers))
+                if geometry.dim != skill.readout.in_features or geometry.layers != len(skill.core.layers):
+                    raise ValueError("initial skill width or depth does not match training geometry")
+        except ValueError as exc:
+            p.error(str(exc))
 
-    backbone = selected_backbone(use_sdpa=args.use_sdpa)
-    if args.cold:
-        result = cold_evaluate(args.cold, args, geometry, backbone, train, evaluation, device)
-        print(json.dumps(result, allow_nan=False))
-        return
-    directory = prepare_directory(args.directory, ROOT)
-    ident = experiment_identity(args, geometry, backbone, manifest, device)
-    spec = EpochRun(directory, "gate17", ident, geometry.epochs, geometry.steps_per_epoch, device=device)
-    if args.smoke_evidence:
-        emit_smoke(spec, args, device, args.smoke_evidence)
-    else:
-        run_slice(spec, args, geometry, backbone, train, device, argv)
+        backbone = selected_backbone(use_sdpa=args.use_sdpa, skill_backbone=bool(skill or args.skill_backbone))
+        if backbone == "hybrid" and geometry.layers != 2:
+            p.error("select --skill-backbone or --use-sdpa for a different layer depth")
+        if args.cold:
+            result = cold_evaluate(args.cold, args, geometry, backbone, train, evaluation, device)
+            print(json.dumps(dict(result, donor_forward_calls=guard.donor_forward_calls), allow_nan=False))
+            return
+        directory = prepare_directory(args.directory, ROOT)
+        ident = experiment_identity(args, geometry, backbone, manifest, device, init_skill_sha256=skill_sha)
+        spec = EpochRun(directory, "gate17", ident, geometry.epochs, geometry.steps_per_epoch, device=device)
+        if args.smoke_evidence:
+            emit_smoke(spec, args, device, args.smoke_evidence)
+        else:
+            run_slice(spec, args, geometry, backbone, train, device, argv, skill=skill, guard=guard)
 
 
 if __name__ == "__main__":

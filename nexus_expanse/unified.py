@@ -74,8 +74,8 @@ class NexusExpanseUnified:
         self.arbitrator = ReliabilityArbitrator()
         if isinstance(backbone, NexusExpanseByteCore):
             for layer in backbone.layers:
-                if not isinstance(layer.ffn.fc1, DirectMonarchLinear):
-                    raise ValueError("unified attention requires DirectMonarch")
+                if not isinstance(layer.ffn.fc1, (DirectMonarchLinear, torch.nn.Linear)):
+                    raise ValueError("unsupported unified attention feed-forward layout")
                 layer.ffn.enable_skip = True
                 layer.ffn.tau_eval.fill_(-math.inf)
             self.stream = backbone.new_kv_cache()
@@ -127,9 +127,14 @@ class NexusExpanseUnified:
     def _config(self):
         model = self.backbone
         layer = model.layers[0]
-        shape = dict(n_layers=len(model.layers), dim=model.dim,
-                     ffn_mult=layer.ffn.fc1.out_dim // model.dim)
+        fc1 = layer.ffn.fc1
+        hidden = fc1.out_features if isinstance(fc1, torch.nn.Linear) else fc1.out_dim
+        shape = dict(n_layers=len(model.layers), dim=model.dim, ffn_mult=hidden // model.dim)
         if isinstance(model, NexusExpanseByteCore):
+            if isinstance(fc1, torch.nn.Linear):
+                shape["ffn_kind"] = "dense"
+            if model.readout is not None:
+                shape["untied_readout"] = True
             return "attention", dict(shape, n_heads=layer.attn.num_heads, max_seq_len=model.max_seq_len)
         if isinstance(model, HybridDeltaAttentionCore):
             return "hybrid", dict(dim=model.dim, n_heads=model.n_heads, ffn_mult=model.ffn_mult,

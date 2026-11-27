@@ -86,4 +86,4 @@ class CausalKVCache:
                 self.active[i] += 1
         scratch.zero_()
         scratch[pos] = m.out_norm(x)
-        return F.linear(scratch,m.emb.weight)[pos].clone()
+        return F.linear(scratch,m.readout_weight)[pos].clone()
