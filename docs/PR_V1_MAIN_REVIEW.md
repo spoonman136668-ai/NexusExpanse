@@ -1,6 +1,19 @@
-# Nexus Expanse v1.0-rc1 + Checkpoint Transfer — Owner PR Review Summary
+# Nexus Expanse v1.0-rc1 owner PR review
 
-Everything below is DEV-verified on Linux CPU (`PyTorch 2.10/2.15+cpu`). Protected `main` remains untouched at `bb21fbe53c0299d432e866eb4d016c25b81ee6eb` pending owner authorization.
+## Release-candidate qualification
+
+**Engineering.** The local Linux CPU release-candidate check used PyTorch 2.10 and bare `pytest -q`. It passed **672/672** tests with zero failures, skips or warnings. The separate prefix check reported **0/100** failures. The expected base for the proposed PR is protected `main` at `bb21fbe53c0299d432e866eb4d016c25b81ee6eb`.
+
+**Owner-executed Colab receipts.** The owner recorded Tesla T4 FP32 SDPA training, a direct-to-Drive FUSE training run and zero-execution imports from Qwen2.5-0.5B and DeepSeek-V4.1-Flash-1017. The log gives the source revisions, supplied hashes, parity checks and DeepSeek BPB measurements. [Owner Colab receipts](LIVE_COLAB_RECEIPTS.md)
+
+**Scientific scope and open work.** The five-seed Phase 12 DEV comparison used a local BPE donor and a FIT-only byte table. Independent scientific qualification, multi-GB GPU pretraining and live DeepSeek Engram extraction from approximately 101.5 GB shards remain open. Merge review remains with the owner. [Architecture](ARCHITECTURE_V1.md) · [Checkpoint transfer findings](CHECKPOINT_TRANSFER_FINDINGS.md) · [Phase 12 evidence](../evidence/phase12-scaled-zero-exec-dev-001.json)
+
+### CLI surface
+
+- `train` runs resumable training, `verify` checks runtime and snapshot parity, and `stream` observes bytes and forecasts continuations.
+- `solve` searches checked expression pipelines, and `route-stream` forecasts from a saved multi-skill bank.
+- `import-skill` converts a compatible static donor checkpoint, `assimilate` trains from a donor cache, and `assimilate-zero-exec` initializes from checkpoint shards with configurable student geometry.
+- `weight-edit` inspects or ablates a saved skill's attention projection.
 
 ## Verified Architecture & Milestone Arc
 
@@ -13,20 +26,18 @@ Everything below is DEV-verified on Linux CPU (`PyTorch 2.10/2.15+cpu`). Protect
 | **Checkpoint Transfer Phase 1 (Gates 25–26 + Fidelity)** | `dev/checkpoint-transfer-fidelity` (`92d43cb`) | **PASS** | **PASS (32->32 & 32->64) / FAIL (BPE zero-run)** | Near-lossless zero-update transfer on `30/30` compatible & width-doubled cases (`99.86–100%` top-1, `<=8.4e-6` bits KL, `94.1–98.6%` time saved). |
 | **Checkpoint Transfer Phase 2 (BPE Folding & Offline KL)** | `dev/checkpoint-transfer-bpe-offline-kl` (`a362a93`) | **PASS** | **FAIL (Folding/On-fit KL) / MIXED (Disjoint-Corpus KL)** | Disjoint-corpus validation-stopped offline byte-KL (`192` windows, `0` receiver donor calls) beat `position_lift` and `shuffled` on `5/5` seeds (`1.2911 -> 0.9401` bits mean KL, `15.73% -> 33.57%` agreement); corpus scale—not width—is the active lever. |
 
-## Regression & Custody Verification (Current Tip)
+## Historical Phase 2 regression and custody
 
 - `pytest -q`: **190 passed**, `0` failed, `0` skipped.
 - `benchmarks/prefix_causality_dev.py`: **0/100** failures (`fails: []`).
 - `git diff --check`: clean (`0` issues).
 - Protected `origin/main`: untouched at `bb21fbe53c0299d432e866eb4d016c25b81ee6eb`.
 
-## Open Items Requiring Owner Hardware / Approval
+## Windows consumer GPU launch example
 
-1. **Windows Consumer GPU Multi-MB Scaling Run (from `1137a68` or current tip):**
-   ```powershell
-   python -m nexus_expanse.cli train --device cuda --dtype bf16 --corpus-dir .\data --directory ..\nexus-gpu-run --dim 64 --context 256 --batch-per-domain 4 --steps-per-epoch 64 --epochs 64 --epoch-limit 1 --until-complete --save-snapshot ..\nexus-gpu-run\unified.pt
-   ```
-2. **PR Merge to `main`:** Ready for owner review once the GPU run receipt is logged or if you wish to merge the CPU-verified v1.0-rc1 + Checkpoint Transfer suite first.
+```powershell
+python -m nexus_expanse.cli train --device cuda --dtype bf16 --corpus-dir .\data --directory ..\nexus-gpu-run --dim 64 --context 256 --batch-per-domain 4 --steps-per-epoch 64 --epochs 64 --epoch-limit 1 --until-complete --save-snapshot ..\nexus-gpu-run\unified.pt
+```
 
 ## Phase 2D Addendum (`dev/checkpoint-transfer-phase2d-scale-and-cli`)
 
@@ -196,6 +207,6 @@ Each cell shows pooled held BPB at zero updates / after 64 updates. Lower is bet
 | 2604 | 7.149258 / 4.429328 | 6.951027 / 4.353798 | 5.820578 / 4.336148 | 7.857234 / 4.418397 | 8.347664 / 4.413068 |
 | 2605 | 6.892848 / 4.341284 | 6.646161 / 4.320726 | 5.660547 / 4.325634 | 7.749088 / 4.339640 | 8.151367 / 4.399695 |
 
-The preregistered run at `b639c99a88a8955a3c0afb399f15c4a219bc2660` measured one peak loaded shard, zero downloaded shards, zero consumer donor forwards, and 0.0 maximum prefix difference across 50 probe seeds per arm and stage. All ten archives per seed restored exact states and forecasts in a fresh process, for 5/5 exact seeds. The offline mocked Hub test reached one peak downloaded shard with Engram enabled. The scored Linux CPU run took 135.98 seconds with peak RSS of 331,196 KiB. Independent scientific qualification and real-checkpoint Colab validation remain open.
+The preregistered run at `b639c99a88a8955a3c0afb399f15c4a219bc2660` measured one peak loaded shard, zero downloaded shards, zero consumer donor forwards, and 0.0 maximum prefix difference across 50 probe seeds per arm and stage. All ten archives per seed restored exact states and forecasts in a fresh process, for 5/5 exact seeds. The offline mocked Hub test reached one peak downloaded shard with Engram enabled. The scored Linux CPU run took 135.98 seconds with peak RSS of 331,196 KiB. The owner's live checkpoint results are logged separately. Independent scientific qualification and live Engram extraction remain open. [Owner Colab receipts](LIVE_COLAB_RECEIPTS.md#deepseek-v41-flash-1017-streamed-zero-execution-assimilation)
 
 [Preregistration](PHASE12_SCALED_ZERO_EXEC_PREREG.md) · [Unrounded five-seed receipt](../evidence/phase12-scaled-zero-exec-dev-001.json)

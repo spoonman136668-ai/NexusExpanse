@@ -1,6 +1,6 @@
 # Nexus Expanse v1.0-rc1
 
-Nexus Expanse is an independent raw-byte research prototype. The developer release candidate includes a CPU unified runtime, a finite expression solver, and a resumable consumer-GPU training launcher. The [architecture scorecard](docs/ARCHITECTURE_V1.md) links the kept components, failed experiments and remaining qualification work.
+Nexus Expanse is an independent raw-byte research prototype. The release candidate includes a CPU streaming runtime, a bounded expression solver, resumable training and checkpoint assimilation. [Architecture](docs/ARCHITECTURE_V1.md) · [Checkpoint transfer findings](docs/CHECKPOINT_TRANSFER_FINDINGS.md) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
 
 ## Quick start
 
@@ -16,6 +16,26 @@ Omit `--input-hex` to submit hex byte chunks on stdin, one line at a time. The s
 
 The solver searches one- to three-step pipelines over six fixed, pure AST expressions on raw bytes `00` through `07`. It reports grammar calibration separately from the six-call search budget and returns the checked byte residual. Use `--save-agent-snapshot` and `--agent-snapshot` to carry verified skills between sessions.
 
+## CLI commands
+
+Run `python -m nexus_expanse.cli <command> --help` for arguments and defaults.
+
+| Command | What it does |
+| --- | --- |
+| `train` | Trains on local byte files, resumes from immutable epoch checkpoints and can export a verified unified snapshot. |
+| `verify` | Checks prefix, streaming and snapshot round-trip parity. Accepts a snapshot and optional SHA-256. |
+| `stream` | Observes raw hex byte chunks, reports next-byte candidates and optionally generates a continuation. |
+| `solve` | Searches a bounded expression library and checks the output against the target bytes. |
+| `import-skill` | Converts a compatible static donor checkpoint into a verified native skill. |
+| `route-stream` | Forecasts from a saved multi-skill bank using the selected router. |
+| `assimilate` | Trains a native byte skill from static donor-cache shards. |
+| `assimilate-zero-exec` | Initializes a native skill from local or streamed safetensors without running the donor. Offers configurable student width and depth. |
+| `weight-edit` | Inspects or ablates an attention subspace in a saved skill. |
+
+## Release-candidate evidence
+
+The local Linux CPU run using bare `pytest -q` passed **672/672** tests with zero failures, skips or warnings. The separate prefix benchmark reported **0/100** failures. The owner-executed Colab log covers bounded T4 training, writes to Google Drive FUSE, and Qwen and DeepSeek checkpoint imports at the recorded source revisions. Multi-GB GPU pretraining, live Engram extraction from approximately 101.5 GB shards, and independent scientific qualification remain open. [Release review](docs/PR_V1_MAIN_REVIEW.md#release-candidate-qualification) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
+
 ## Windows consumer-GPU launch
 
 With CUDA-enabled PyTorch, place `math-train.bin`, `math-eval.bin`, `code-train.bin`, `code-eval.bin`, `prose-train.bin`, and `prose-eval.bin` in `data`. Use separate train and evaluation files. The example covers roughly one pass over up to 4 MiB per training domain. Use a local NTFS run directory outside the clean source checkout.
@@ -24,7 +44,7 @@ With CUDA-enabled PyTorch, place `math-train.bin`, `math-eval.bin`, `code-train.
 python -m nexus_expanse.cli train --device cuda --dtype bf16 --corpus-dir .\data --directory ..\nexus-gpu-run --dim 64 --context 256 --batch-per-domain 4 --steps-per-epoch 64 --epochs 64 --epoch-limit 1 --until-complete --save-snapshot ..\nexus-gpu-run\unified.pt
 ```
 
-Use `--dtype fp32` if the device lacks native BF16. Repeat an interrupted run with identical source, bytes, device and training settings to resume from the last fully committed epoch. The exact training receipt and unified CPU snapshot are written when training completes. Gate 24 exercises Linux CPU only. Windows CUDA throughput and multi-MB learning are unverified. See the [scaling protocol](docs/GATE17_PREREG.md) and [CLI smoke protocol](docs/GATE24_PREREG.md).
+Use `--dtype fp32` if the device lacks native BF16. Repeat an interrupted run with identical source, bytes, device and training settings to resume from the last fully committed epoch. The exact training receipt and unified CPU snapshot are written when training completes. Windows CUDA throughput remains open. [Scaling protocol](docs/GATE17_PREREG.md) · [CLI smoke protocol](docs/GATE24_PREREG.md)
 
 <details>
 <summary>Historical research and API notes</summary>
@@ -43,7 +63,7 @@ Python with PyTorch and pytest. Run `python -m pytest -q`. The new qualification
 
 ## Research status
 
-See `docs/RESEARCH.md`. No checkpoint, frozen source corpus, independently reproduced dense control or scientific first-use authorization is present. Keep original evidence immutable. No deployment, external runner, or scheduled execution authorized by this import.
+The initial import lacked a checkpoint, frozen source corpus, independently reproduced dense control and scientific first-use authorization. Keep original evidence immutable. [Historical research notes](docs/RESEARCH.md)
 
 ## Matched development ablation
 
