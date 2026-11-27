@@ -59,6 +59,17 @@ Use the packaged directory as `train --corpus-dir`. The packager keeps input fil
 
 Phase 14B selects holdout documents from large pools using a seeded ranking based on shared 32-byte windows. A smaller pool can use a bounded search when ranking leaves too few bytes. Each candidate is a whole document, and publication requires an exact overlap check across all train and eval files. The offline regression covers 5,000 Hub-like records with repeated story prefixes and local files with shared imports.
 
+## Phase 15 cosine training and repetition control
+
+```sh
+python -m nexus_expanse.cli train --corpus-dir ./data --directory ../nexus-cosine --init-skill ../skill.pt --dim 64 --layers 4 --context 64 --epochs 4 --steps-per-epoch 32 --lr 0.003 --lr-schedule cosine --until-complete --save-snapshot ../nexus-cosine/unified.pt
+python -m nexus_expanse.cli generate --snapshot ../nexus-cosine/unified.pt --prompt-text "Hello" --seed 42 --temperature 0.7 --top-p 0.9 --repetition-penalty 1.5 --repeat-window 64
+```
+
+Training defaults to a constant rate of `0.003`. Cosine uses the committed optimizer step to resume the same schedule after a restart. Keep the rate and schedule fixed across invocations. Training now accepts widths from 32 through 512 in increments of 32, 2/4/6/8 layers, up to 1,024 steps per epoch, and up to 32 blocks per domain per batch. Offline checks cover constructing and restoring the largest supported snapshot geometry. Full-scale GPU throughput remains unverified.
+
+Generation disables the penalty at `1.0`. Higher values scale the log scores of bytes present in the last `--repeat-window` bytes, including the prompt tail. The default window is 64 bytes and the supported range is 1–512. The five CPU DEV seeds passed exact resume and generation checks. Cosine lowered pooled held-out BPB in 2/5 seeds and raised the mean by 0.01255 BPB. [Preregistration](docs/PHASE15_COSINE_LR_AND_SAMPLING_PREREG.md) · [Raw results](evidence/phase15-cosine-lr-dev-001.json)
+
 ## Release-candidate evidence
 
 The local Linux CPU run using bare `pytest -q` passed **688/688** tests with zero failures, skips or warnings. The separate prefix benchmark reported **0/100** failures. The owner reported identical greedy output on CPU and T4 CUDA for one matched Phase 14 prompt, with 11.1× faster CUDA decode on that prompt. Owner verification of the Phase 14B Hub fix on Colab, multi-GB GPU pretraining, live Engram extraction from approximately 101.5 GB shards, and independent scientific qualification remain open. [Release review](docs/PR_V1_MAIN_REVIEW.md#release-candidate-qualification) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
