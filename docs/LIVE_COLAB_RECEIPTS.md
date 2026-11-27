@@ -56,6 +56,19 @@ The owner ran `12c5b87141aaae4c09888afc9948180ed98ce2e7`. Lower bits per byte (B
 | After 64 updates | Markdown | 4.5065 | 5.1148 | -0.6083 |
 | After 64 updates | Python | 5.8137 | 6.5914 | -0.7778 |
 
+### 256-wide, six-layer skill
+
+The owner reported an 8,259,317-byte skill with SHA-256 `caae641862b01b436c54c9b3e9e69970f0af2dfc04595746bf162ebc85ed12e7`. The import used 8 of 48 shards, with `peak_disk_shards = 1`, `peak_loaded_shards = 1` and `donor_forward_calls = 0`. The prefix and snapshot round-trip differences were both 0.0.
+
+The 64-step adaptation used `RESEARCH.md`. The table records the supplied BPB values and changes versus scratch.
+
+| Stage | Domain | Assimilated BPB | Scratch BPB | Reported Δ BPB |
+| --- | --- | ---: | ---: | ---: |
+| Zero updates | Markdown | 7.0603 | 8.2330 | -1.1728 |
+| Zero updates | Python | 6.6980 | 8.3027 | -1.6047 |
+| After 64 updates | Markdown | 4.6386 | 5.1550 | -0.5165 |
+| After 64 updates | Python | 5.9888 | 6.4030 | -0.4142 |
+
 ## Open qualification
 
 Multi-GB GPU pretraining and live DeepSeek Engram extraction from the approximately 101.5 GB Engram shards remain open. The DeepSeek BPB values above are owner-run measurements at the stated revisions. The preregistered Phase 12 comparison used a local BPE donor and a FIT-only static byte table. [Phase 12 evidence](../evidence/phase12-scaled-zero-exec-dev-001.json)
