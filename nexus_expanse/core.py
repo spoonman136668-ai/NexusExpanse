@@ -154,10 +154,10 @@ class NexusExpanseByteCore(nn.Module):
         self.episodic = EpisodicByteMemory(max_order=memory_max_order)
         self.fast_weights = HebbianFastWeightAdapter(dim=dim, vocab_size=256, lr=fast_lr)
 
-    def new_kv_cache(self):
-        """Create an opt-in independent CPU inference stream for frozen weights."""
+    def new_kv_cache(self, *, batched=False):
+        """Create an independent inference stream for frozen weights."""
         from nexus_expanse.kv_cache import CausalKVCache
-        return CausalKVCache(self)
+        return CausalKVCache(self, batched=batched)
 
     @property
     def readout_weight(self):

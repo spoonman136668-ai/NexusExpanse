@@ -4,6 +4,7 @@ import hashlib
 import itertools
 import json
 import math
+import os
 from pathlib import Path
 import pickle
 import random
@@ -179,10 +180,13 @@ def generate_command(args):
     else:
         prompt = parsed_hex(args.prompt_hex, MAX_STREAM_CHUNK)
     with forbid_donor_forward() as guard:
+        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+        device = scaling.device_for(args.device, "fp32")
         data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT, args.snapshot_sha256)
-        model = NexusExpanseUnified.restore(data)
-        for byte in prompt:
-            forecast = model.step(byte, adapt=args.adapt)
+        model = NexusExpanseUnified.restore(data, fast_decode=True, decode_device=device)
+        start = time.perf_counter()
+        forecast = model.prefill(prompt, adapt=args.adapt)
+        prefill_elapsed = time.perf_counter() - start
         start = time.perf_counter()
         generated = continuation(model, forecast, args.max_bytes, adapt=args.adapt,
                                  temperature=args.temperature, top_p=args.top_p, seed=args.seed)
@@ -190,6 +194,7 @@ def generate_command(args):
         emit(dict(
             command="generate", prompt_bytes=len(prompt), generated_bytes=len(generated),
             generated_hex=generated.hex(), generated_text=generated.decode("utf-8", errors="replace"),
+            device=device.type, prefill_ms=prefill_elapsed * 1000,
             ms_per_byte=elapsed * 1000 / len(generated), snapshot_sha256=hashlib.sha256(data).hexdigest(),
             donor_forward_calls=guard.donor_forward_calls,
         ))
@@ -486,6 +491,7 @@ def parser():
     generate = sub.add_parser("generate", help="generate UTF-8 text and raw bytes from a unified snapshot")
     generate.add_argument("--snapshot", type=Path, required=True)
     generate.add_argument("--snapshot-sha256")
+    generate.add_argument("--device", choices=("auto", "cpu", "cuda"), default="cpu")
     prompt = generate.add_mutually_exclusive_group(required=True)
     prompt.add_argument("--prompt-text")
     prompt.add_argument("--prompt-hex")

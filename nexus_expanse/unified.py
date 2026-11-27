@@ -4,6 +4,7 @@ from __future__ import annotations
 import io
 import math
 from collections import deque
+from copy import deepcopy
 from dataclasses import dataclass
 
 import torch
@@ -36,6 +37,37 @@ class _DeltaStream:
         return sum(t.numel() * t.element_size() for t in self.states)
 
 
+def _stream_for(backbone, *, fast_decode=False):
+    if isinstance(backbone, NexusExpanseByteCore):
+        return backbone.new_kv_cache(batched=fast_decode)
+    if isinstance(backbone, HybridDeltaAttentionCore):
+        return backbone.new_stream()
+    return _DeltaStream(backbone)
+
+
+class _PrefillPatchReader(BytePatchReader):
+    def prefill(self, raw):
+        # Advance the same surprise and pending-byte state as forecast(),
+        # without scoring intermediate bytes or replaying expired events.
+        for observed in raw:
+            wake = self.previous is None or (
+                (self.counts[self.previous, observed] + 1.) / self.totals[self.previous]
+                < self.minimum_probability)
+            self.previous = observed
+            if wake:
+                if self.pending is not None:
+                    self.events.append(self.pending)
+                    self.pending = None
+                self.events.append(observed)
+                self.deep_calls += 1
+            else:
+                self.pending = observed
+        logits = self.cache.rebuild(self.events)
+        if wake:
+            return logits.double().softmax(0)
+        return torch.from_numpy((self.counts[observed].astype("float64") + 1.) / self.totals[observed])
+
+
 @dataclass(frozen=True)
 class ByteForecast:
     mixed: torch.Tensor
@@ -56,7 +88,7 @@ class NexusExpanseUnified:
     SNAPSHOT_LIMIT = 32_000_000
     SNAPSHOT_VERSION = "nexus-unified-dev-v1"
 
-    def __init__(self, backbone, counts, *, memory=None, sleep_budget=False):
+    def __init__(self, backbone, counts, *, memory=None, sleep_budget=False, fast_decode=False):
         if not isinstance(counts, CompactBigram):
             raise ValueError("a compact fitted byte bigram is required")
         if not isinstance(backbone, (DeltaNetMonarchByteCore, HybridDeltaAttentionCore, NexusExpanseByteCore)):
@@ -78,12 +110,8 @@ class NexusExpanseUnified:
                     raise ValueError("unsupported unified attention feed-forward layout")
                 layer.ffn.enable_skip = True
                 layer.ffn.tau_eval.fill_(-math.inf)
-            self.stream = backbone.new_kv_cache()
-        elif isinstance(backbone, HybridDeltaAttentionCore):
-            self.stream = backbone.new_stream()
-        else:
-            self.stream = _DeltaStream(backbone)
-        self.reader = BytePatchReader(self, counts, kv_cache=self.stream)
+        self.stream = _stream_for(backbone, fast_decode=fast_decode)
+        self.reader = _PrefillPatchReader(self, counts, kv_cache=self.stream)
         self._history = deque(maxlen=self.episodic.max_order)
         self._previous = None
 
@@ -102,11 +130,26 @@ class NexusExpanseUnified:
             self.episodic.observe_transition(bytes(self._history), observed)
         self._history.append(observed)
         patch = self.reader.forecast(observed)
+        return self._forecast(patch)
+
+    def _forecast(self, patch):
+        patch = patch.cpu()
         episodic, confidence = self.episodic.predict_probs(bytes(self._history))
         weight = self.arbitrator.weight(confidence)
         self._previous = (patch, episodic, confidence)
         mixed = (1 - weight) * patch + weight * episodic
         return ByteForecast(mixed, patch.clone(), episodic.clone(), confidence)
+
+    @torch.inference_mode()
+    def prefill(self, raw, *, adapt=False):
+        if not raw:
+            raise ValueError("expected a nonempty raw-byte prompt")
+        if not adapt and getattr(self.stream, "batched", False):
+            self._history.extend(raw)
+            return self._forecast(self.reader.prefill(raw))
+        for byte in raw:
+            forecast = self.step(byte, adapt=adapt)
+        return forecast
 
     @torch.inference_mode()
     def forward_neural(self, tokens):
@@ -166,7 +209,7 @@ class NexusExpanseUnified:
         return output.getvalue()
 
     @classmethod
-    def restore(cls, payload):
+    def restore(cls, payload, *, fast_decode=False, decode_device="cpu"):
         if len(payload) > cls.SNAPSHOT_LIMIT:
             raise ValueError("whole-system checkpoint exceeds DEV limit")
         saved = torch.load(io.BytesIO(payload), weights_only=True, map_location="cpu")
@@ -184,7 +227,8 @@ class NexusExpanseUnified:
         backbone.load_state_dict(saved["backbone"])
         counts = CompactBigram.restore(saved["compact_counts"])
         memory = ConsolidatingMemory.restore(saved["episodic"], max_bytes=cls.MEMORY_BUDGET)
-        restored = cls(backbone, counts, memory=memory, sleep_budget=saved.get("sleep_budget", False))
+        restored = cls(backbone, counts, memory=memory, sleep_budget=saved.get("sleep_budget", False),
+                       fast_decode=fast_decode)
         restored.reasoning.restore(saved["relation"])
 
         share, weight, updates = saved["arbitration"]
@@ -218,13 +262,21 @@ class NexusExpanseUnified:
         restored._history.extend(history)
         restored._previous = forecast
 
+        device = torch.device(decode_device)
+        if device.type != "cpu":
+            # Keep the snapshot and relational runtime on their portable CPU representation.
+            restored.stream = _stream_for(deepcopy(backbone).to(device), fast_decode=fast_decode)
+            restored.reader.cache = restored.stream
         if saved["kind"] in ("attention", "hybrid"):
-            for byte in events:
-                restored.stream.append(byte)
+            if events and getattr(restored.stream, "batched", False):
+                restored.stream.rebuild(events)
+            else:
+                for byte in events:
+                    restored.stream.append(byte)
         else:
             states = saved["delta_state"]
             if any(new.shape != old.shape or new.dtype != old.dtype or not torch.isfinite(new).all()
                    for new, old in zip(states, restored.stream.states, strict=True)):
                 raise ValueError("invalid recurrent state")
-            restored.stream.states = states
+            restored.stream.states = tuple(state.to(device) for state in states)
         return restored
