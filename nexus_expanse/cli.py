@@ -1,6 +1,7 @@
 """Nexus Expanse raw-byte developer CLI."""
 import argparse
 from collections import deque
+from contextlib import nullcontext
 import hashlib
 import itertools
 import json
@@ -25,6 +26,7 @@ from nexus_expanse.expr_verifier import EXPRESSIONS, MAX_LENGTH, run_pipeline, v
 from nexus_expanse.jepa import state_hash
 from nexus_expanse.patching import CompactBigram
 from nexus_expanse.snapshot_quant import SNAPSHOT_QUANTS
+from nexus_expanse.ssd_engram import SSDEngramStore
 from nexus_expanse.unified import NexusExpanseUnified
 from nexus_expanse.verifier_agent import VerifierGatedNexusAgent
 from nexus_expanse.checkpoint_transport import CONFIG as SKILL_CONFIG, CorrectedLinear, ImportedSkill, METHODS as SKILL_METHODS, load_skill
@@ -160,8 +162,18 @@ def repetition_adjusted_logs(probabilities, recent, penalty):
     return logs
 
 
+def engram_forecast(probabilities, history, store, alpha):
+    gain, match = store.lookup(history, max_alpha=alpha)
+    if not gain:
+        return probabilities, 0.0
+    indices, counts = zip(*match.counts, strict=True)
+    mixed = probabilities * (1 - gain)
+    mixed[list(indices)] += mixed.new_tensor([gain * count / match.support for count in counts])
+    return mixed / mixed.sum(), gain
+
+
 def continuation(model, forecast, length, *, adapt=False, temperature=0.0, top_p=1.0, seed=42,
-                 repetition_penalty=1.0, repeat_window=64, prompt=b""):
+                 repetition_penalty=1.0, repeat_window=64, prompt=b"", forecast_filter=None):
     if not math.isfinite(repetition_penalty) or repetition_penalty < 1.0:
         raise ValueError("repetition penalty must be finite and at least 1.0")
     if type(repeat_window) is not int or not 1 <= repeat_window <= MAX_REPEAT_WINDOW:
@@ -170,13 +182,16 @@ def continuation(model, forecast, length, *, adapt=False, temperature=0.0, top_p
     generator = torch.Generator().manual_seed(seed) if temperature else None
     output = bytearray()
     for _ in range(length):
+        forecast_probs = forecast.mixed
+        if forecast_filter is not None:
+            forecast_probs = forecast_filter(forecast_probs, output)
         if generator is None:
-            scores = (forecast.mixed if recent is None else
-                      repetition_adjusted_logs(forecast.mixed, recent, repetition_penalty))
+            scores = (forecast_probs if recent is None else
+                      repetition_adjusted_logs(forecast_probs, recent, repetition_penalty))
             byte = int(scores.argmax())
         else:
-            logs = (forecast.mixed.log() if recent is None else
-                    repetition_adjusted_logs(forecast.mixed, recent, repetition_penalty))
+            logs = (forecast_probs.log() if recent is None else
+                    repetition_adjusted_logs(forecast_probs, recent, repetition_penalty))
             probabilities = ((logs - logs.max()) / temperature).softmax(0)
             sorted_probs, ids = probabilities.sort(descending=True, stable=True)
             keep = sorted_probs.cumsum(0) - sorted_probs < top_p
@@ -215,6 +230,19 @@ def stream_command(args):
                   snapshot_sha256=hashlib.sha256(snapshot).hexdigest(), **report))
 
 
+def build_engram_command(args):
+    report = SSDEngramStore.build(args.input, args.out, min_order=args.min_order,
+                                  max_order=args.max_order, min_support=args.min_support)
+    emit(dict(command="build-engram", **report, donor_forward_calls=0))
+
+
+def parse_engram_alpha(text):
+    value = float(text)
+    if not math.isfinite(value) or not 0 <= value <= 0.9:
+        raise argparse.ArgumentTypeError("engram alpha must be finite and in [0.0, 0.9]")
+    return value
+
+
 def generate_command(args):
     if (not math.isfinite(args.temperature) or args.temperature < 0
             or not math.isfinite(args.top_p) or not 0 < args.top_p <= 1):
@@ -225,7 +253,23 @@ def generate_command(args):
             raise ValueError(f"expected between 1 and {MAX_STREAM_CHUNK} prompt bytes")
     else:
         prompt = parsed_hex(args.prompt_hex, MAX_STREAM_CHUNK)
-    with forbid_donor_forward() as guard:
+    if args.engram_index_sha256 is not None and args.engram_index is None:
+        raise ValueError("--engram-index-sha256 requires --engram-index")
+    index = (SSDEngramStore(args.engram_index, expected_sha256=args.engram_index_sha256)
+             if args.engram_index is not None else nullcontext())
+    with index as engram, forbid_donor_forward() as guard:
+        hits = 0
+        forecast_filter = None
+        if engram is not None:
+            tail = prompt[-engram.max_order:]
+
+            def forecast_filter(probabilities, output):
+                nonlocal hits
+                observed = tail + bytes(output[-engram.max_order:])
+                mixed, gain = engram_forecast(probabilities, observed, engram, args.engram_alpha)
+                hits += int(gain > 0)
+                return mixed
+
         os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
         device = scaling.device_for(args.device, "fp32")
         data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT, args.snapshot_sha256)
@@ -238,8 +282,11 @@ def generate_command(args):
         start = time.perf_counter()
         generated = continuation(model, forecast, args.max_bytes, adapt=args.adapt,
                                  temperature=args.temperature, top_p=args.top_p, seed=args.seed, prompt=prompt,
-                                 repetition_penalty=args.repetition_penalty, repeat_window=args.repeat_window)
+                                 repetition_penalty=args.repetition_penalty, repeat_window=args.repeat_window,
+                                 forecast_filter=forecast_filter)
         elapsed = time.perf_counter() - start
+        engram_report = ({} if engram is None else dict(engram_hits=hits, engram_hit_rate=hits / len(generated),
+                                                       engram_index_sha256=engram.index_sha256))
         emit(dict(
             command="generate", prompt_bytes=len(prompt), generated_bytes=len(generated),
             generated_hex=generated.hex(), generated_text=generated.decode("utf-8", errors="replace"),
@@ -248,6 +295,7 @@ def generate_command(args):
             repetition_penalty=args.repetition_penalty, repeat_window=args.repeat_window,
             always_wake=bool(args.always_wake),
             donor_forward_calls=guard.donor_forward_calls,
+            **engram_report,
         ))
 
 
@@ -583,7 +631,18 @@ def parser():
                           metavar="1..512")
     generate.add_argument("--always-wake", action="store_true", help="keep every observed byte on the neural path")
     generate.add_argument("--adapt", action="store_true", help="adapt online memory in the restored session")
+    generate.add_argument("--engram-index", type=Path, help="read-only byte suffix index")
+    generate.add_argument("--engram-index-sha256", help="verify the index against a pinned digest")
+    generate.add_argument("--engram-alpha", type=parse_engram_alpha, default=0.35)
     generate.set_defaults(handler=generate_command)
+
+    engram = sub.add_parser("build-engram", help="index raw-byte suffix counts in a new immutable SQLite file")
+    engram.add_argument("--input", type=Path, required=True)
+    engram.add_argument("--out", type=Path, required=True)
+    engram.add_argument("--min-order", type=int, default=4)
+    engram.add_argument("--max-order", type=int, default=12)
+    engram.add_argument("--min-support", type=int, default=2)
+    engram.set_defaults(handler=build_engram_command)
 
     solve = sub.add_parser("solve", help="search the bounded expression library")
     solve.add_argument("--source-hex", required=True)
