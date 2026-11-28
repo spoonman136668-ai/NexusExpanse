@@ -4,6 +4,7 @@ from collections import deque
 import torch
 from torch import nn
 from torch.nn import functional as F
+from torch.utils.checkpoint import checkpoint
 
 from nexus_expanse.core import NexusLayer
 from nexus_expanse.deltanet import GatedDeltaNetLayer
@@ -51,6 +52,7 @@ class HybridDeltaAttentionCore(nn.Module):
         self.max_seq_len = max_seq_len
         self.schedule = schedule
         self.stabilized = stabilized
+        self.grad_checkpoint = False
         delta_type = _StabilizedDeltaNetLayer if stabilized else GatedDeltaNetLayer
         blocks = rank_safe_blocks(dim, dim * ffn_mult)
         self.emb = nn.Embedding(256, dim)
@@ -102,9 +104,13 @@ class HybridDeltaAttentionCore(nn.Module):
             mask = torch.ones((t, t), dtype=torch.bool, device=tokens.device).triu(1)
             for tag, layer in zip(self.schedule, self.layers, strict=True):
                 if tag == "delta":
-                    x = layer(x)
+                    x = checkpoint(layer, x, use_reentrant=False) if self.grad_checkpoint else layer(x)
                 else:
-                    x = layer(x, mask, self.out_norm, self.emb.weight, valid_length=t)[0]
+                    args = (x, mask, self.out_norm, self.emb.weight)
+                    if self.grad_checkpoint:
+                        x = checkpoint(layer, *args, valid_length=t, use_reentrant=False)[0]
+                    else:
+                        x = layer(*args, valid_length=t)[0]
             hidden = self.out_norm(x)
             logits = F.linear(hidden, self.emb.weight)
         return logits, hidden, [0.0] * len(self.layers)

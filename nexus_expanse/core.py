@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint
 
 from nexus_expanse.arbitration import ReliabilityArbitrator
 from nexus_expanse.memory import EpisodicByteMemory, HebbianFastWeightAdapter
@@ -125,6 +126,7 @@ class NexusExpanseByteCore(nn.Module):
         self.dim = dim
         self.fixed_eval_geometry = fixed_eval_geometry
         self.use_sdpa = use_sdpa
+        self.grad_checkpoint = False
         self.max_seq_len = max_seq_len
         self.n_blocks = rank_safe_blocks(dim, dim * ffn_mult)
 
@@ -193,7 +195,11 @@ class NexusExpanseByteCore(nn.Module):
             if (self.fixed_eval_geometry or self.use_sdpa) and not self.training and not layer.ffn.enable_skip:
                 # Always-on FFNs also keep the same matrix shapes for a short prefix.
                 valid_length = x.shape[1]
-            x, aux, sk = layer(x, mask, self.out_norm, self.readout_weight, targets=targets, valid_length=valid_length)
+            args = (x, mask, self.out_norm, self.readout_weight, targets, valid_length)
+            if self.training and self.grad_checkpoint:
+                x, aux, sk = checkpoint(layer, *args, use_reentrant=False)
+            else:
+                x, aux, sk = layer(*args)
             total_aux = total_aux + aux
             skips.append(sk)
 

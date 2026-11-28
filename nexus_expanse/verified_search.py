@@ -15,7 +15,7 @@ import torch
 from nexus_expanse.byte_decode import engram_forecast, nucleus_byte
 from nexus_expanse.donor_assimilation import forbid_donor_forward
 from nexus_expanse.expr_verifier import MAX_DEPTH, MAX_NODES, MAX_SOURCE, MAX_VALUE
-from nexus_expanse.structured_verifiers import MAX_TEXT, STRUCTURED
+from nexus_expanse.structured_verifiers import MAX_TEXT, STRUCTURED, THINK_OPEN, final_answer
 from nexus_expanse.unified import NexusExpanseUnified
 
 MAX_CASES = 32
@@ -186,8 +186,25 @@ def _cases(rows, arity):
     return tuple(verified)
 
 
-def make_verifier(kind, prompt, tests=None, *, spec=None):
+def scratchpad_verifier(verify):
+    def check(raw):
+        if not raw.startswith(THINK_OPEN):
+            return verify(raw)
+        answer = final_answer(raw)
+        if answer is None:
+            return Verification(False, 0, verify(b"").total_tests, "unterminated think block")
+        return verify(answer)
+
+    return check
+
+
+def make_verifier(kind, prompt, tests=None, *, spec=None, allow_think=False):
     """Bind the bounded task once and return a pure continuation verifier."""
+    verify = _make_verifier(kind, prompt, tests, spec=spec)
+    return scratchpad_verifier(verify) if allow_think else verify
+
+
+def _make_verifier(kind, prompt, tests, *, spec):
     if type(prompt) is not bytes or not 1 <= len(prompt) <= MAX_PROMPT:
         raise ValueError("expected a bounded raw-byte prompt")
     if kind in STRUCTURED:
@@ -317,7 +334,7 @@ class VerifiedByteSearch:
             return torch.stack([next(trace), *(trace.send(byte) for byte in observed)])
 
     def run(self, prompt, verifier, *, candidates=16, max_bytes=128, temperature=0.7, top_p=0.9,
-            seed=42, stop_bytes=b"\n"):
+            seed=42, stop_bytes=b"\n", allow_think=False):
         if type(prompt) is not bytes or not 1 <= len(prompt) <= MAX_PROMPT:
             raise ValueError("expected a bounded raw-byte prompt")
         if (type(candidates) is not int or not 1 <= candidates <= 64 or type(max_bytes) is not int
@@ -332,12 +349,13 @@ class VerifiedByteSearch:
             for k in range(candidates):
                 start = time.perf_counter()
                 generator = torch.Generator().manual_seed((seed + k) % 2**64) if k else None
-                raw, logprob = self._proposal(prompt, max_bytes, stop_bytes, temperature, top_p, generator)
+                options = {"allow_think": True} if allow_think else {}
+                raw, logprob = self._proposal(prompt, max_bytes, stop_bytes, temperature, top_p, generator, **options)
                 verification = verifier(raw)
                 rows.append(ByteCandidate(raw, logprob, verification, time.perf_counter() - start))
         return SearchResult(tuple(rows), guard.donor_forward_calls)
 
-    def _proposal(self, prompt, length, stop_bytes, temperature, top_p, generator):
+    def _proposal(self, prompt, length, stop_bytes, temperature, top_p, generator, *, allow_think=False):
         output = bytearray()
         logprob = 0.0
         with closing(self._forecasts(prompt)) as trace:
@@ -347,7 +365,8 @@ class VerifiedByteSearch:
                         else nucleus_byte(probs.log(), temperature, top_p, generator))
                 logprob += math.log(float(probs[byte]))
                 output.append(byte)
-                if output.endswith(stop_bytes) or pos + 1 == length:
+                tail = final_answer(output) if allow_think else output
+                if (tail and tail.endswith(stop_bytes)) or pos + 1 == length:
                     break
                 probs = trace.send(byte)
         return bytes(output), logprob

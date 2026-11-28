@@ -4,6 +4,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 from torch.nn import functional as F
+from torch.utils.checkpoint import checkpoint
 
 from nexus_expanse.substrate import CausalGatedMonarchFFN, rank_safe_blocks
 
@@ -100,6 +101,7 @@ class DeltaNetMonarchByteCore(nn.Module):
         if n_layers < 1:
             raise ValueError("n_layers must be positive")
         self.dim = dim
+        self.grad_checkpoint = False
         self.emb = nn.Embedding(256, dim)
         self.layers = nn.ModuleList(
             GatedDeltaNetLayer(dim, n_heads, ffn_mult, dropout) for _ in range(n_layers)
@@ -129,7 +131,7 @@ class DeltaNetMonarchByteCore(nn.Module):
         if self.training:
             x = self.emb(tokens)
             for layer in self.layers:
-                x = layer(x)
+                x = checkpoint(layer, x, use_reentrant=False) if self.grad_checkpoint else layer(x)
             logits, hidden = self._readout(x)
         else:
             states = self.init_stream_state(len(tokens), tokens.device)

@@ -12,7 +12,7 @@ import time
 from typing import Callable
 
 from nexus_expanse.structured_verifiers import parse_table, strict_json
-from nexus_expanse.verified_search import MAX_OUTPUT, MAX_PROMPT, SearchResult, Verification, make_verifier
+from nexus_expanse.verified_search import MAX_OUTPUT, MAX_PROMPT, SearchResult, Verification, make_verifier, scratchpad_verifier
 
 VERIFIERS = {"math": "arithmetic", "coding": "python_fn", "reasoning": "logic_csp",
              "data_analysis": "table_format", "instruction_following": "instruction_constraints"}
@@ -140,7 +140,7 @@ def _official(row, category, prompt, raw):
     return make_verifier(kind, raw, spec=spec), kind
 
 
-def _task(row, key, category):
+def _task(row, key, category, *, allow_think):
     declared = row.get("verifier")
     is_local = "verifier" in row or "spec" in row
     if category not in VERIFIERS:
@@ -172,10 +172,12 @@ def _task(row, key, category):
     if (type(max_bytes) is not int or not 1 <= max_bytes <= MAX_OUTPUT or type(stop) is not str
             or not 1 <= len(stop.encode("utf-8")) <= 16):
         raise ValueError("invalid search limits in task row")
+    if allow_think:
+        verify = scratchpad_verifier(verify)
     return Task(key, category, raw, verify, max_bytes, stop.encode("utf-8"), mode)
 
 
-def suite_from_rows(rows):
+def suite_from_rows(rows, *, allow_think=False):
     tasks, unsupported, seen = [], [], set()
     for n, row in enumerate(rows, 1):
         if type(row) is not dict:
@@ -189,7 +191,7 @@ def suite_from_rows(rows):
             raise ValueError(f"row {n}: missing category")
         category = raw_category.lower().strip().replace(" ", "_").replace("-", "_")
         try:
-            tasks.append(_task(row, key, category))
+            tasks.append(_task(row, key, category, allow_think=allow_think))
         except UnsupportedTask as exc:
             unsupported.append(dict(question_id=key, category=category, reason=str(exc)))
         except (ValueError, RecursionError) as exc:
@@ -199,7 +201,7 @@ def suite_from_rows(rows):
     return Suite(tuple(tasks), tuple(unsupported))
 
 
-def load_tasks_jsonl(path):
+def load_tasks_jsonl(path, *, allow_think=False):
     def read_rows():
         with Path(path).open("rb") as source:
             line_number = 0
@@ -212,15 +214,16 @@ def load_tasks_jsonl(path):
                         yield strict_json(raw)
                     except (ValueError, RecursionError) as exc:
                         raise ValueError(f"invalid JSONL line {line_number}: {exc}") from exc
-    return suite_from_rows(read_rows())
+    return suite_from_rows(read_rows(), allow_think=allow_think)
 
 
-def evaluate_budgets(engine, suite, budgets, *, seed=42, max_bytes=MAX_OUTPUT, temperature=0.7, top_p=0.9):
+def evaluate_budgets(engine, suite, budgets, *, seed=42, max_bytes=MAX_OUTPUT, temperature=0.7, top_p=0.9, allow_think=False):
     """Score nested greedy/nucleus budgets on the same raw proposals."""
     started = time.perf_counter()
     maximum = max(budgets)
+    options = {"allow_think": True} if allow_think else {}
     outputs = [engine.run(t.prompt, t.verify, candidates=maximum, max_bytes=min(max_bytes, t.max_bytes),
-                          stop_bytes=t.stop, seed=seed + 64*i, temperature=temperature, top_p=top_p)
+                          stop_bytes=t.stop, seed=seed + 64*i, temperature=temperature, top_p=top_p, **options)
                for i, t in enumerate(suite.tasks)]
     scoreboards = {}
     for budget in budgets:
@@ -285,5 +288,5 @@ def dev_records(seed=BUILTIN_SEED):
     return fit, val, check
 
 
-def builtin_dev_suite():
-    return suite_from_rows(row for row, _ in dev_records()[2])
+def builtin_dev_suite(*, allow_think=False):
+    return suite_from_rows((row for row, _ in dev_records()[2]), allow_think=allow_think)

@@ -86,8 +86,9 @@ class NexusExpanseUnified:
     """
 
     MEMORY_BUDGET = 40_000
-    # Eight dense FP32 layers at width 512 and 4096 learned positions fit.
-    SNAPSHOT_LIMIT = 80_000_000
+    # Sixteen dense FP32 layers at width 1024 and 4096 learned positions fit.
+    SNAPSHOT_LIMIT = 580_000_000
+    SMALL_ATTENTION_SNAPSHOT_LIMIT = 80_000_000
     LEGACY_SNAPSHOT_LIMIT = 32_000_000
     SNAPSHOT_VERSION = "nexus-unified-dev-v1"
 
@@ -195,9 +196,16 @@ class NexusExpanseUnified:
 
     @classmethod
     def _snapshot_limit(cls, kind, config):
-        if (kind == "attention" and 32 <= config["dim"] <= 512 and 2 <= config["n_layers"] <= 8
+        dim = config["dim"]
+        if (kind == "attention" and 32 <= dim <= 1024 and 2 <= config["n_layers"] <= 16
                 and 8 <= config["max_seq_len"] <= 4096 and config["ffn_mult"] == 2):
+            if dim <= 512 and config["n_layers"] <= 8:
+                return cls.SMALL_ATTENTION_SNAPSHOT_LIMIT
             return cls.SNAPSHOT_LIMIT
+        if (kind == "hybrid" and 512 < dim <= 1024 and config["ffn_mult"] == 2
+                and config["schedule"] in (("delta", "attention"), ["delta", "attention"])
+                and 8 <= config["max_seq_len"] <= 512):
+            return cls.SMALL_ATTENTION_SNAPSHOT_LIMIT
         return cls.LEGACY_SNAPSHOT_LIMIT
 
     def snapshot(self, *, snapshot_quant="fp32"):

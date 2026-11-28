@@ -7,6 +7,17 @@ import math
 import re
 
 MAX_TEXT = 512
+THINK_OPEN = b"<think>"
+THINK_CLOSE = b"</think>"
+
+
+def final_answer(raw):
+    """Return the original continuation or the answer after a leading scratchpad."""
+    if not raw.startswith(THINK_OPEN):
+        return raw
+    _, closed, answer = raw[len(THINK_OPEN):].partition(THINK_CLOSE)
+    return answer.lstrip() if closed else None
+
 NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,31}\Z")
 MARKDOWN_RULE = re.compile(r":?-{3,}:?\Z")
 BULLET = re.compile(r"^[ \t]*[-*+] +\S")

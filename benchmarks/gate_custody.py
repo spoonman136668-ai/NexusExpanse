@@ -139,6 +139,7 @@ class EpochRun:
                 torch.set_rng_state(restored["rng"])
                 if self.device.type == "cuda":
                     torch.cuda.set_rng_state(restored["cuda_rng"], self.device)
+                del restored
             for epoch in range(completed + 1, min(completed + epoch_limit, self.epochs) + 1):
                 # A slice finishes at an epoch boundary. Leave a conservative
                 # multiple of the slowest measured epoch for the next one.
@@ -201,6 +202,10 @@ def update(model, optimizer, loss):
     if not bool(torch.isfinite(loss)):
         raise ValueError("nonfinite training loss")
     loss.backward()
+    finish_update(model, optimizer)
+    return float(loss.detach())
+
+
+def finish_update(model, optimizer):
     torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0, error_if_nonfinite=True)
     optimizer.step()
-    return float(loss.detach())

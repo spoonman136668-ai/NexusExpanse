@@ -25,13 +25,34 @@ BLOCK_ROUNDS = 1024
 DELIMITER = b"\n\n"
 
 
-def examples(seed, split, index, rng):
+def arithmetic_steps(left, symbol, right):
+    tens, units = divmod(left, 10)
+    if symbol == "*":
+        low, high = units*right, tens*10*right
+        return f"{units}*{right}={low}; {tens*10}*{right}={high}; {low}+{high}={low+high}."
+    if symbol == "%":
+        multiple = (left // right) * right
+        return f"{left}//{right}={left//right}; {left}-{multiple}={left-multiple}."
+    change = right if symbol == "+" else -right
+    carry, digit = divmod(units+change, 10)
+    return f"{units}{change:+}={units+change}; tens {tens}{carry:+}={tens+carry}; units {digit}."
+
+
+def scratchpad(steps, answer):
+    return f"<think>{steps}</think>\n{answer}"
+
+
+def examples(seed, split, index, rng, *, include_think=False):
     """One task per category, with compact prompts and split-specific record markers."""
     mark = f"[{seed}.{index:x}.{split}]\n"
     shift = 32 + 2*index + (split == "E")
     left, right = rng.randrange(13, 97), rng.randrange(1, 13)
     symbol, op = (("+", operator.add), ("-", operator.sub), ("*", operator.mul), ("%", operator.mod))[index % 4]
-    yield "math", mark+f"{left}{symbol}{right}=", f"{op(left,right)}\n", None, None
+    answer = f"{op(left,right)}\n"
+    if include_think:
+        steps = arithmetic_steps(left, symbol, right).replace("; ", f"; {split}: ")
+        answer = scratchpad(f"{split}: {steps} [{split}]", answer)
+    yield "math", mark+f"{left}{symbol}{right}=", answer, None, None
 
     letter, prompt = ("+", "Add") if index % 2 == 0 else ("*", "Multiply by")
     rule = operator.add if letter == "+" else operator.mul
@@ -41,7 +62,10 @@ def examples(seed, split, index, rng):
     next_slot = shift+1
     constraints = [dict(type="all_different", variables=["A","B"]), dict(type="before", left="A", right="B")]
     spec = dict(variables={"A":[shift,next_slot], "B":[shift,next_slot]}, constraints=constraints)
-    yield "reasoning", mark+f"Slots {shift},{next_slot}. A before B. A=n,B=n.\n", f"A={shift},B={next_slot}\n", None, spec
+    answer = f"A={shift},B={next_slot}\n"
+    if include_think:
+        answer = scratchpad(f"{next_slot}: drop A, no later B. Keep A={shift}, then B={next_slot}.", answer)
+    yield "reasoning", mark+f"Slots {shift},{next_slot}. A before B. A=n,B=n.\n", answer, None, spec
 
     target = ("csv", "json", "tsv", "markdown")[index % 4]
     if target == "csv":
@@ -73,14 +97,14 @@ class StreamPlan:
         return self.block + extension[:GRAM_BYTES-1]
 
 
-def plan(seed, split, limit):
+def plan(seed, split, limit, *, include_think=False):
     rng = random.Random(f"phase23:{seed}:{split}")
     records, size = [], 0
     for index in range(BLOCK_ROUNDS):
         chunk = bytearray()
-        for category, prompt, answer, tests, spec in examples(seed, split, index, rng):
+        for category, prompt, answer, tests, spec in examples(seed, split, index, rng, include_think=include_think):
             prompt, answer = prompt.encode(), answer.encode()
-            result = make_verifier(VERIFIERS[category], prompt, tests, spec=spec)(answer)
+            result = make_verifier(VERIFIERS[category], prompt, tests, spec=spec, allow_think=include_think)(answer)
             if not result.passed or result.total_tests <= 0 or result.passed_tests != result.total_tests:
                 raise ValueError(f"curriculum verifier failed for {category} record {index}")
             chunk.extend(prompt + answer + DELIMITER)
@@ -127,11 +151,12 @@ def _write_stream(path, stream):
                 per_category=dict.fromkeys(CATEGORIES, stream.rounds), unique_per_category=stream.unique_rounds)
 
 
-def prepare(directory, *, size_bytes, seed):
+def prepare(directory, *, size_bytes, seed, include_think=False):
     if type(size_bytes) is not int or size_bytes <= 0:
         raise ValueError("positive total size cap required")
     held_cap = size_bytes // 5
-    splits = {"train":plan(seed, "T", size_bytes-held_cap), "eval":plan(seed, "E", held_cap)}
+    splits = {name: plan(seed, split, cap, include_think=include_think)
+              for name, split, cap in (("train", "T", size_bytes-held_cap), ("eval", "E", held_cap))}
     builtin = builtin_references()
     fit, held = (splits[name].coverage() for name in ("train", "eval"))
     assert_disjoint((fit,), {"curriculum eval":held})
@@ -160,6 +185,8 @@ def prepare(directory, *, size_bytes, seed):
                             builtin_reference_sha256={name:hashlib.sha256(raw).hexdigest() for name,raw in builtin.items()},
                             shared_32_byte_windows=dict(train_eval=0, train_builtin=0, eval_builtin=0),
                             donor_forward_calls=0)
+            if include_think:
+                manifest["include_think"] = True
             atomic(manifest_path, manifest)
         except BaseException:
             for path in (*created, *partials):
@@ -175,11 +202,15 @@ def main():
     parser.add_argument("--out-dir", required=True, type=Path)
     parser.add_argument("--size-mb", type=float, default=1.0, help="total cap in decimal megabytes")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--include-think", action="store_true", help="include worked math and logic scratchpads")
+    parser.add_argument("--builtin-dev-suite", action="store_true",
+                        help="check builtin held-suite disjointness (always enabled)")
     args = parser.parse_args()
     if not math.isfinite(args.size_mb) or args.size_mb <= 0:
         parser.error("--size-mb must be finite and positive")
     try:
-        manifest = prepare(args.out_dir, size_bytes=int(args.size_mb*1_000_000), seed=args.seed)
+        manifest = prepare(args.out_dir, size_bytes=int(args.size_mb*1_000_000), seed=args.seed,
+                           include_think=args.include_think)
     except (ValueError, OSError, OverflowError) as exc:
         parser.error(str(exc))
     print(json.dumps(manifest, allow_nan=False))

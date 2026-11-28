@@ -43,9 +43,10 @@ from nexus_expanse.weight_editing import (
 )
 from nexus_expanse.verified_search import MAX_CASE_BYTES, MAX_OUTPUT, VerifiedByteSearch, make_verifier
 
-VERSION = "2.1.0-rc1"
+VERSION = "2.3.0-dev"
 TRAIN_OPTIONS = ("device", "dtype", "epoch_limit", "seed", "dim", "context",
-                 "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks", "layers", "lr", "lr_schedule")
+                 "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks", "layers", "lr", "lr_schedule",
+                 "n_heads", "grad_accum")
 EXPRESSION_LIBRARY = dict(zip(b"amdrvX", EXPRESSIONS, strict=True))
 MAX_STREAM_CHUNK = 4096
 MAX_REPEAT_WINDOW = 512
@@ -321,7 +322,8 @@ def search_verified_command(args):
     prompt = args.prompt_text.encode("utf-8")
     if args.verifier == "arithmetic" and args.tests_json is not None:
         raise ValueError("arithmetic does not take test cases")
-    verifier = make_verifier(args.verifier, prompt, read_verifier_json(args.tests_json), spec=read_verifier_json(args.spec_json))
+    verifier = make_verifier(args.verifier, prompt, read_verifier_json(args.tests_json),
+                             spec=read_verifier_json(args.spec_json), allow_think=args.allow_think)
     stop = (args.stop_text.encode("utf-8") if args.stop_text is not None else
             b"\n" if args.verifier == "arithmetic" else b"\n\n")
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
@@ -333,7 +335,7 @@ def search_verified_command(args):
                                     always_wake=args.always_wake, no_episodic=args.no_episodic,
                                     engram=engram, engram_alpha=args.engram_alpha)
         result = engine.run(prompt, verifier, candidates=args.candidates, max_bytes=args.max_bytes,
-                            temperature=args.temperature, top_p=args.top_p, seed=args.seed, stop_bytes=stop)
+                            temperature=args.temperature, top_p=args.top_p, seed=args.seed, stop_bytes=stop, allow_think=args.allow_think)
         selected = result.selected
         report = dict(command="search-verified", verified=selected.verification.passed,
                       candidates_tried=len(result.candidates), verified_count=sum(c.verification.passed for c in result.candidates),
@@ -341,7 +343,7 @@ def search_verified_command(args):
                       selected_logprob=selected.logprob, passed_tests=selected.verification.passed_tests,
                       total_tests=selected.verification.total_tests, error=selected.verification.error,
                       snapshot_sha256=engine.snapshot_sha256, device=device.type, always_wake=args.always_wake,
-                      no_episodic=bool(args.no_episodic),
+                      no_episodic=bool(args.no_episodic), allow_think=args.allow_think,
                       donor_forward_calls=result.donor_forward_calls, wall_ms=(time.perf_counter() - start) * 1000)
         if engram is not None:
             report["engram_index_sha256"] = engram.index_sha256
@@ -350,7 +352,8 @@ def search_verified_command(args):
 
 def eval_livebench_command(args):
     started = time.perf_counter()
-    suite = builtin_dev_suite() if args.builtin_dev_suite else load_tasks_jsonl(args.tasks_jsonl)
+    suite = (builtin_dev_suite(allow_think=args.allow_think) if args.builtin_dev_suite
+             else load_tasks_jsonl(args.tasks_jsonl, allow_think=args.allow_think))
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     device = scaling.device_for(args.device, "fp32")
     data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT)
@@ -359,13 +362,14 @@ def eval_livebench_command(args):
                                     always_wake=args.always_wake, no_episodic=args.no_episodic,
                                     engram=engram, engram_alpha=args.engram_alpha)
         boards, _ = evaluate_budgets(engine, suite, (args.candidates,), seed=args.seed, max_bytes=args.max_bytes,
-                                     temperature=args.temperature, top_p=args.top_p)
+                                     temperature=args.temperature, top_p=args.top_p, allow_think=args.allow_think)
         report = boards[args.candidates]
         if engram is not None:
             report["engram_index_sha256"] = engram.index_sha256
         emit(dict(command="eval-livebench", scope="local_objective", device=device.type,
                   source="builtin_dev_suite" if args.builtin_dev_suite else "tasks_jsonl",
-                  no_episodic=bool(args.no_episodic), wall_seconds=time.perf_counter() - started, **report))
+                  no_episodic=bool(args.no_episodic), allow_think=args.allow_think,
+                  wall_seconds=time.perf_counter() - started, **report))
 
 
 def harvest_verified_command(args):
@@ -388,7 +392,8 @@ def harvest_verified_command(args):
         if evaluation is not None:
             report.update(heldout_sha256=hashlib.sha256(evaluation).hexdigest(), shared_32_byte_windows=0)
         emit(dict(command="harvest-verified", device=device.type, candidates=args.candidates,
-                  no_episodic=bool(args.no_episodic), wall_seconds=time.perf_counter() - started, **report))
+                  no_episodic=bool(args.no_episodic), allow_think=args.allow_think,
+                  wall_seconds=time.perf_counter() - started, **report))
 
 
 def add_search_runtime_arguments(parser, *, max_bytes):
@@ -412,7 +417,7 @@ def corpus_paths(directory):
 def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32", focus_domain="all", init_snapshot=None):
     report = json.loads((directory / "gate17.json").read_text())
     identity = report["identity"]
-    geometry = scaling.Geometry(**identity["geometry"])
+    geometry = scaling.replace(scaling.Geometry(**identity["geometry"]), grad_checkpoint=False)
     architecture = identity.get("snapshot_architecture")
     expected_init = identity.get("init_snapshot_sha256")
     if (digest(init_snapshot) if init_snapshot is not None else None) != expected_init:
@@ -482,6 +487,8 @@ def train_command(args):
         command.extend(("--init-snapshot", str(args.init_snapshot)))
     if args.skill_backbone:
         command.append("--skill-backbone")
+    if args.grad_checkpoint:
+        command.append("--grad-checkpoint")
     if args.until_complete:
         command.append("--until-complete")
     scaling.main(command)
@@ -709,9 +716,10 @@ def parser():
     train.add_argument("--epoch-limit", type=int, choices=range(1, 9), default=1)
     for name in ("seed", "context", "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks"):
         train.add_argument("--" + name.replace("_", "-"), type=int)
-    train.add_argument("--dim", type=int, choices=scaling.TRAIN_DIMS, metavar="{32,64,...,512}")
+    train.add_argument("--dim", type=int, choices=scaling.TRAIN_DIMS, metavar="{32,64,...,1024}")
     train.add_argument("--layers", type=int, choices=scaling.TRAIN_LAYERS)
     scaling.add_lr_arguments(train)
+    scaling.add_scaling_arguments(train)
     initial = train.add_mutually_exclusive_group()
     initial.add_argument("--init-skill", type=Path, help="start from a verified local standalone byte skill")
     initial.add_argument("--init-snapshot", type=Path, help="initialize neural weights from a verified unified snapshot")
@@ -755,6 +763,7 @@ def parser():
 
     search = sub.add_parser("search-verified", help="sample byte continuations and verify bounded tasks")
     add_search_runtime_arguments(search, max_bytes=128)
+    search.add_argument("--allow-think", action="store_true", help="grade the answer after a leading scratchpad")
     search.add_argument("--verifier", choices=tuple(VERIFIERS.values()), required=True)
     search.add_argument("--prompt-text", required=True)
     search.add_argument("--tests-json", help="bounded Python test list as JSON or a local file")
@@ -764,6 +773,7 @@ def parser():
 
     livebench = sub.add_parser("eval-livebench", help="score local tasks with deterministic verifiers")
     add_search_runtime_arguments(livebench, max_bytes=MAX_OUTPUT)
+    livebench.add_argument("--allow-think", action="store_true", help="grade the answer after a leading scratchpad")
     tasks = livebench.add_mutually_exclusive_group(required=True)
     tasks.add_argument("--tasks-jsonl", type=Path, help="local LiveBench-shaped task rows")
     tasks.add_argument("--builtin-dev-suite", action="store_true", help="use the deterministic offline suite")

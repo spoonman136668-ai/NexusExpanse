@@ -20,7 +20,7 @@ import torch
 from torch.nn import functional as F
 
 from benchmarks.dev_artifacts import atomic, digest
-from benchmarks.gate_custody import EpochRun, peak_rss, prepare_directory, update
+from benchmarks.gate_custody import EpochRun, finish_update, peak_rss, prepare_directory, update
 from benchmarks.unified_checks import exactness
 from nexus_expanse.core import NexusExpanseByteCore
 from nexus_expanse.deltanet import DeltaNetMonarchByteCore
@@ -38,8 +38,9 @@ GATE15 = ROOT / "evidence/gate15-hybrid-dev-001.json"
 PHASE1 = "57eded620df922f250495dbb7eeaa280630b1881"
 DEFAULT_LR = 0.003
 LR_SCHEDULES = ("constant", "cosine")
-TRAIN_DIMS = range(32, 513, 32)
-TRAIN_LAYERS = (2, 4, 6, 8)
+TRAIN_DIMS = range(32, 1025, 32)
+TRAIN_LAYERS = (2, 4, 6, 8, 12, 16)
+TRAIN_HEADS = (4, 8, 16)
 MAX_STEPS_PER_EPOCH = 1024
 MAX_BATCH_PER_DOMAIN = 32
 INIT_SKILL_LIMIT = 32_000_000
@@ -55,6 +56,9 @@ class Geometry:
     batch_per_domain: int
     eval_blocks: int
     layers: int = 2
+    n_heads: int = 4
+    grad_accum: int = 1
+    grad_checkpoint: bool = False
 
 
 SMOKE = Geometry(seed=42, dim=32, context=32, epochs=2, steps_per_epoch=2,
@@ -75,6 +79,15 @@ def positive_lr(text):
 def add_lr_arguments(parser):
     parser.add_argument("--lr", type=positive_lr, default=DEFAULT_LR, help="positive base learning rate")
     parser.add_argument("--lr-schedule", choices=LR_SCHEDULES, default="constant")
+
+
+def add_scaling_arguments(parser):
+    parser.add_argument("--n-heads", type=int, choices=TRAIN_HEADS,
+                        help="attention heads (default 4, or the count in the initial snapshot/skill)")
+    parser.add_argument("--grad-accum", type=int, default=1, choices=range(1, 33), metavar="[1..32]",
+                        help="micro-batches per optimizer update")
+    parser.add_argument("--grad-checkpoint", action="store_true",
+                        help="recompute layer activations during backpropagation")
 
 
 def cosine_lr(global_step, total_steps, base_lr):
@@ -167,7 +180,7 @@ def selected_backbone(*, use_sdpa=False, skill_backbone=False):
 
 def model_for(geometry, backbone, device, *, use_sdpa=False, snapshot_architecture=None):
     torch.manual_seed(geometry.seed)
-    common = dict(dim=geometry.dim, n_heads=4, ffn_mult=2, max_seq_len=geometry.context)
+    common = dict(dim=geometry.dim, n_heads=geometry.n_heads, ffn_mult=2, max_seq_len=geometry.context)
     if snapshot_architecture is not None:
         kind, config = snapshot_architecture["kind"], snapshot_architecture["config"]
         if kind == "attention":
@@ -186,6 +199,7 @@ def model_for(geometry, backbone, device, *, use_sdpa=False, snapshot_architectu
             **common, n_layers=geometry.layers, dropout=0.0, enable_skip=False, use_sdpa=use_sdpa,
             ffn_kind="dense" if skill_shape else "monarch", untied_readout=skill_shape,
         )
+    model.grad_checkpoint = geometry.grad_checkpoint
     return model.to(device)
 
 
@@ -211,6 +225,9 @@ def snapshot_geometry(snapshot, args):
     dim, layers = model.dim, len(model.layers)
     if (args.dim is not None and args.dim != dim) or (args.layers is not None and args.layers != layers):
         raise ValueError("initial snapshot width or depth does not match training geometry")
+    requested_heads = getattr(args, "n_heads", None)
+    if requested_heads is not None and requested_heads != config["n_heads"]:
+        raise ValueError("initial snapshot head count does not match training geometry")
     context = snapshot.max_seq_len if args.context is None else args.context
     if context < snapshot.max_seq_len:
         raise ValueError("training context cannot be smaller than the initial snapshot context")
@@ -319,6 +336,23 @@ def loss_for(model, batch, keep, dtype, device, *, reduction="mean", prior=None,
         return F.cross_entropy(out[keep], batch[:, 1:][keep], reduction=reduction)
 
 
+def accumulated_update(model, optimizer, microbatches, geometry, dtype, device, *, prior=None, alpha=0.0):
+    def target_count(rows):
+        return sum(min(geometry.context, len(raw) - block*geometry.context - 1) for raw, block in rows)
+
+    total = sum(map(target_count, microbatches))
+    summed_loss = 0.0
+    for rows in microbatches:
+        batch, keep, _ = make_batch(rows, geometry.context, device)
+        loss = loss_for(model, batch, keep, dtype, device, reduction="sum", prior=prior, alpha=alpha)
+        if not bool(torch.isfinite(loss)):
+            raise ValueError("nonfinite training loss")
+        (loss / total).backward()
+        summed_loss += float(loss.detach())
+    finish_update(model, optimizer)
+    return summed_loss / total, total
+
+
 def vram(device):
     if device.type != "cuda":
         return dict(peak_cuda_allocated_bytes=None, peak_cuda_reserved_bytes=None)
@@ -345,6 +379,7 @@ def build_unified(model, train, *, focus_domain="all"):
 def cold_evaluate(path, args, geometry, backbone, train, evaluation, device, *, snapshot_architecture=None):
     start = time.perf_counter()
     architecture = {} if snapshot_architecture is None else dict(snapshot_architecture=snapshot_architecture)
+    geometry = replace(geometry, grad_checkpoint=False)
     model = model_for(geometry, backbone, device, use_sdpa=args.use_sdpa, **architecture).eval()
     state = torch.load(path, map_location="cpu", weights_only=True)
     model.load_state_dict(state)
@@ -453,8 +488,6 @@ def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None
         alphas = []
         rates = []
         for index in range(first, first + geometry.steps_per_epoch):
-            rows = training_rows(train, geometry, index, focus_domain=args.focus_domain)
-            batch, keep, valid = make_batch(rows, geometry.context, device)
             optimizer.zero_grad(set_to_none=True)
             if scheduled:
                 lr = cosine_lr(index + 1, total_steps, args.lr)
@@ -464,8 +497,17 @@ def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None
             remaining = geometry.steps_per_epoch - 1 - index
             alpha = prior_alpha * remaining / (geometry.steps_per_epoch - 1) if number == 1 and remaining > 0 else 0.0
             alphas.append(alpha)
-            losses.append(update(model, optimizer, loss_for(model, batch, keep, args.dtype, device,
-                                                           prior=prior, alpha=alpha)))
+            first_micro = index * geometry.grad_accum
+            microbatches = [training_rows(train, geometry, micro, focus_domain=args.focus_domain)
+                            for micro in range(first_micro, first_micro + geometry.grad_accum)]
+            if geometry.grad_accum == 1:
+                batch, keep, valid = make_batch(microbatches[0], geometry.context, device)
+                loss = update(model, optimizer, loss_for(model, batch, keep, args.dtype, device,
+                                                         prior=prior, alpha=alpha))
+            else:
+                loss, valid = accumulated_update(model, optimizer, microbatches, geometry, args.dtype, device,
+                                                 prior=prior, alpha=alpha)
+            losses.append(loss)
             epoch_bytes += valid
         epoch_trace.update(target_bytes=epoch_bytes, start_model_hash=start_hash,
                            end_model_hash=state_hash(model), optimizer_steps_at_start=first)
@@ -541,13 +583,14 @@ def main(argv=None):
     p.add_argument("--skill-backbone", action="store_true", help="use dense FFNs and an untied readout from scratch")
     p.add_argument("--epoch-limit", type=int, default=1, choices=range(1, 9))
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--dim", type=int, choices=TRAIN_DIMS, metavar="{32,64,...,512}")
+    p.add_argument("--dim", type=int, choices=TRAIN_DIMS, metavar="{32,64,...,1024}")
     p.add_argument("--context", type=int)
     p.add_argument("--epochs", type=int, default=20)
     p.add_argument("--steps-per-epoch", type=int, default=32)
     p.add_argument("--batch-per-domain", type=int, default=2)
     p.add_argument("--eval-blocks", type=int, default=16)
     add_lr_arguments(p)
+    add_scaling_arguments(p)
     p.add_argument("--focus-domain", choices=FOCUS_DOMAINS, default="all")
     p.add_argument("--corpus-dir", type=Path)
     p.add_argument("--train-file", type=Path)
@@ -564,6 +607,8 @@ def main(argv=None):
     args = p.parse_args(argv)
     if args.smoke and (args.lr != DEFAULT_LR or args.lr_schedule != "constant"):
         p.error("the frozen smoke profile uses its original constant learning rate")
+    if args.smoke and (args.n_heads not in (None, 4) or args.grad_accum != 1 or args.grad_checkpoint):
+        p.error("the frozen smoke profile uses its original head count and update geometry")
     # Set CUDA's deterministic cuBLAS configuration before initializing CUDA.
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     torch.set_num_threads(1)
@@ -571,7 +616,7 @@ def main(argv=None):
     geometry = SMOKE if args.smoke else Geometry(
         args.seed, args.dim or 64, args.context if args.context is not None else 128,
         args.epochs, args.steps_per_epoch, args.batch_per_domain,
-        args.eval_blocks, args.layers or 2,
+        args.eval_blocks, args.layers or 2, args.n_heads or 4, args.grad_accum, args.grad_checkpoint,
     )
     max_context = 4096 if args.use_sdpa else 512
     if not ((args.init_snapshot or 8 <= geometry.context <= max_context) and 1 <= geometry.epochs <= 5000
@@ -599,6 +644,10 @@ def main(argv=None):
             if args.cold_init_snapshot_sha256 is not None and snapshot_sha != args.cold_init_snapshot_sha256:
                 raise ValueError("initial snapshot SHA-256 changed before cold evaluation")
             if skill is not None:
+                skill_heads = skill.core.layers[0].attn.num_heads
+                if args.n_heads is not None and args.n_heads != skill_heads:
+                    raise ValueError("initial skill head count does not match training geometry")
+                geometry = replace(geometry, n_heads=skill_heads)
                 if args.layers is None:
                     geometry = replace(geometry, layers=len(skill.core.layers))
                 if geometry.layers not in TRAIN_LAYERS:
@@ -610,7 +659,8 @@ def main(argv=None):
                 dim, layers, context, backbone, architecture = snapshot_geometry(snapshot, args)
                 if not min(8, snapshot.max_seq_len) <= context <= max(4096, snapshot.max_seq_len):
                     raise ValueError("invalid context for snapshot fine-tuning")
-                geometry = replace(geometry, dim=dim, layers=layers, context=context)
+                geometry = replace(geometry, dim=dim, layers=layers, context=context,
+                                   n_heads=architecture["config"]["n_heads"])
                 if architecture["kind"] == "attention" and context > 512:
                     args.use_sdpa = True
             else:
@@ -618,6 +668,8 @@ def main(argv=None):
         except (ValueError, OSError) as exc:
             p.error(str(exc))
 
+        if geometry.dim % geometry.n_heads:
+            p.error("training dimension must be divisible by the head count")
         if snapshot is None and backbone == "hybrid" and geometry.layers != 2:
             p.error("select --skill-backbone or --use-sdpa for a different layer depth")
         if args.cold:
