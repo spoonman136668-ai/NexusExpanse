@@ -102,9 +102,10 @@ class CausalGatedMonarchFFN(nn.Module):
                 for group in selected.split(32):
                     block = F.pad(group, (0, 0, 0, 32 - len(group)))
                     deltas.append(self.fc2(F.silu(self.fc1(block)))[:len(group)])
-                out[deep] = torch.cat(deltas)
+                updated = torch.cat(deltas)
             else:
-                out[deep] = self.fc2(F.silu(self.fc1(selected)))
+                updated = self.fc2(F.silu(self.fc1(selected)))
+            out[deep] = updated.to(dtype=out.dtype)
         return out, scores, deep
 
 

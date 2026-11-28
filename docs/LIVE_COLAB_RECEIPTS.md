@@ -1,6 +1,6 @@
-# Owner-executed Colab receipts
+# Owner-executed Colab and Windows receipts
 
-This log transcribes the owner's externally executed Colab run details. Artifact sizes, SHA-256 digests and metrics are recorded as supplied. The release candidate's local Linux CPU regression is recorded separately. [Release review](PR_V1_MAIN_REVIEW.md#release-candidate-qualification)
+This log transcribes the owner's externally executed Colab and local Windows run details. Artifact sizes, SHA-256 digests and metrics are recorded as supplied. The release candidate's local Linux CPU regression is recorded separately. [Release review](PR_V1_MAIN_REVIEW.md#release-candidate-qualification)
 
 ## Tesla T4 CUDA FP32 training with SDPA
 
@@ -95,6 +95,24 @@ On the `v1.1.0-rc1` checkout at `e124207417be94c3ea242a8c5042067860ac23f5`, the 
 At `6d23046834673c338298348e21c21e92f809629b`, the owner trained a 128-wide, four-layer TinyStories model for 4,096 steps with cosine learning-rate scheduling on Colab. The run reported `donor_forward_calls: 0`. Its snapshot, `v12_ts_128x4_4096steps.pt`, had SHA-256 `152c21d8cc969f6855f6b2415d3262897d1c55d71c0c262257f229e97f672c2e`.
 
 On that snapshot, the owner reproduced a repeated-space loop under the default `BytePatchReader` gate. Setting the restored reader's `minimum_probability` to `2.0` before generation kept the neural path active and cleared the loop on all four supplied prompts, which covered prose greedy and nucleus decoding and Python greedy decoding. This manual setting is the behavior exposed by `generate --always-wake` in Phase 15B.
+
+## Windows RTX 5070 Ti Laptop GPU training and generation
+
+The owner ran `v1.2.0` at `d1936aaa760c644915653ddc1dcefedf0ce32aa6` in Windows 11 PowerShell on an NVIDIA GeForce RTX 5070 Ti Laptop GPU with PyTorch `2.11.0+cu128`. The 45 MB corpus comprised TinyStories, local repository Python, and synthetic math from `scripts/prepare_real_corpus.py`, with zero shared 32-byte train/eval windows.
+
+The FP32 CUDA run used width 512, eight layers, context 512, and 12 epochs of 256 steps at `--batch-per-domain 4`. It used `--lr 0.001 --lr-schedule cosine --skill-backbone --use-sdpa --dtype fp32`. It processed 18,872,770 target bytes at about 25.7–28.5 seconds per epoch and about 5.4 minutes total. The run reported `cold_equal: true`, `exact_state: true`, `0.0` across all four parity checks and snapshot round-trip, and `donor_forward_calls: 0`.
+
+`cli.py verify` reported **PASS** on the 70,015,619-byte snapshot. The neural-state SHA-256 was `d334ff74af5720737943223d5c0a0dfd5f22d1d9f8ca4a593708534101c20b20`, and the snapshot SHA-256 was `44ec5dfed7030e36cfe7791fbc3d5cbbfae4bcb3d7a259bece9a24f72b3e0a27`.
+
+| Held-out domain | BPB | Validation B/s |
+| --- | ---: | ---: |
+| Prose | 1.880117 | 137,039 |
+| Code | 10.170066 | 138,945 |
+| Math | 10.541899 | 32,555 |
+
+The owner attributed the code result to overfitting on about 60 KB of local Python. The receipt reported `peak_cuda_allocated_bytes: 144,418,304`. Live `generate --device cuda --always-wake` took 4.11–4.28 ms/byte with zero donor forward calls.
+
+The owner also caught a BF16 autocast dtype mismatch in the gated FFN on this hardware. This branch casts the FFN update to the destination dtype before indexed assignment. Offline CPU BF16 tests qualify the fix locally. A Windows CUDA BF16 rerun remains open.
 
 ## Open qualification
 

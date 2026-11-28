@@ -16,6 +16,7 @@ from nexus_expanse.deltanet import DeltaNetMonarchByteCore
 from nexus_expanse.hybrid_backbone import HybridDeltaAttentionCore
 from nexus_expanse.hopfield_vsa import HopfieldVSAMemory
 from nexus_expanse.patching import BytePatchReader, CompactBigram
+from nexus_expanse.snapshot_quant import SNAPSHOT_QUANTS, pack_weights, unpack_weights
 from nexus_expanse.substrate import DirectMonarchLinear
 from nexus_expanse.sleep_consolidation import EPISODIC_BYTES, SleepHopfieldMemory, sleep
 
@@ -98,6 +99,7 @@ class NexusExpanseUnified:
         if backbone.emb.weight.device.type != "cpu" or backbone.emb.weight.dtype != torch.float32:
             raise ValueError("unified DEV requires FP32 CPU weights")
         self.backbone = backbone.requires_grad_(False).eval()
+        self.snapshot_quant = "fp32"
         self.max_seq_len = getattr(backbone, "max_seq_len", 256)
         self.sleep_budget = sleep_budget
         cap = EPISODIC_BYTES if sleep_budget else self.MEMORY_BUDGET
@@ -193,8 +195,10 @@ class NexusExpanseUnified:
             return cls.SNAPSHOT_LIMIT
         return cls.LEGACY_SNAPSHOT_LIMIT
 
-    def snapshot(self):
+    def snapshot(self, *, snapshot_quant="fp32"):
         """Serialize model, adaptive memories, and the in-flight stream cursor."""
+        if snapshot_quant not in SNAPSHOT_QUANTS:
+            raise ValueError("unsupported snapshot quantization")
         kind, config = self._config()
         payload = dict(
             version=self.SNAPSHOT_VERSION, kind=kind, config=config,
@@ -211,6 +215,11 @@ class NexusExpanseUnified:
         )
         if self.sleep_budget:
             payload["sleep_budget"] = True
+        if snapshot_quant != "fp32":
+            payload["snapshot_quant"] = snapshot_quant
+            scales = pack_weights(self.backbone, payload["backbone"], snapshot_quant)
+            if snapshot_quant == "int8":
+                payload["int8_scales"] = scales
         output = io.BytesIO()
         torch.save(payload, output)
         if output.tell() > self._snapshot_limit(kind, config):
@@ -224,6 +233,9 @@ class NexusExpanseUnified:
         saved = torch.load(io.BytesIO(payload), weights_only=True, map_location="cpu")
         if saved["version"] != cls.SNAPSHOT_VERSION:
             raise ValueError("unsupported unified checkpoint version")
+        snapshot_quant = saved.get("snapshot_quant", "fp32")
+        if snapshot_quant not in SNAPSHOT_QUANTS:
+            raise ValueError("unsupported snapshot quantization")
         if len(payload) > cls.LEGACY_SNAPSHOT_LIMIT and len(payload) > cls._snapshot_limit(saved["kind"], saved["config"]):
             raise ValueError("whole-system checkpoint exceeds DEV limit for its geometry")
         with torch.random.fork_rng(devices=[]):
@@ -235,11 +247,14 @@ class NexusExpanseUnified:
                 backbone = DeltaNetMonarchByteCore(**saved["config"])
             else:
                 raise ValueError("unsupported checkpoint backbone")
+        if snapshot_quant != "fp32":
+            unpack_weights(backbone, saved["backbone"], snapshot_quant, saved.get("int8_scales"))
         backbone.load_state_dict(saved["backbone"])
         counts = CompactBigram.restore(saved["compact_counts"])
         memory = ConsolidatingMemory.restore(saved["episodic"], max_bytes=cls.MEMORY_BUDGET)
         restored = cls(backbone, counts, memory=memory, sleep_budget=saved.get("sleep_budget", False),
                        fast_decode=fast_decode)
+        restored.snapshot_quant = snapshot_quant
         restored.reasoning.restore(saved["relation"])
 
         share, weight, updates = saved["arbitration"]

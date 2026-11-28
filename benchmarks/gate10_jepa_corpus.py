@@ -1,12 +1,22 @@
 """Deterministic raw-byte DEV corpus with exact histogram counterfactual groups."""
 import hashlib, itertools, json
+import subprocess
 from collections import Counter
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
+CODE_SOURCE = 'a07734ff624a797ad7818b355f8129936c3f58e3'
 CODE={'train':['nexus_expanse/memory.py','nexus_expanse/arbitration.py','nexus_expanse/substrate.py'], 'eval':['nexus_expanse/hopfield_vsa.py','nexus_expanse/kuramoto.py','nexus_expanse/patching.py']}
 DOMAINS=('math','code','science')
 
-def corpus():
+def code_sources():
+    # Read the preregistered source rather than mutable runtime code.
+    return {path: subprocess.check_output(['git', 'show', f'{CODE_SOURCE}:{path}'], cwd=ROOT)
+            for paths in CODE.values() for path in paths}
+
+
+def corpus(code=None):
+    if code is None:
+        code = code_sources()
     splits={}
     for split,n,prefix in [('train',120,'1'),('eval',40,'6')]:
         rows=[]
@@ -21,7 +31,7 @@ def corpus():
                 total=a+b-c; label=total%4
                 add('math',f'(({a}+{b})-{c}) mod 4'.encode(),f'{a}+{b}-{c}={total}; mod4={label}'.encode(),label,g,'arithmetic')
         for k,path in enumerate(CODE[split]):
-            data=(ROOT/path).read_bytes(); count=n//3+(k==0)*(n%3)
+            data=code[path]; count=n//3+(k==0)*(n%3)
             assert len(data)>=count*48,(path,len(data),count)
             for i in range(count):
                 pos=i*48
@@ -50,6 +60,7 @@ def corpus():
     return splits
 
 def manifest():
-    s=corpus()
-    return dict(schema='nexus-gate10-corpus-v1',splits=s,sha256=hashlib.sha256(json.dumps(s,sort_keys=True,separators=(',',':')).encode()).hexdigest(),code_sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for v in CODE.values() for p in v})
+    code = code_sources()
+    s=corpus(code)
+    return dict(schema='nexus-gate10-corpus-v1',splits=s,sha256=hashlib.sha256(json.dumps(s,sort_keys=True,separators=(',',':')).encode()).hexdigest(),code_sha256={p:hashlib.sha256(raw).hexdigest() for p,raw in code.items()})
 if __name__=='__main__': print(json.dumps(manifest(),indent=2))

@@ -84,7 +84,19 @@ With CUDA-enabled PyTorch, place `math-train.bin`, `math-eval.bin`, `code-train.
 python -m nexus_expanse.cli train --device cuda --dtype bf16 --corpus-dir .\data --directory ..\nexus-gpu-run --dim 64 --context 256 --batch-per-domain 4 --steps-per-epoch 64 --epochs 64 --epoch-limit 1 --until-complete --save-snapshot ..\nexus-gpu-run\unified.pt
 ```
 
-Use `--dtype fp32` if the device lacks native BF16. Repeat an interrupted run with identical source, bytes, device and training settings to resume from the last fully committed epoch. The exact training receipt and unified CPU snapshot are written when training completes. Windows CUDA throughput remains open. [Scaling protocol](docs/GATE17_PREREG.md) · [CLI smoke protocol](docs/GATE24_PREREG.md)
+Use `--dtype fp32` if the device lacks native BF16. Repeat an interrupted run with identical source, bytes, device and training settings to resume from the last fully committed epoch. The exact training receipt and unified CPU snapshot are written when training completes. The owner recorded a Windows FP32 512×8 run on an RTX 5070 Ti Laptop GPU. The v1.2.1 autocast fix has offline CPU coverage. A Windows CUDA BF16 rerun remains open. [Scaling protocol](docs/GATE17_PREREG.md) · [Owner Windows receipt](docs/LIVE_COLAB_RECEIPTS.md#windows-rtx-5070-ti-laptop-gpu-training-and-generation)
+
+## Snapshot weight storage
+
+Use `train --save-snapshot PATH --snapshot-quant fp16` or `int8` to reduce the exported snapshot size. The default `fp32` retains the existing archive bytes and reads as `fp32` in verification JSON. Compressed archives record their storage mode. FP16 stores matrix and higher-rank neural weights in half precision. INT8 uses symmetric per-output-channel scales. Biases, norms, adaptive memories, and the stream cursor retain their original precision. Both encodings restore to FP32 for inference, including `generate --always-wake`.
+
+```sh
+python -m nexus_expanse.cli verify --snapshot ../unified.pt --save-snapshot ../unified-int8.pt --snapshot-quant int8
+```
+
+The export reports exact parity for the stored representation after restore. Quantization can change probabilities relative to the source FP32 weights. The training export's `neural_state_sha256` identifies the original training checkpoint, and `snapshot_sha256` identifies the exported archive.
+
+On the offline trained 256×6 fixture, the FP16 archive was 1.94× smaller and the INT8 archive was 3.63× smaller. The largest absolute held-out BPB change across the three domains was 0.000089 for FP16 and 0.002095 for INT8.
 
 <details>
 <summary>Historical research and API notes</summary>

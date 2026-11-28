@@ -1,7 +1,9 @@
 """Frozen deterministic authored DEV corpus; no network, tokenizer or external data."""
 from pathlib import Path
 import hashlib,json
+import subprocess
 ROOT=Path(__file__).resolve().parents[1]
+CODE_SOURCE = '447b8f0fb945014883334ca047cb32d25b25acea'
 CODE={'train':['nexus_expanse/memory.py','nexus_expanse/arbitration.py','nexus_expanse/substrate.py'], 'eval':['nexus_expanse/hopfield_vsa.py','nexus_expanse/kuramoto.py','nexus_expanse/patching.py']}
 # Topic labels are metadata, never passed to the model.
 SCIENCE={
@@ -17,7 +19,15 @@ SCIENCE={
  'networks':[('A packet exceeds a link transmission unit.','Fragmentation or packet rejection may follow.'),('A network route becomes unavailable.','Routing may select an alternative path.'),('A receiver verifies a packet checksum.','Transmission corruption may be detected.'),('A sender receives congestion feedback.','Reducing its rate can relieve network load.')]}}
 
 
-def corpus():
+def code_sources():
+    # Read the preregistered source rather than mutable runtime code.
+    return {path: subprocess.check_output(['git', 'show', f'{CODE_SOURCE}:{path}'], cwd=ROOT)
+            for paths in CODE.values() for path in paths}
+
+
+def corpus(code=None):
+    if code is None:
+        code = code_sources()
     splits={}
     for split,n,offset in [('train',24,3),('eval',16,103)]:
         rows=[]
@@ -30,7 +40,7 @@ def corpus():
             else: expr=f'({a}*{b}-{c})+2'; y=a*b-c+2
             add('math',f'Calculate {expr}. '.encode(),f'Result: {y}; compare with {a}: {y>a}.'.encode(),y%2,'arithmetic')
         for path in CODE[split]:
-            raw=(ROOT/path).read_bytes(); count=n//3+(path==CODE[split][0])*(n%3)
+            raw=code[path]; count=n//3+(path==CODE[split][0])*(n%3)
             # Non-overlapping 96-byte windows, chosen without outcomes.
             for i in range(count):
                 pos=(i+1)*(len(raw)-96)//(count+1)
@@ -47,7 +57,8 @@ def corpus():
 
 
 def manifest():
-    s=corpus()
-    return dict(schema='nexus-gate9-corpus-v1',splits=s,sha256=hashlib.sha256(json.dumps(s,sort_keys=True,separators=(',',':')).encode()).hexdigest(),code_sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for v in CODE.values() for p in v})
+    code = code_sources()
+    s=corpus(code)
+    return dict(schema='nexus-gate9-corpus-v1',splits=s,sha256=hashlib.sha256(json.dumps(s,sort_keys=True,separators=(',',':')).encode()).hexdigest(),code_sha256={p:hashlib.sha256(raw).hexdigest() for p,raw in code.items()})
 
 if __name__=='__main__': print(json.dumps(manifest(),indent=2))

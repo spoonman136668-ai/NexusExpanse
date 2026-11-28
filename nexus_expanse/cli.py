@@ -24,6 +24,7 @@ from benchmarks.unified_checks import exactness
 from nexus_expanse.expr_verifier import EXPRESSIONS, MAX_LENGTH, run_pipeline, verify as verify_expression
 from nexus_expanse.jepa import state_hash
 from nexus_expanse.patching import CompactBigram
+from nexus_expanse.snapshot_quant import SNAPSHOT_QUANTS
 from nexus_expanse.unified import NexusExpanseUnified
 from nexus_expanse.verifier_agent import VerifierGatedNexusAgent
 from nexus_expanse.checkpoint_transport import CONFIG as SKILL_CONFIG, CorrectedLinear, ImportedSkill, METHODS as SKILL_METHODS, load_skill
@@ -64,9 +65,16 @@ def parsed_hex(text, limit):
     return data
 
 
-def snapshot_checks(model):
-    original = model.snapshot()
+def snapshot_checks(model, *, snapshot_quant=None):
+    if snapshot_quant is None:
+        snapshot_quant = model.snapshot_quant
+    original = model.snapshot(snapshot_quant=snapshot_quant)
     restored = NexusExpanseUnified.restore(original)
+    if snapshot_quant != "fp32" and snapshot_quant != model.snapshot_quant:
+        # Check the weights actually delivered by a lossy export, including
+        # whether its dequantized state survives a second pack and restore.
+        model = restored
+        restored = NexusExpanseUnified.restore(model.snapshot(snapshot_quant=snapshot_quant))
     # Exercise the actual saved cursor before resetting for the prefix check.
     round_trip = 0.
     for byte in b"\x1fnexus\x00":
@@ -87,7 +95,8 @@ def snapshot_checks(model):
     parity = exactness(model, restored, window)
     if not state_equal or round_trip != 0. or any(v != 0. for v in parity.values()):
         raise ValueError(f"unified runtime parity failed: {parity}")
-    return original, dict(parity=parity, round_trip_probabilities=round_trip, exact_state=state_equal)
+    return original, dict(snapshot_quant=snapshot_quant, parity=parity,
+                          round_trip_probabilities=round_trip, exact_state=state_equal)
 
 
 def default_model():
@@ -100,19 +109,23 @@ def default_model():
 def verify_command(args):
     if args.snapshot_sha256 is not None and not args.snapshot:
         raise ValueError("--snapshot-sha256 requires --snapshot")
-    if args.snapshot:
-        raw = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT, args.snapshot_sha256)
-        model = NexusExpanseUnified.restore(raw)
-    else:
-        raw = None
-        model = default_model()
-    snapshot, report = snapshot_checks(model)
-    if raw is not None:
-        snapshot = raw
+    if args.snapshot_quant is not None and not args.save_snapshot:
+        raise ValueError("--snapshot-quant requires --save-snapshot")
+    with forbid_donor_forward() as guard:
+        if args.snapshot:
+            raw = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT, args.snapshot_sha256)
+            model = NexusExpanseUnified.restore(raw)
+        else:
+            raw = None
+            model = default_model()
+        snapshot, report = snapshot_checks(model, snapshot_quant=args.snapshot_quant)
+        if raw is not None and report["snapshot_quant"] == model.snapshot_quant:
+            snapshot = raw
     if args.save_snapshot:
         atomic_bytes(args.save_snapshot, snapshot)
     emit(dict(command="verify", status="PASS", snapshot_bytes=len(snapshot),
-              snapshot_sha256=hashlib.sha256(snapshot).hexdigest(), **report))
+              snapshot_sha256=hashlib.sha256(snapshot).hexdigest(), donor_forward_calls=guard.donor_forward_calls,
+              **report))
 
 
 def raw_chunks(args):
@@ -243,7 +256,7 @@ def corpus_paths(directory):
             for split in ("train", "eval") for domain in scaling.DOMAINS}
 
 
-def export_trained_snapshot(directory, paths, target):
+def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32"):
     report = json.loads((directory / "gate17.json").read_text())
     identity = report["identity"]
     geometry = scaling.Geometry(**identity["geometry"])
@@ -267,14 +280,17 @@ def export_trained_snapshot(directory, paths, target):
     if state_hash(model) != verified["final_hash"]:
         raise ValueError("restored neural weights disagree with the committed training receipt")
     torch.set_num_threads(1)
-    snapshot, checks = snapshot_checks(scaling.build_unified(model, train))
+    with forbid_donor_forward() as guard:
+        snapshot, checks = snapshot_checks(scaling.build_unified(model, train), snapshot_quant=snapshot_quant)
     atomic_bytes(target, snapshot)
     emit(dict(command="train", saved_snapshot=str(target), neural_state_sha256=verified["final_hash"],
               snapshot_sha256=hashlib.sha256(snapshot).hexdigest(),
-              donor_forward_calls=verified.get("donor_forward_calls", 0), **checks))
+              donor_forward_calls=verified.get("donor_forward_calls", 0) + guard.donor_forward_calls, **checks))
 
 
 def train_command(args):
+    if args.snapshot_quant != "fp32" and not args.save_snapshot:
+        raise ValueError("--snapshot-quant requires --save-snapshot")
     paths = corpus_paths(args.corpus_dir)
     for path in paths.values():
         if not path.is_file():
@@ -298,7 +314,7 @@ def train_command(args):
         command.append("--until-complete")
     scaling.main(command)
     if args.save_snapshot and (args.directory / "gate17.json").is_file():
-        export_trained_snapshot(args.directory.resolve(), paths, args.save_snapshot)
+        export_trained_snapshot(args.directory.resolve(), paths, args.save_snapshot, snapshot_quant=args.snapshot_quant)
 
 
 def solve_command(args):
@@ -517,6 +533,8 @@ def parser():
     train.add_argument("--use-sdpa", action="store_true", help="causal SDPA training up to 4096 bytes")
     train.add_argument("--until-complete", action="store_true")
     train.add_argument("--save-snapshot", type=Path, help="export an exact checked unified snapshot on completion")
+    train.add_argument("--snapshot-quant", choices=SNAPSHOT_QUANTS, default="fp32",
+                       help="storage precision for the exported neural weights")
     train.set_defaults(handler=train_command)
 
     stream = sub.add_parser("stream", help="forecast after observing raw hex byte chunks")
@@ -560,6 +578,8 @@ def parser():
     verify.add_argument("--snapshot", type=Path)
     verify.add_argument("--snapshot-sha256")
     verify.add_argument("--save-snapshot", type=Path)
+    verify.add_argument("--snapshot-quant", choices=SNAPSHOT_QUANTS,
+                        help="re-export the verified snapshot with this neural weight precision")
     verify.set_defaults(handler=verify_command)
 
     imp = sub.add_parser("import-skill", help="convert a static donor checkpoint into a verified Nexus skill")
