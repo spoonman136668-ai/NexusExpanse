@@ -165,6 +165,20 @@ python -m nexus_expanse.cli generate --snapshot ../unified.pt --prompt-text 'Onc
 
 SSD Engram opening compares path identity before hashing and after connecting. It also checks the number of bytes hashed against the file size. This handles the Windows NTFS descriptor-ID mismatch and detects file replacement or size changes during open. [Architecture](docs/ARCHITECTURE_V1.md#phase-22b-clean-memory-decoding-and-engram-identity)
 
+## Phase 23 fine-tuning from a native snapshot (DEV)
+
+```sh
+python scripts/prepare_reasoning_curriculum.py --out-dir ../curriculum --size-mb 1 --seed 3701
+python -m nexus_expanse.cli train --init-snapshot ../pretrained.pt \
+  --train-file ../curriculum/stream-train.bin --eval-file ../curriculum/stream-eval.bin \
+  --directory ../nexus-finetune --epochs 2 --epoch-limit 1 --until-complete \
+  --lr 0.001 --lr-schedule cosine --save-snapshot ../nexus-finetune/unified.pt --snapshot-quant int8
+```
+
+`--init-snapshot` loads neural weights from a verified FP32, FP16, or INT8 unified snapshot and starts a fresh optimizer. Omitted geometry comes from the archive. Explicit width and depth must match. Context can grow, keeping the learned position rows. Keep using the same source archive to resume. The curriculum writes balanced, verifier-checked train and eval streams and verifies their exact 32-byte separation from each other and the built-in DEV prompts and answers.
+
+All five scoped CPU runs reproduced the uninterrupted INT8 export after cold resume. The scientific result was **MIXED** under the preregistered rule. Fine-tuning improved one seed at `K=16`, while aggregate solves fell from **3/150 to 1/150**. Greedy and all four non-math categories stayed at zero. [Preregistration](docs/PHASE23_SNAPSHOT_FINETUNE_PREREG.md) · [Raw evidence](evidence/phase23-snapshot-finetune-dev-001.json)
+
 ## Release-candidate evidence
 
 The Phase 21 CPU DEV scoreboard and Phase 22 self-distillation experiment are linked above. The Windows RTX 5070 Ti receipts cover verified BF16 and INT8 training on the listed revisions, including **1.4363 BPB** on held-out FineWeb-Edu and **0.0%** on the local five-category DEV suite for the same uninstructed prose snapshot. Live Windows retesting of the Phase 22B Engram and clean-memory changes remains open, as do official LiveBench evaluation and independent scientific qualification. [Owner Windows receipts](docs/LIVE_COLAB_RECEIPTS.md#windows-11-rtx-5070-ti-bf16-and-int8-receipts)

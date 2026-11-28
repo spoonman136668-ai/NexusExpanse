@@ -393,3 +393,25 @@ These are synthetic held-instance results from one adaptation round. Official Li
 `SSDEngramStore` compares a path stat from before hashing with a path stat after connecting in read-only mode. It also counts bytes while hashing and checks the final file size. Using the same stat interface avoids the Windows NTFS discrepancy between descriptor and path file IDs. Stable identity and size are still required, along with an exact SHA-256 match when the caller pins a digest.
 
 The regression fixtures exercise the conflicting episodic phrase across all four commands, bit-exact default generation parity, exact clean prefix forecasts, and zero donor forwards. The release candidate preserves the Phase 21 and 22 DEV outcomes and records owner Windows results as separate runs. [Owner Windows receipts](LIVE_COLAB_RECEIPTS.md#windows-11-rtx-5070-ti-bf16-and-int8-receipts)
+
+## Phase 23 native snapshot initialization and reasoning curriculum
+
+`train --init-snapshot` accepts a verified local unified archive and loads its neural weights after the normal dequantization step. It takes the source backbone configuration and validates declared width and depth. Omitted geometry is inferred. Expansion copies the learned position rows and keeps the seeded initialization of the new rows. The restored inference cursor, old memory tables, and training optimizer are outside the initialization. The existing training exporter fits its memory tables from the new training input. `--init-skill` and `--init-snapshot` are mutually exclusive.
+
+The exact input archive digest is written as `init_snapshot_sha256` in the training manifest and each epoch intent. Cold evaluation verifies the digest it receives from the training process. Export also checks the source digest. The regular immutable epoch chain still owns checkpoint, optimizer, and RNG resume state.
+
+`prepare_reasoning_curriculum.py` generates complete rounds with equal counts across math, coding, reasoning, data analysis, and instruction following. The generator verifies each prompt-answer pair and selects whole rounds under the decimal megabyte cap. Large streams repeat a verified block with a whole-round tail. Overlap checks include record joins, repeated-block joins, and the Phase 21 built-in prompts and answers. Manifest publication binds each file digest, byte size, category counts, and overlap results. Its absence indicates an incomplete publication.
+
+All five benchmark seeds reproduced exact uninterrupted weights, epoch checkpoints, and final INT8 archives after one-epoch cold resumes. The curriculum verified 4,815/4,815 emitted examples. The two curriculum splits and the built-in suite had zero shared 32-byte windows in all required comparisons. All 100 prefix perturbations were exact and donor forwards were zero. Seed 3704 used corpus candidate 13704 through Phase 17's frozen data-only overlap rule.
+
+The **MIXED** DEV verdict reflects one strict win at `K=16` under the frozen decision rule. Aggregate `K=16` accuracy fell from **2.00% to 0.67%**. Both arms scored zero at `K=1`, and neither arm solved any coding, reasoning, data-analysis, or instruction-following task at either budget. The table gives exact solves out of 30 held tasks per seed. All nonzero entries were math solves.
+
+| Seed | Base K=1 | Fine-tuned K=1 | Base K=16 | Fine-tuned K=16 |
+| --- | ---: | ---: | ---: | ---: |
+| 3701 | 0 | 0 | 1 | 0 |
+| 3702 | 0 | 0 | 1 | 0 |
+| 3703 | 0 | 0 | 0 | 0 |
+| 3704 | 0 | 0 | 0 | 1 |
+| 3705 | 0 | 0 | 1 | 0 |
+
+The scored models use the compact local CPU profile. Live GPU fine-tuning of large pretrained snapshots and official LiveBench performance remain unmeasured. [Preregistration](PHASE23_SNAPSHOT_FINETUNE_PREREG.md) · [Unrounded evidence](../evidence/phase23-snapshot-finetune-dev-001.json)
