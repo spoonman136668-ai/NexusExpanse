@@ -29,6 +29,7 @@ Run `python -m nexus_expanse.cli <command> --help` for arguments and defaults.
 | `build-engram` | Builds an immutable on-disk index of exact byte suffixes and their observed successors. |
 | `search-verified` | Searches greedy and seeded byte continuations and applies the selected objective verifier. |
 | `eval-livebench` | Scores local five-category task files or the built-in offline suite. |
+| `harvest-verified` | Writes exact, independently re-verified continuations to a raw training stream. |
 | `solve` | Searches a bounded expression library and checks the output against the target bytes. |
 | `import-skill` | Converts a compatible static donor checkpoint into a verified native skill. |
 | `route-stream` | Forecasts from a saved multi-skill bank or named unified snapshots using the selected router. |
@@ -140,6 +141,18 @@ python -m nexus_expanse.cli eval-livebench --snapshot ../unified.pt \
 Use `--tasks-jsonl ../questions.jsonl` for local LiveBench-shaped rows. Each row identifies a `question_id`, `category`, and single text prompt in `turns`. Custom tasks can provide the matching `verifier` and `spec` or Python `tests`. The report lists uncovered rows with reasons and reports the macro average across categories with graded rows. Official grading rules and leaderboard scores are outside this local report. [Task schema](docs/ARCHITECTURE_V1.md#phase-21-local-five-category-scoreboard)
 
 The CPU DEV macro score improved in **5/5 seeds**, from **1.33% to 7.33%**. With 30 held tasks per category across seeds, `K=16` solved **9 math**, **1 coding**, and **1 instruction following** task. Reasoning and table formatting each scored **0/30**. Cumulative candidate time rose from 3.26 s to 66.52 s. [Preregistration](docs/PHASE21_LIVEBENCH_VERIFIERS_PREREG.md) · [Raw evidence](evidence/phase21-livebench-verifiers-dev-001.json)
+
+## Phase 22 verified trace harvesting (DEV)
+
+```sh
+python -m nexus_expanse.cli harvest-verified --snapshot ../unified.pt \
+  --tasks-jsonl ../train-tasks.jsonl --eval-file ../held.bin --always-wake \
+  --candidates 16 --out-bin ../verified.bin --out-jsonl ../verified-audit.jsonl
+```
+
+Use training-only task rows or `--builtin-train-suite`. The optional `--eval-file` rejects shared 32-byte windows before publication, including windows across trace joins. The JSONL audit binds each accepted record to its byte range and output digest. A nonempty `verified.bin` is compatible with `train --train-file`. An empty harvest reports zero accepted tasks and has no training data.
+
+The offline run kept **59/200** traces, all independently re-verified. Verified adaptation beat both controls in **1/5 seeds** at `K=1` and **2/5** at `K=16`, yielding **MIXED**. Greedy held macro accuracy stayed at **2.00%**, and `K=16` moved from **9.33% to 10.67%** versus the unchanged base. [Preregistration](docs/PHASE22_VERIFIED_SELF_DISTILLATION_PREREG.md) · [Raw evidence](evidence/phase22-verified-self-distillation-dev-001.json)
 
 ## Release-candidate evidence
 

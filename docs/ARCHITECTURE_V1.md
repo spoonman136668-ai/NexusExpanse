@@ -356,3 +356,31 @@ The study scored six held instances per category at each seed. `K=16` beat `K=1`
 | Macro accuracy | 1.33% | 7.33% |
 
 Candidate time rose from 3.26 s to 66.52 s and decoded bytes from 1,663 to 33,640 across the five seeds. The in-memory and JSONL replays matched exactly apart from timing. All 100 prefix probes had `0.0` difference and donor forwards were zero. Official task performance, live CUDA, and independent scientific qualification remain open. [Preregistration](PHASE21_LIVEBENCH_VERIFIERS_PREREG.md) · [Unrounded evidence](../evidence/phase21-livebench-verifiers-dev-001.json)
+
+## Phase 22 verified trace harvesting and matched adaptation
+
+`harvest-verified` uses the Phase 21 task loader and runs `VerifiedByteSearch` from the supplied frozen snapshot. The selected candidate must pass every case and pass the same verifier again before it enters the training stream. Arithmetic candidates with unchecked text on subsequent lines are rejected. Each written record is the exact prompt, the exact selected continuation with its original delimiter bytes, and two added newline bytes. The audit includes task ID, category, byte offset, prompt and continuation lengths, verifier counts, and SHA-256 digests. Uncovered tasks and rejected candidates contribute no bytes. An optional raw held file enables an exact 32-byte overlap check before either output is published.
+
+The study used 40 training-side prompts and 30 held tasks in each of five seeds. The matched greedy arm used candidate zero on the same accepted prompts without filtering its continuations. Of 59 accepted prompts, greedy happened to pass on 17. Both adaptation arms restored the same base and used 24 updates and 6,144 target bytes per seed. Across the five seeds, the 59 records covered 43 math, three coding, five reasoning, three data-analysis, and five instruction tasks. Every written record passed independent replay. All actual training streams shared zero 32-byte windows with held prompts and answers. Prefix differences were exactly `0.0` and donor forwards were zero.
+
+**Scientific DEV verdict: MIXED.** Verified adaptation beat both controls in one seed at `K=1` and two seeds at `K=16`. One seed won at both budgets. Each table entry gives solves at `K=1 / K=16` out of 30 held tasks per seed.
+
+| Seed | Unchanged base | Matched greedy adaptation | Verified adaptation |
+| --- | ---: | ---: | ---: |
+| 3601 | 0 / 1 | 1 / 2 | 0 / 1 |
+| 3602 | 2 / 6 | 2 / 6 | 2 / 6 |
+| 3603 | 0 / 2 | 0 / 0 | 0 / 3 |
+| 3604 | 0 / 2 | 0 / 0 | 1 / 3 |
+| 3605 | 1 / 3 | 0 / 1 | 0 / 3 |
+
+Each category below has 30 held tasks across the five seeds. The three arms tied at 2.00% macro at `K=1`. At `K=16`, the unchanged, greedy-adapted, and verified-adapted arms reached 9.33%, 6.00%, and 10.67% respectively. The verified arm's gain over the base at `K=16` came from instruction following. Coding, reasoning, and data-analysis held scores stayed at zero in every arm and budget.
+
+| Category | Base K=1 / K=16 | Greedy adaptation K=1 / K=16 | Verified adaptation K=1 / K=16 |
+| --- | ---: | ---: | ---: |
+| Math | 2 / 13 | 3 / 9 | 3 / 13 |
+| Coding | 0 / 0 | 0 / 0 | 0 / 0 |
+| Reasoning | 0 / 0 | 0 / 0 | 0 / 0 |
+| Data analysis | 0 / 0 | 0 / 0 | 0 / 0 |
+| Instruction following | 1 / 1 | 0 / 0 | 0 / 3 |
+
+These are synthetic held-instance results from one adaptation round. Official LiveBench performance and independent scientific qualification remain open. [Preregistration](PHASE22_VERIFIED_SELF_DISTILLATION_PREREG.md) · [Unrounded evidence](../evidence/phase22-verified-self-distillation-dev-001.json)
