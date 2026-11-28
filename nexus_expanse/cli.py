@@ -25,9 +25,11 @@ from benchmarks.unified_checks import exactness
 from nexus_expanse.byte_decode import engram_forecast, nucleus_byte
 from nexus_expanse.expr_verifier import EXPRESSIONS, MAX_LENGTH, run_pipeline, verify as verify_expression
 from nexus_expanse.jepa import state_hash
+from nexus_expanse.livebench_eval import VERIFIERS, builtin_dev_suite, evaluate_budgets, load_tasks_jsonl
 from nexus_expanse.patching import CompactBigram
 from nexus_expanse.snapshot_quant import SNAPSHOT_QUANTS
 from nexus_expanse.ssd_engram import SSDEngramStore
+from nexus_expanse.structured_verifiers import strict_json
 from nexus_expanse.unified import NexusExpanseUnified
 from nexus_expanse.verifier_agent import VerifierGatedNexusAgent
 from nexus_expanse.checkpoint_transport import CONFIG as SKILL_CONFIG, CorrectedLinear, ImportedSkill, METHODS as SKILL_METHODS, load_skill
@@ -297,27 +299,27 @@ def generate_command(args):
         ))
 
 
-def read_verifier_cases(value):
+def read_verifier_json(value):
     if value is None:
         return None
-    if value.lstrip().startswith("["):
+    if value.lstrip().startswith(("[", "{")):
         raw = value.encode("utf-8")
     else:
         with Path(value).open("rb") as source:
             raw = source.read(MAX_CASE_BYTES + 1)
     if len(raw) > MAX_CASE_BYTES:
-        raise ValueError("verifier cases exceed their size limit")
+        raise ValueError("verifier JSON exceeds its size limit")
     try:
-        return json.loads(raw)
+        return strict_json(raw)
     except (UnicodeError, ValueError, RecursionError) as exc:
-        raise ValueError("invalid verifier test JSON") from exc
+        raise ValueError("invalid verifier JSON") from exc
 
 
 def search_verified_command(args):
     prompt = args.prompt_text.encode("utf-8")
     if args.verifier == "arithmetic" and args.tests_json is not None:
         raise ValueError("arithmetic does not take test cases")
-    verifier = make_verifier(args.verifier, prompt, read_verifier_cases(args.tests_json))
+    verifier = make_verifier(args.verifier, prompt, read_verifier_json(args.tests_json), spec=read_verifier_json(args.spec_json))
     stop = (args.stop_text.encode("utf-8") if args.stop_text is not None else
             b"\n" if args.verifier == "arithmetic" else b"\n\n")
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
@@ -340,6 +342,38 @@ def search_verified_command(args):
         if engram is not None:
             report["engram_index_sha256"] = engram.index_sha256
         emit(report)
+
+
+def eval_livebench_command(args):
+    started = time.perf_counter()
+    suite = builtin_dev_suite() if args.builtin_dev_suite else load_tasks_jsonl(args.tasks_jsonl)
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+    device = scaling.device_for(args.device, "fp32")
+    data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT)
+    with open_engram(args) as engram:
+        engine = VerifiedByteSearch(data, expected_sha256=args.snapshot_sha256, device=device,
+                                    always_wake=args.always_wake, engram=engram, engram_alpha=args.engram_alpha)
+        boards, _ = evaluate_budgets(engine, suite, (args.candidates,), seed=args.seed, max_bytes=args.max_bytes,
+                                     temperature=args.temperature, top_p=args.top_p)
+        report = boards[args.candidates]
+        if engram is not None:
+            report["engram_index_sha256"] = engram.index_sha256
+        emit(dict(command="eval-livebench", scope="local_objective", device=device.type,
+                  source="builtin_dev_suite" if args.builtin_dev_suite else "tasks_jsonl",
+                  wall_seconds=time.perf_counter() - started, **report))
+
+
+def add_search_runtime_arguments(parser, *, max_bytes):
+    parser.add_argument("--snapshot", type=Path, required=True)
+    parser.add_argument("--snapshot-sha256")
+    parser.add_argument("--device", choices=("auto", "cpu", "cuda"), default="cpu")
+    add_engram_arguments(parser)
+    parser.add_argument("--always-wake", action="store_true")
+    parser.add_argument("--candidates", type=int, choices=range(1, 65), default=16, metavar="1..64")
+    parser.add_argument("--max-bytes", type=int, choices=range(1, MAX_OUTPUT + 1), default=max_bytes, metavar="1..512")
+    parser.add_argument("--temperature", type=float, default=0.7)
+    parser.add_argument("--top-p", type=float, default=0.9)
+    parser.add_argument("--seed", type=int, default=42)
 
 
 def corpus_paths(directory):
@@ -678,21 +712,20 @@ def parser():
     generate.set_defaults(handler=generate_command)
 
     search = sub.add_parser("search-verified", help="sample byte continuations and verify bounded tasks")
-    search.add_argument("--snapshot", type=Path, required=True)
-    search.add_argument("--snapshot-sha256")
-    search.add_argument("--device", choices=("auto", "cpu", "cuda"), default="cpu")
-    add_engram_arguments(search)
-    search.add_argument("--always-wake", action="store_true")
-    search.add_argument("--verifier", choices=("arithmetic", "python_fn"), required=True)
+    add_search_runtime_arguments(search, max_bytes=128)
+    search.add_argument("--verifier", choices=tuple(VERIFIERS.values()), required=True)
     search.add_argument("--prompt-text", required=True)
     search.add_argument("--tests-json", help="bounded Python test list as JSON or a local file")
-    search.add_argument("--candidates", type=int, choices=range(1, 65), default=16, metavar="1..64")
-    search.add_argument("--max-bytes", type=int, choices=range(1, MAX_OUTPUT + 1), default=128, metavar="1..512")
-    search.add_argument("--temperature", type=float, default=0.7)
-    search.add_argument("--top-p", type=float, default=0.9)
-    search.add_argument("--seed", type=int, default=42)
+    search.add_argument("--spec-json", help="structured verifier specification as JSON or a local file")
     search.add_argument("--stop-text", help="stop after emitting this exact UTF-8 delimiter")
     search.set_defaults(handler=search_verified_command)
+
+    livebench = sub.add_parser("eval-livebench", help="score local tasks with deterministic verifiers")
+    add_search_runtime_arguments(livebench, max_bytes=MAX_OUTPUT)
+    tasks = livebench.add_mutually_exclusive_group(required=True)
+    tasks.add_argument("--tasks-jsonl", type=Path, help="local LiveBench-shaped task rows")
+    tasks.add_argument("--builtin-dev-suite", action="store_true", help="use the deterministic offline suite")
+    livebench.set_defaults(handler=eval_livebench_command)
 
     engram = sub.add_parser("build-engram", help="index raw-byte suffix counts in a new immutable SQLite file")
     engram.add_argument("--input", type=Path, required=True)

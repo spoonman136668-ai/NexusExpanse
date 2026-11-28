@@ -15,12 +15,13 @@ import torch
 from nexus_expanse.byte_decode import engram_forecast, nucleus_byte
 from nexus_expanse.donor_assimilation import forbid_donor_forward
 from nexus_expanse.expr_verifier import MAX_DEPTH, MAX_NODES, MAX_SOURCE, MAX_VALUE
+from nexus_expanse.structured_verifiers import MAX_TEXT, STRUCTURED
 from nexus_expanse.unified import NexusExpanseUnified
 
 MAX_CASES = 32
 MAX_ARGS = 8
 MAX_PROMPT = 4096
-MAX_OUTPUT = 512
+MAX_OUTPUT = MAX_TEXT
 MAX_CASE_BYTES = 16_384
 MAX_STEPS = 64
 IDENTIFIER = r"[A-Za-z_][A-Za-z_0-9]*"
@@ -185,10 +186,17 @@ def _cases(rows, arity):
     return tuple(verified)
 
 
-def make_verifier(kind, prompt, tests=None):
+def make_verifier(kind, prompt, tests=None, *, spec=None):
     """Bind the bounded task once and return a pure continuation verifier."""
     if type(prompt) is not bytes or not 1 <= len(prompt) <= MAX_PROMPT:
         raise ValueError("expected a bounded raw-byte prompt")
+    if kind in STRUCTURED:
+        if tests is not None:
+            raise ValueError("structured verifiers require a spec rather than test cases")
+        check = STRUCTURED[kind](spec)
+        return lambda candidate: Verification(*check(candidate))
+    if spec is not None:
+        raise ValueError("arithmetic and Python verifiers do not use a structured spec")
     if kind == "arithmetic":
         line = prompt.rstrip().rsplit(b"\n", 1)[-1]
         if not line.endswith(b"=") or tests is not None:
