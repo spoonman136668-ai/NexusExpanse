@@ -76,11 +76,23 @@ def grams(raw):
     return (raw[i:i + GRAM_BYTES] for i in range(len(raw) - GRAM_BYTES + 1))
 
 
+class CorpusOverlapError(ValueError):
+    """An exact byte window occurs in both corpus splits."""
+
+
 def assert_disjoint(train, evaluation):
+    train = tuple(train)
+    if len(evaluation) == 1:
+        name, raw = next(iter(evaluation.items()))
+        if len(raw) < sum(map(len, train)):
+            held_grams = set(grams(raw))
+            if any(gram in held_grams for data in train for gram in grams(data)):
+                raise CorpusOverlapError(f"{name} shares an exact {GRAM_BYTES}-byte window with the training split")
+            return
     train_grams = {gram for raw in train for gram in grams(raw)}
     for name, raw in evaluation.items():
         if any(gram in train_grams for gram in grams(raw)):
-            raise ValueError(f"{name} shares an exact {GRAM_BYTES}-byte window with the training split")
+            raise CorpusOverlapError(f"{name} shares an exact {GRAM_BYTES}-byte window with the training split")
 
 
 def allocate(total):

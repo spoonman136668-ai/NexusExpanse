@@ -252,11 +252,10 @@ def generate_command(args):
 
 
 def corpus_paths(directory):
-    return {f"{split}_{domain}": directory / f"{domain}-{split}.bin"
-            for split in ("train", "eval") for domain in scaling.DOMAINS}
+    return scaling.corpus_paths(directory)
 
 
-def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32"):
+def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32", focus_domain="all"):
     report = json.loads((directory / "gate17.json").read_text())
     identity = report["identity"]
     geometry = scaling.Geometry(**identity["geometry"])
@@ -268,8 +267,8 @@ def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32"):
             )
             or identity["gate15_sha256"] != digest(scaling.GATE15)):
         raise ValueError("training result does not bind the current committed source")
-    train, _, manifest = scaling.load_corpora(SimpleNamespace(smoke=False, **paths))
-    if identity["corpora"] != manifest:
+    train, _, manifest = scaling.load_corpora(SimpleNamespace(smoke=False, focus_domain=focus_domain, **paths))
+    if identity["corpora"] != manifest or identity.get("focus_domain", "all") != focus_domain:
         raise ValueError("training corpus changed before export")
     spec = EpochRun(directory, "gate17", identity, geometry.epochs, geometry.steps_per_epoch)
     verified = spec.read()
@@ -281,7 +280,8 @@ def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32"):
         raise ValueError("restored neural weights disagree with the committed training receipt")
     torch.set_num_threads(1)
     with forbid_donor_forward() as guard:
-        snapshot, checks = snapshot_checks(scaling.build_unified(model, train), snapshot_quant=snapshot_quant)
+        snapshot, checks = snapshot_checks(scaling.build_unified(model, train, focus_domain=focus_domain),
+                                           snapshot_quant=snapshot_quant)
     atomic_bytes(target, snapshot)
     emit(dict(command="train", saved_snapshot=str(target), neural_state_sha256=verified["final_hash"],
               snapshot_sha256=hashlib.sha256(snapshot).hexdigest(),
@@ -291,13 +291,22 @@ def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32"):
 def train_command(args):
     if args.snapshot_quant != "fp32" and not args.save_snapshot:
         raise ValueError("--snapshot-quant requires --save-snapshot")
-    paths = corpus_paths(args.corpus_dir)
+    if args.train_file:
+        if not args.eval_file or args.focus_domain != "all":
+            raise ValueError("--train-file requires --eval-file and cannot be combined with a focused domain")
+        paths = dict(train_file=args.train_file, eval_file=args.eval_file)
+    else:
+        if args.eval_file:
+            raise ValueError("--eval-file requires --train-file")
+        paths = corpus_paths(args.corpus_dir)
     for path in paths.values():
         if not path.is_file():
             raise ValueError(f"missing raw corpus file: {path}")
     if args.save_snapshot and args.save_snapshot.exists():
         raise FileExistsError(args.save_snapshot)
     command = ["--directory", str(args.directory)]
+    if args.focus_domain != "all":
+        command.extend(("--focus-domain", args.focus_domain))
     for name in TRAIN_OPTIONS:
         value = getattr(args, name)
         if value is not None:
@@ -314,7 +323,8 @@ def train_command(args):
         command.append("--until-complete")
     scaling.main(command)
     if args.save_snapshot and (args.directory / "gate17.json").is_file():
-        export_trained_snapshot(args.directory.resolve(), paths, args.save_snapshot, snapshot_quant=args.snapshot_quant)
+        export_trained_snapshot(args.directory.resolve(), paths, args.save_snapshot,
+                                snapshot_quant=args.snapshot_quant, focus_domain=args.focus_domain)
 
 
 def solve_command(args):
@@ -518,7 +528,11 @@ def parser():
     p.add_argument("--version", action="version", version=f"Nexus Expanse {VERSION}")
     sub = p.add_subparsers(dest="command", required=True)
     train = sub.add_parser("train", help="run Gate 17 corpus training with immutable resume")
-    train.add_argument("--corpus-dir", type=Path, required=True)
+    source = train.add_mutually_exclusive_group(required=True)
+    source.add_argument("--corpus-dir", type=Path)
+    source.add_argument("--train-file", type=Path)
+    train.add_argument("--eval-file", type=Path)
+    train.add_argument("--focus-domain", choices=scaling.FOCUS_DOMAINS, default="all")
     train.add_argument("--directory", type=Path, required=True)
     train.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
     train.add_argument("--dtype", choices=("fp32", "bf16"), default="fp32")

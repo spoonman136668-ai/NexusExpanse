@@ -1,4 +1,4 @@
-"""Pack whole local or opt-in Hub documents into six leakage-checked byte files."""
+"""Pack local or opt-in Hub data into leakage-checked raw byte files."""
 
 import argparse
 from collections import Counter
@@ -21,6 +21,9 @@ SPLIT_ATTEMPTS = 24
 MAX_GRAPH_DOCUMENTS = 256
 RANKED_SPLIT_ATTEMPTS = 4
 MAX_HUB_RECORDS = 50_000
+STREAM_DOMAIN = "stream"
+STREAM_CHUNK_BYTES = 64 * 1024
+STREAM_RANK_SAMPLE_BYTES = 512 * 1024
 SUFFIXES = {"prose": {".md", ".txt", ".rst"}, "math": {".md", ".txt", ".rst", ".tex"},
             "code": {".py", ".js", ".ts", ".go", ".rs", ".c", ".cpp", ".java", ".sh"}}
 
@@ -55,22 +58,37 @@ def hub_documents(spec, field):
         yield value.encode("utf-8")
 
 
-def collect(source, limit, *, streaming=False):
+def local_stream_documents(path, limit):
+    path = Path(path)
+    if path.is_file():
+        span = min(STREAM_CHUNK_BYTES, max(MIN_BYTES, path.stat().st_size // 2), limit - MIN_BYTES)
+        with path.open("rb") as source:
+            while raw := source.read(span):
+                yield raw
+    elif path.is_dir():
+        for file in sorted(path.rglob("*")):
+            if file.is_file() and not file.is_symlink() and file.stat().st_size <= limit - MIN_BYTES:
+                yield file.read_bytes()
+    else:
+        raise ValueError(f"missing single-stream input: {path}")
+
+
+def collect(source, limit, *, streaming=False, separator=b"\n", max_records=MAX_HUB_RECORDS):
     documents, seen = [], set()
     total = 0
     # Bound the received Hub text even in streams dominated by duplicates.
     received = 0
     for index, raw in enumerate(source):
         received += len(raw)
-        if streaming and (received > 3 * limit or index >= MAX_HUB_RECORDS):
+        if streaming and (received > 3 * limit or index >= max_records):
             break
-        if not raw.strip() or len(raw) + 1 > limit - MIN_BYTES:
+        if not (raw.strip() if separator else raw) or len(raw) + len(separator) > limit - MIN_BYTES:
             continue
         identity = hashlib.sha256(raw).digest()
         if identity in seen:
             continue
         seen.add(identity)
-        documents.append(raw + b"\n")
+        documents.append(raw + separator)
         total += len(documents[-1])
         if streaming and total >= 2 * limit:
             break
@@ -136,7 +154,7 @@ def synthetic_math(seed, cap, fraction):
 
 
 def conflict_graph(documents):
-    rows = [(domain, doc) for domain in DOMAINS for doc in documents.get(domain, ())]
+    rows = [(domain, doc) for domain, docs in documents.items() for doc in docs]
     owners = {}
     conflicts = [1 << i for i in range(len(rows))]
     for i, (_, doc) in enumerate(rows):
@@ -162,11 +180,11 @@ def conflict_aware_holdout(graph, targets, caps, seed):
     rng.shuffle(order)
     lengths = [len(doc) for _, doc in rows]
     noise = {i: rng.uniform(0.8, 1.2) for i in order}
-    held = {d: [] for d in DOMAINS}
-    held_bytes = dict.fromkeys(DOMAINS, 0)
+    held = {d: [] for d in targets}
+    held_bytes = dict.fromkeys(targets, 0)
     chosen = set()
     blocked = 0
-    while any(held_bytes[d] < targets[d] for d in DOMAINS):
+    while any(held_bytes[d] < targets[d] for d in targets):
         best, best_cost = None, float("inf")
         for i in order:
             domain, _ = rows[i]
@@ -174,7 +192,7 @@ def conflict_aware_holdout(graph, targets, caps, seed):
             if i in chosen or remaining <= 0 or held_bytes[domain] + lengths[i] > caps[domain] - MIN_BYTES:
                 continue
             combined = blocked | conflicts[i]
-            available = dict.fromkeys(DOMAINS, 0)
+            available = dict.fromkeys(targets, 0)
             loss = 0
             for j, (kind, _) in enumerate(rows):
                 bit = 1 << j
@@ -182,7 +200,7 @@ def conflict_aware_holdout(graph, targets, caps, seed):
                     available[kind] += lengths[j]
                 elif not blocked & bit:
                     loss += lengths[j]
-            if any(targets[kind] and available[kind] < MIN_BYTES for kind in DOMAINS):
+            if any(targets[kind] and available[kind] < MIN_BYTES for kind in targets):
                 continue
             cost = (loss + 1) * noise[i] / min(lengths[i], remaining)
             if cost < best_cost:
@@ -194,7 +212,7 @@ def conflict_aware_holdout(graph, targets, caps, seed):
         held_bytes[domain] += lengths[best]
         chosen.add(best)
         blocked |= conflicts[best]
-    candidates = {d: [] for d in DOMAINS}
+    candidates = {d: [] for d in targets}
     for i in order:
         domain, doc = rows[i]
         if i not in chosen and not (blocked & (1 << i)):
@@ -202,18 +220,22 @@ def conflict_aware_holdout(graph, targets, caps, seed):
     return held, candidates
 
 
-def holdout_scores(documents):
+def holdout_scores(documents, *, sample_bytes=None):
     """Rank by shared windows without materializing document pairs."""
     frequencies = Counter()
-    for docs in documents.values():
-        for doc in docs:
-            frequencies.update(set(grams(doc)))
+    probes = [doc for docs in documents.values() for doc in docs]
+    if sample_bytes is not None:
+        probes = probes[::math.ceil(len(probes) / 512)]
+        width = sample_bytes // len(probes)
+        probes = [doc[:width] for doc in probes]
+    for doc in probes:
+        frequencies.update(set(grams(doc)))
     scores = {}
     for docs in documents.values():
         for doc in docs:
             highest = total = 0
             for gram in grams(doc):
-                shared = frequencies[gram] - 1
+                shared = frequencies.get(gram, 1) - 1
                 highest = max(highest, shared)
                 total += shared
             scores[doc] = highest, total / max(1, len(doc) - GRAM_BYTES + 1)
@@ -221,7 +243,7 @@ def holdout_scores(documents):
 
 
 def split_payloads(held, candidates, caps):
-    evaluation = {domain: b"".join(held[domain]) for domain in DOMAINS}
+    evaluation = {domain: b"".join(docs) for domain, docs in held.items()}
     held_grams = {gram for raw in evaluation.values() for gram in grams(raw)}
     result = {}
     for domain, raw in evaluation.items():
@@ -230,24 +252,26 @@ def split_payloads(held, candidates, caps):
     return result
 
 
-def split_corpus(documents, seed, fraction, caps, *, fixed_math=None):
-    available = {domain: sum(map(len, documents[domain])) for domain in DOMAINS}
-    for domain in DOMAINS:
+def split_corpus(documents, seed, fraction, caps, *, fixed_math=None, rank_sample_bytes=None):
+    available = {domain: sum(map(len, documents[domain])) for domain in caps}
+    for domain in caps:
         if domain == "math" and fixed_math is not None:
             continue
         if available[domain] < 2 * MIN_BYTES or len(documents[domain]) < 2:
             raise ValueError(f"{domain} needs enough distinct whole documents for two {MIN_BYTES:,}-byte files")
-    active = {d: documents[d] if d != "math" or fixed_math is None else [] for d in DOMAINS}
+    active = {d: documents[d] if d != "math" or fixed_math is None else [] for d in caps}
     large = sum(map(len, active.values())) > MAX_GRAPH_DOCUMENTS
-    scores = holdout_scores(active) if large else None
+    scores = holdout_scores(active) if large and rank_sample_bytes is None else None
     targets = {d: (0 if d == "math" and fixed_math is not None else eval_target(caps[d], available[d], fraction))
-               for d in DOMAINS}
+               for d in caps}
     graph = None
     repairs = {}
     for attempt in range(RANKED_SPLIT_ATTEMPTS if large else SPLIT_ATTEMPTS):
+        if large and attempt == 1 and scores is None:
+            scores = holdout_scores(active, sample_bytes=rank_sample_bytes)
         if large or attempt < 4:
             held, candidates = {}, {}
-            for domain in DOMAINS:
+            for domain in caps:
                 order = list(active[domain])
                 random.Random(f"real-corpus:{seed}:{domain}:{attempt}").shuffle(order)
                 if scores is not None:
@@ -266,13 +290,13 @@ def split_corpus(documents, seed, fraction, caps, *, fixed_math=None):
         if fixed_math is not None:
             held["math"], candidates["math"] = fixed_math["eval"], fixed_math["train"]
         result = split_payloads(held, candidates, caps)
-        short = tuple(d for d in DOMAINS if any(len(result[s, d][0]) < MIN_BYTES for s in ("train", "eval")))
+        short = tuple(d for d in caps if any(len(result[s, d][0]) < MIN_BYTES for s in ("train", "eval")))
         if not short:
             return result
         if large and all(active[d] for d in short) and sum(len(active[d]) for d in short) <= MAX_GRAPH_DOCUMENTS:
             # A hard local split can be retried without adding a large Hub domain
             # to the graph. The rebuilt payload still checks against every holdout.
-            repair_targets = {d: targets[d] if d in short else 0 for d in DOMAINS}
+            repair_targets = {d: targets[d] if d in short else 0 for d in caps}
             if short not in repairs:
                 repairs[short] = conflict_graph({d: active[d] for d in short})
             selected = conflict_aware_holdout(repairs[short], repair_targets, caps, f"real-corpus:repair:{seed}:{attempt}")
@@ -283,7 +307,7 @@ def split_corpus(documents, seed, fraction, caps, *, fixed_math=None):
                 result = split_payloads(held, candidates, caps)
                 if all(len(raw) >= MIN_BYTES for raw, _ in result.values()):
                     return result
-    raise ValueError(f"could not form six leakage-free whole-document files of {MIN_BYTES:,} bytes within the cap")
+    raise ValueError(f"could not form {2 * len(caps)} leakage-free files of {MIN_BYTES:,} bytes within the cap")
 
 
 def publish(directory, payloads, manifest):
@@ -343,9 +367,29 @@ def prepare(directory, *, local, hub, field="text", seed=42, fraction=0.10,
         fixed = synthetic_math(seed, caps["math"], fraction)
         splits = split_corpus(documents, seed, fraction, caps, fixed_math=fixed)
         sources["math"] = "synthetic"
-    assert_disjoint([splits["train", d][0] for d in DOMAINS],
-                    {domain: splits["eval", domain][0] for domain in DOMAINS})
     del documents
+    return publish_splits(directory, splits, sources, seed, fraction, limit)
+
+
+def prepare_single(directory, *, local=None, hub=None, field="text", seed=42, fraction=0.10, limit=3_000_000):
+    if (local is None) == (hub is None):
+        raise ValueError("choose exactly one single-stream source")
+    if not math.isfinite(fraction) or not 0 < fraction < 1:
+        raise ValueError("eval-fraction must be between 0 and 1")
+    if limit < MIN_BYTES * 2:
+        raise ValueError("size cap must hold two 50,000-byte files")
+    source = local_stream_documents(local, limit) if local is not None else hub_documents(hub, field)
+    docs = collect(source, limit, streaming=True, separator=b"" if local is not None else b"\n",
+                   max_records=max(MAX_HUB_RECORDS, 3 * limit // 256))
+    caps = {STREAM_DOMAIN: limit}
+    sources = {STREAM_DOMAIN: "local" if local is not None else "hf"}
+    splits = split_corpus({STREAM_DOMAIN: docs}, seed, fraction, caps, rank_sample_bytes=STREAM_RANK_SAMPLE_BYTES)
+    del docs
+    return publish_splits(directory, splits, sources, seed, fraction, limit)
+
+
+def publish_splits(directory, splits, sources, seed, fraction, limit):
+    assert_disjoint([splits["train", d][0] for d in sources], {d: splits["eval", d][0] for d in sources})
     files, payloads = {}, {}
     for (split, domain), (raw, count) in splits.items():
         name = f"{domain}-{split}.bin"
@@ -354,7 +398,7 @@ def prepare(directory, *, local, hub, field="text", seed=42, fraction=0.10,
                                          sha256=hashlib.sha256(raw).hexdigest())
     manifest = dict(schema="nexus-real-corpus-v1", seed=seed, eval_fraction=fraction, size_limit_bytes=limit,
                     total_bytes=sum(map(len, payloads.values())), sources=sources,
-                    overlap_32b=dict.fromkeys(DOMAINS, 0), global_overlap_32b=0, files=files)
+                    overlap_32b=dict.fromkeys(sources, 0), global_overlap_32b=0, files=files)
     publish(Path(directory), payloads, manifest)
     return manifest
 
@@ -362,6 +406,9 @@ def prepare(directory, *, local, hub, field="text", seed=42, fraction=0.10,
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", type=Path, required=True)
+    single = parser.add_mutually_exclusive_group()
+    single.add_argument("--single-dir", type=Path, help="directory of raw byte files or one raw byte file")
+    single.add_argument("--single-hf", metavar="REPO[:CONFIG]", help="stream one Hub dataset's text field")
     for domain in DOMAINS:
         source = parser.add_mutually_exclusive_group()
         source.add_argument(f"--{domain}-dir", type=Path)
@@ -372,11 +419,16 @@ def main(argv=None):
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--eval-fraction", type=float, default=0.10)
     args = parser.parse_args(argv)
+    local = {d: getattr(args, d + "_dir") for d in DOMAINS}
+    hub = {d: getattr(args, "hf_" + d) for d in DOMAINS}
+    common = dict(field=args.hf_text_field, seed=args.seed, fraction=args.eval_fraction, limit=args.size_mb)
     try:
-        result = prepare(args.out_dir, local={d: getattr(args, d + "_dir") for d in DOMAINS},
-                         hub={d: getattr(args, "hf_" + d) for d in DOMAINS}, field=args.hf_text_field,
-                         seed=args.seed, fraction=args.eval_fraction, limit=args.size_mb,
-                         math_fallback=args.math_fallback_synthetic)
+        if args.single_dir is not None or args.single_hf is not None:
+            if any(local.values()) or any(hub.values()) or args.math_fallback_synthetic:
+                raise ValueError("single-stream sources cannot be combined with multi-domain inputs")
+            result = prepare_single(args.out_dir, local=args.single_dir, hub=args.single_hf, **common)
+        else:
+            result = prepare(args.out_dir, local=local, hub=hub, math_fallback=args.math_fallback_synthetic, **common)
     except (ValueError, OSError) as exc:
         parser.exit(2, f"prepare_real_corpus: {exc}\n")
     print(json.dumps(result, allow_nan=False))

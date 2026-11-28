@@ -31,6 +31,8 @@ from nexus_expanse.unified import NexusExpanseUnified
 from nexus_expanse.weight_editing import _affine_parameters, restore_skill
 
 DOMAINS = ("math", "code", "prose")
+STREAM = "stream"
+FOCUS_DOMAINS = ("all", *DOMAINS)
 GATE15 = ROOT / "evidence/gate15-hybrid-dev-001.json"
 PHASE1 = "57eded620df922f250495dbb7eeaa280630b1881"
 DEFAULT_LR = 0.003
@@ -85,28 +87,53 @@ def cosine_lr(global_step, total_steps, base_lr):
     return base_lr * (0.1 + 0.45 * (1 + math.cos(math.pi * progress)))
 
 
+def corpus_paths(directory):
+    return {f"{split}_{domain}": directory / f"{domain}-{split}.bin"
+            for split in ("train", "eval") for domain in DOMAINS}
+
+
+def corpus_domains(data, focus_domain="all"):
+    if focus_domain != "all":
+        return (focus_domain,)
+    return (STREAM,) if STREAM in data else DOMAINS
+
+
 def load_corpora(args):
-    fields = {(split, domain): getattr(args, f"{split}_{domain}")
-              for split in ("train", "eval") for domain in DOMAINS}
+    fields = {f"{split}_{d}": getattr(args, f"{split}_{d}", None) for split in ("train", "eval") for d in DOMAINS}
+    directory = getattr(args, "corpus_dir", None)
+    train_file = getattr(args, "train_file", None)
+    eval_file = getattr(args, "eval_file", None)
+    focus = getattr(args, "focus_domain", "all")
     if args.smoke:
-        if any(fields.values()):
+        if any(fields.values()) or directory or train_file or eval_file or focus != "all":
             raise ValueError("the frozen smoke supplies all six input spans")
         code = git("show", f"{PHASE1}:nexus_expanse/substrate.py")
         prose = git("show", f"{PHASE1}:README.md")
         math_data = lambda lo, hi: b"".join(f"{i}+2={i + 2}\n".encode() for i in range(lo, hi))
         train = dict(math=math_data(0, 50), code=code[:384], prose=prose[:384])
         evaluation = dict(math=math_data(70, 90), code=code[-128:], prose=prose[-128:])
+    elif train_file or eval_file:
+        if not train_file or not eval_file or directory or any(fields.values()) or focus != "all":
+            raise ValueError("--train-file and --eval-file must be supplied together and used alone")
+        if not train_file.is_file() or not eval_file.is_file():
+            raise ValueError("single-stream inputs must be raw byte files")
+        if train_file.samefile(eval_file):
+            raise ValueError("single-stream train and eval must be distinct files")
+        train, evaluation = ({STREAM: path.read_bytes()} for path in (train_file, eval_file))
     else:
+        if directory:
+            if any(fields.values()):
+                raise ValueError("--corpus-dir cannot be combined with explicit domain files")
+            fields = corpus_paths(directory)
         if not all(fields.values()):
             raise ValueError("provide separate --train-* and --eval-* files for math, code, and prose")
-        train, evaluation = ({d: fields[split, d].read_bytes() for d in DOMAINS}
+        train, evaluation = ({d: fields[f"{split}_{d}"].read_bytes() for d in DOMAINS}
                              for split in ("train", "eval"))
     manifest = {}
     for split, data in (("train", train), ("eval", evaluation)):
-        if any(len(data[d]) < 2 for d in DOMAINS):
+        if any(len(raw) < 2 for raw in data.values()):
             raise ValueError("every corpus needs at least two raw bytes")
-        manifest[split] = {d: dict(bytes=len(data[d]), sha256=hashlib.sha256(data[d]).hexdigest())
-                           for d in DOMAINS}
+        manifest[split] = {d: dict(bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest()) for d, raw in data.items()}
     train_hashes = {r["sha256"] for r in manifest["train"].values()}
     eval_hashes = {r["sha256"] for r in manifest["eval"].values()}
     if train_hashes & eval_hashes:
@@ -210,14 +237,16 @@ def make_batch(rows, context, device):
     return batch.to(device), keep.to(device), int(lengths.sum())
 
 
-def training_rows(data, geometry, step):
+def training_rows(data, geometry, step, *, focus_domain="all"):
     rows = []
-    for i, domain in enumerate(DOMAINS):
+    batch_size = geometry.batch_per_domain * (len(DOMAINS) if focus_domain != "all" else 1)
+    for domain in corpus_domains(data, focus_domain):
+        i = 0 if domain == STREAM else DOMAINS.index(domain)
         raw = data[domain]
         count = block_count(raw, geometry.context)
-        start = step * geometry.batch_per_domain
+        start = step * batch_size
         rows.extend((raw, shuffled_index(j, count, geometry.seed + i))
-                    for j in range(start, start + geometry.batch_per_domain))
+                    for j in range(start, start + batch_size))
     return rows
 
 
@@ -238,10 +267,10 @@ def vram(device):
                 peak_cuda_reserved_bytes=torch.cuda.max_memory_reserved(device))
 
 
-def build_unified(model, train):
+def build_unified(model, train, *, focus_domain="all"):
     """Build the CPU runtime with the Gate 17 fitted compact and episodic inputs."""
     counts = np.zeros((256, 256), dtype="<u4")
-    examples = [train[d][:512] for d in DOMAINS]
+    examples = [train[d][:512] for d in corpus_domains(train, focus_domain)]
     for raw in examples:
         b = np.frombuffer(raw, dtype=np.uint8)
         np.add.at(counts, (b[:-1], b[1:]), 1)
@@ -268,7 +297,7 @@ def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
     if args.dtype == "bf16":
         torch.backends.mha.set_fastpath_enabled(False)
     per_domain = {}
-    for domain in DOMAINS:
+    for domain in corpus_domains(evaluation):
         data = evaluation[domain]
         n = min(geometry.eval_blocks, block_count(data, geometry.context))
         elapsed = time.perf_counter()
@@ -290,8 +319,9 @@ def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
         del model
         model = model_for(geometry, backbone, torch.device("cpu")).eval()
         model.load_state_dict(state)
-    unified = build_unified(model, train)
-    raw = evaluation["prose"][:min(32, geometry.context)]
+    unified = build_unified(model, train, focus_domain=args.focus_domain)
+    parity_domain = corpus_domains(evaluation, args.focus_domain)[-1]
+    raw = evaluation[parity_domain][:min(32, geometry.context)]
     checkpoint = unified.snapshot()
     parity = exactness(unified, NexusExpanseUnified.restore(checkpoint), raw)
     if any(parity.values()):
@@ -323,6 +353,8 @@ def experiment_identity(args, geometry, backbone, manifest, device, *, init_skil
     # The legacy identity already means a constant rate of 0.003.
     if args.lr != DEFAULT_LR or args.lr_schedule != "constant":
         identity.update(lr=args.lr, lr_schedule=args.lr_schedule)
+    if args.focus_domain != "all":
+        identity["focus_domain"] = args.focus_domain
     return identity
 
 
@@ -354,7 +386,7 @@ def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None
         alphas = []
         rates = []
         for index in range(first, first + geometry.steps_per_epoch):
-            rows = training_rows(train, geometry, index)
+            rows = training_rows(train, geometry, index, focus_domain=args.focus_domain)
             batch, keep, valid = make_batch(rows, geometry.context, device)
             optimizer.zero_grad(set_to_none=True)
             if scheduled:
@@ -445,6 +477,10 @@ def main(argv=None):
     p.add_argument("--batch-per-domain", type=int, default=2)
     p.add_argument("--eval-blocks", type=int, default=16)
     add_lr_arguments(p)
+    p.add_argument("--focus-domain", choices=FOCUS_DOMAINS, default="all")
+    p.add_argument("--corpus-dir", type=Path)
+    p.add_argument("--train-file", type=Path)
+    p.add_argument("--eval-file", type=Path)
     for split in ("train", "eval"):
         for domain in DOMAINS:
             p.add_argument(f"--{split}-{domain}", type=Path)
@@ -493,7 +529,7 @@ def main(argv=None):
                     raise ValueError(f"initial skill depth must be one of {TRAIN_LAYERS}")
                 if geometry.dim != skill.readout.in_features or geometry.layers != len(skill.core.layers):
                     raise ValueError("initial skill width or depth does not match training geometry")
-        except ValueError as exc:
+        except (ValueError, OSError) as exc:
             p.error(str(exc))
 
         backbone = selected_backbone(use_sdpa=args.use_sdpa, skill_backbone=bool(skill or args.skill_backbone))
