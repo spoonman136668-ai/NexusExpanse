@@ -1,0 +1,3980 @@
+{
+  "schema": "nexus.phase21-livebench-scoreboard.v1",
+  "base": "61d238f84334c9716c2d1c4a56388f83cf1f3e20",
+  "source_commit": "b151b57cba6226c3c4cb4f5231d230ef2317e270",
+  "source_tree": "8c2be9b565d76a7324166ee986987ae3bdb15344",
+  "prereg_sha256": "9774543f86d3c91797250c0bdbe585fb69baad8a50d1824668b5ac41f01e520a",
+  "offline": true,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "torch": "2.10.0+cpu",
+  "seconds": 172.22699645499233,
+  "peak_rss_bytes": 303767552,
+  "seeds": [
+    {
+      "seed": 3501,
+      "training": {
+        "report": {
+          "command": "train",
+          "saved_snapshot": "/tmp/phase21-livebench-scoreboard-emh8zm45/3501/unified.pt",
+          "neural_state_sha256": "e144204dc72982bfc311179f5e9630c8a62291370f49098b53104725739240f9",
+          "snapshot_sha256": "6200b0911a3aaa5e38651a55bd0f8e0ad3178aa547a5a5d7d0ae120500112d88",
+          "donor_forward_calls": 0,
+          "snapshot_quant": "int8",
+          "parity": {
+            "prefix_logits": 0.0,
+            "prefix_hidden": 0.0,
+            "streaming_logits": 0.0,
+            "unified_stream_probabilities": 0.0
+          },
+          "round_trip_probabilities": 0.0,
+          "exact_state": true
+        },
+        "targets": 49152,
+        "updates": 192,
+        "cold_equal": true,
+        "donor_forward_calls": 0,
+        "archive_bytes": 230736,
+        "fit_sha256": "a4ee1cd05bf4f0689d4e68e45e43ddca45f06c913f729189b464992ef77ca348",
+        "validation_sha256": "456599f82231edcec58b34fa505403d5bfd2e667ce08222a38ca2b25326b0f59"
+      },
+      "custody": {
+        "fit_tasks": 320,
+        "calibration_tasks": 10,
+        "check_tasks": 30,
+        "shared_task_prompts": 0,
+        "fit_padding_bytes": 17,
+        "check_sha256": "37adde5e918f591df74a7823b69626ea47d3321b8153f0812c57be5c54358016"
+      },
+      "scoreboards": {
+        "1": {
+          "math": 0.0,
+          "coding": 0.0,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.0,
+          "overall_score": 0.0,
+          "counts": {
+            "math": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 1,
+          "tasks": [
+            {
+              "question_id": "math-6*7",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "310a",
+              "logprob": -3.531300640387646,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-7%4",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "310a",
+              "logprob": -3.4805908173878457,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-10-3",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -1.5735536376735624,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4-8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "310a",
+              "logprob": -2.901391259166074,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-6-1",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -1.7511985276746662,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-11-6",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "330a",
+              "logprob": -1.983916895703099,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "coding-23",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b310a0a",
+              "logprob": -4.4166832938904435,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-9",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.127466712423509,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-21",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b310a0a",
+              "logprob": -4.3827300232889606,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-12",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b310a0a",
+              "logprob": -6.588295037431783,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-24",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b310a0a",
+              "logprob": -6.3530115187857366,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-22",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b310a0a",
+              "logprob": -6.472276752392148,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-8",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31392c423d32300a",
+              "logprob": -4.91684759012236,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-9",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31392c423d32300a",
+              "logprob": -5.301242728026045,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-14",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31392c423d32300a",
+              "logprob": -4.9467358980513145,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-10",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31392c423d32300a",
+              "logprob": -4.9698992703608,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-13",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31392c423d32300a",
+              "logprob": -4.965142428133948,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-7",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31392c423d32300a",
+              "logprob": -4.927330250730503,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-13",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031340a0a",
+              "logprob": -4.599726415824381,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-21",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.764000449616842,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-6",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -3.3619236141824134,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-22",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -3.1644859093147524,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-3",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.5887069693269957,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-19",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.8154459209536986,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-3",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "64656620662878293a0a202020207265",
+              "logprob": -6.332741560140914,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-18",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "64656620662878293a0a202020207265",
+              "logprob": -6.951827012327845,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-6",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031340a0a",
+              "logprob": -4.542503013745264,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-19",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "5b7b226964223a2031382c202276616c",
+              "logprob": -7.5871475997418205,
+              "passed": false,
+              "passed_tests": 2,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-20",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031340a0a",
+              "logprob": -5.038220310088339,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-10",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031340a0a",
+              "logprob": -5.137439545987292,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            }
+          ],
+          "decoded_bytes": 230,
+          "candidate_seconds": 0.5449204810720403,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "6200b0911a3aaa5e38651a55bd0f8e0ad3178aa547a5a5d7d0ae120500112d88"
+        },
+        "16": {
+          "math": 0.3333333333333333,
+          "coding": 0.16666666666666666,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.16666666666666666,
+          "overall_score": 0.13333333333333333,
+          "counts": {
+            "math": {
+              "passed": 2,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 1,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 1,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 16,
+          "tasks": [
+            {
+              "question_id": "math-6*7",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -2.603014853273015,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-7%4",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "330a",
+              "logprob": -3.686281900814849,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-10-3",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -1.5735536376735624,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4-8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "2d340a",
+              "logprob": -5.853748866882528,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-6-1",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -1.7511985276746662,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-11-6",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "330a",
+              "logprob": -1.983916895703099,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "coding-23",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b310a0a",
+              "logprob": -4.4166832938904435,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-9",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.127466712423509,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-21",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b310a0a",
+              "logprob": -4.3827300232889606,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-12",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -6.435446098656927,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-24",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "202072657475726e20782a32340a0a",
+              "logprob": -11.654667097340006,
+              "passed": true,
+              "passed_tests": 6,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-22",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -6.324867622657058,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-8",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d320a",
+              "logprob": -3.0721911434206115,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-9",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d320a",
+              "logprob": -3.48902920703126,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-14",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d310a",
+              "logprob": -2.9365944165889504,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-10",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d310a",
+              "logprob": -2.9024130333886724,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-13",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d310a",
+              "logprob": -2.9805270449208416,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-7",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31390a",
+              "logprob": -4.076507752483296,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-13",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.9783232804301005,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-21",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.764000449616842,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-6",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -3.3619236141824134,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-22",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -3.1644859093147524,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-3",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.5887069693269957,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-19",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.8154459209536986,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-3",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -4.56399378140901,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-18",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f20310a0a",
+              "logprob": -6.716083614740842,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-6",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031340a0a",
+              "logprob": -4.542503013745264,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-19",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -4.393257431802056,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-20",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2032300a0a",
+              "logprob": -7.88057526090812,
+              "passed": true,
+              "passed_tests": 5,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-10",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031340a0a",
+              "logprob": -5.137439545987292,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            }
+          ],
+          "decoded_bytes": 5960,
+          "candidate_seconds": 12.282048235065304,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "6200b0911a3aaa5e38651a55bd0f8e0ad3178aa547a5a5d7d0ae120500112d88"
+        }
+      },
+      "prefix": {
+        "seeds": 100,
+        "failures": [],
+        "max_diff": 0.0
+      },
+      "file_replay_exact": true,
+      "wall_seconds": 12.284853524994105,
+      "replay_wall_seconds": 13.228291631006869,
+      "replay_donor_forward_calls": 0
+    },
+    {
+      "seed": 3502,
+      "training": {
+        "report": {
+          "command": "train",
+          "saved_snapshot": "/tmp/phase21-livebench-scoreboard-emh8zm45/3502/unified.pt",
+          "neural_state_sha256": "f6741ee0ccb03394e85dc83a8aa17d9fe7f477d40f00f4e517a5aa3c07e9ddcb",
+          "snapshot_sha256": "6e37a8fd9ab7f07f7a7db44cd17bbc8ab6e269aa1c98853fb1c51d37057d0fea",
+          "donor_forward_calls": 0,
+          "snapshot_quant": "int8",
+          "parity": {
+            "prefix_logits": 0.0,
+            "prefix_hidden": 0.0,
+            "streaming_logits": 0.0,
+            "unified_stream_probabilities": 0.0
+          },
+          "round_trip_probabilities": 0.0,
+          "exact_state": true
+        },
+        "targets": 49152,
+        "updates": 192,
+        "cold_equal": true,
+        "donor_forward_calls": 0,
+        "archive_bytes": 226128,
+        "fit_sha256": "5946fdfd737b3cc40ed45b9f8fb2c7049bd34c630134026bc7988eebefc6cf5f",
+        "validation_sha256": "40b9129821ab5776d6fb92bda5a3e955a2ec1e9115c16069e6d060989e762320"
+      },
+      "custody": {
+        "fit_tasks": 320,
+        "calibration_tasks": 10,
+        "check_tasks": 30,
+        "shared_task_prompts": 0,
+        "fit_padding_bytes": 54,
+        "check_sha256": "9ea2230c36906f3ed56c160e5ba2ac3f12470cbb18f5d9218814852cbe4005de"
+      },
+      "scoreboards": {
+        "1": {
+          "math": 0.3333333333333333,
+          "coding": 0.0,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.0,
+          "overall_score": 0.06666666666666667,
+          "counts": {
+            "math": {
+              "passed": 2,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 1,
+          "tasks": [
+            {
+              "question_id": "math-6-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -1.990852432181485,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4-5",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "310a",
+              "logprob": -3.3196929583268626,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-7%3",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "310a",
+              "logprob": -3.555018688522531,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-8+8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31312e0a",
+              "logprob": -5.704781257007685,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": "expected one integer on the first line"
+            },
+            {
+              "question_id": "math-4-7",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "310a",
+              "logprob": -3.132941180525222,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-2-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -2.033283245351755,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "coding-3",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31300a0a",
+              "logprob": -4.22942408042421,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-17",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31300a0a",
+              "logprob": -4.997765948446298,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-8",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31320a0a",
+              "logprob": -4.924860915599041,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-1",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31300a0a",
+              "logprob": -4.2243835276799775,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-16",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31300a0a",
+              "logprob": -4.363105513580039,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-19",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31300a0a",
+              "logprob": -4.966898357740027,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-2",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "646520413d6e2e0a",
+              "logprob": -7.620860197282907,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-8",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "64652041646520413d6e2e0a",
+              "logprob": -12.935993990020796,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-23",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31312e0a",
+              "logprob": -7.580269278360055,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-15",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31312e0a",
+              "logprob": -7.5665479328817415,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-22",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31312e0a",
+              "logprob": -7.667328279789313,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-20",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31312e0a",
+              "logprob": -7.5813294094446695,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-23",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a20202020726520202020726520616e64207265636f72642031302c20223a0a20202020726574",
+              "logprob": -34.38422339924638,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "invalid delimited table quoting"
+            },
+            {
+              "question_id": "data_analysis-7",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a2020202072657475726e20782a31300a0a",
+              "logprob": -13.334519420947188,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-18",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "69642c76616c75650a312c320a0a",
+              "logprob": -7.137430036269342,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-11",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a2020202072652020202072652020202072657475726e20782a31300a0a",
+              "logprob": -25.009031305933753,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-9",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a20202020726520202020726520202020726520782a31300a0a",
+              "logprob": -23.680419669382417,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-14",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a2020202072652020202072652020202072657475726e20782a31300a0a",
+              "logprob": -23.645695831091917,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "instruction_following-16",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "646520616e64207265636f7264203130",
+              "logprob": -13.248406318193041,
+              "passed": false,
+              "passed_tests": 2,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-23",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "64652031300a0a",
+              "logprob": -9.042230788614225,
+              "passed": false,
+              "passed_tests": 3,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-15",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "646520616e64207265636f7264203130",
+              "logprob": -12.586223346675506,
+              "passed": false,
+              "passed_tests": 2,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-24",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "64652031300a0a",
+              "logprob": -8.866747568465533,
+              "passed": false,
+              "passed_tests": 3,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-13",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "6465206164656620662878293a0a2020",
+              "logprob": -10.56552531911619,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-7",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -5.564213779047028,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            }
+          ],
+          "decoded_bytes": 407,
+          "candidate_seconds": 0.7292149829154368,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "6e37a8fd9ab7f07f7a7db44cd17bbc8ab6e269aa1c98853fb1c51d37057d0fea"
+        },
+        "16": {
+          "math": 0.5,
+          "coding": 0.0,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.0,
+          "overall_score": 0.1,
+          "counts": {
+            "math": {
+              "passed": 3,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 16,
+          "tasks": [
+            {
+              "question_id": "math-6-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "340a",
+              "logprob": -3.324613080373072,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4-5",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -2.757575945551679,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-7%3",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "310a",
+              "logprob": -3.555018688522531,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-8+8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -2.972626396123194,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4-7",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -2.765494881223289,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-2-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -2.033283245351755,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "coding-3",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31350a0a",
+              "logprob": -4.056858575362404,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-17",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31350a0a",
+              "logprob": -4.702833929581481,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-8",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31350a0a",
+              "logprob": -4.507679714712617,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-1",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31350a0a",
+              "logprob": -4.025564619567308,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-16",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31350a0a",
+              "logprob": -4.02313356635907,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-19",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31350a0a",
+              "logprob": -4.660053631705395,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-2",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d6e2e0a",
+              "logprob": -5.073681764979244,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-8",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "0a",
+              "logprob": -3.098852599857196,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "reasoning-23",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "64656620662878293a0a",
+              "logprob": -4.515403355123103,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-15",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "64656620662878293a0a",
+              "logprob": -4.590955964504655,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-22",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "0a",
+              "logprob": -3.1384118827281733,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "reasoning-20",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "64656620662878293a0a",
+              "logprob": -4.559993282129221,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-23",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "4f7574707574206a736f6e207769746820686561646572732069642c766164652069646572732069646520616c756520",
+              "logprob": -29.69452282972605,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-7",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a2020202072657475726e20782a31300a0a",
+              "logprob": -13.334519420947188,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-18",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -6.572460572746591,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-11",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -6.953500787182172,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-9",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64650a312c320a0a",
+              "logprob": -8.637180831186953,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "invalid table shape"
+            },
+            {
+              "question_id": "data_analysis-14",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "642c76616c75650a312c320a0a",
+              "logprob": -7.960008702386463,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "instruction_following-16",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2032310a0a",
+              "logprob": -6.621947718013253,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-23",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2032320a0a",
+              "logprob": -8.479029074387066,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-15",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -4.226634718595392,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-24",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -3.7827514573377883,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-13",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -3.936033503695673,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-7",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -5.564213779047028,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            }
+          ],
+          "decoded_bytes": 7949,
+          "candidate_seconds": 14.819564552162774,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "6e37a8fd9ab7f07f7a7db44cd17bbc8ab6e269aa1c98853fb1c51d37057d0fea"
+        }
+      },
+      "prefix": null,
+      "file_replay_exact": true,
+      "wall_seconds": 14.822631324001122,
+      "replay_wall_seconds": 14.552158353995765,
+      "replay_donor_forward_calls": 0
+    },
+    {
+      "seed": 3503,
+      "training": {
+        "report": {
+          "command": "train",
+          "saved_snapshot": "/tmp/phase21-livebench-scoreboard-emh8zm45/3503/unified.pt",
+          "neural_state_sha256": "62cac4e5e86dc015baf4dbf517937fd5e8425ffd9f0836bb45113405e22f2ae3",
+          "snapshot_sha256": "f5ce58c85a2ccb1faff14a0a0a6e8f638f6a4411c5949e20f74c8d396c084818",
+          "donor_forward_calls": 0,
+          "snapshot_quant": "int8",
+          "parity": {
+            "prefix_logits": 0.0,
+            "prefix_hidden": 0.0,
+            "streaming_logits": 0.0,
+            "unified_stream_probabilities": 0.0
+          },
+          "round_trip_probabilities": 0.0,
+          "exact_state": true
+        },
+        "targets": 49152,
+        "updates": 192,
+        "cold_equal": true,
+        "donor_forward_calls": 0,
+        "archive_bytes": 226192,
+        "fit_sha256": "9a0fde181de143d026c87b56c9d349339d073d0807cb15345066ac42b2019136",
+        "validation_sha256": "10e2749389d0ae979126f75e954cf4d81b223541be516f665a3ce6bbe9033df1"
+      },
+      "custody": {
+        "fit_tasks": 320,
+        "calibration_tasks": 10,
+        "check_tasks": 30,
+        "shared_task_prompts": 0,
+        "fit_padding_bytes": 42,
+        "check_sha256": "f62485f7bf52b24bd325c6a190a4795268cd03fc5febb497b76e17cbd767e782"
+      },
+      "scoreboards": {
+        "1": {
+          "math": 0.0,
+          "coding": 0.0,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.0,
+          "overall_score": 0.0,
+          "counts": {
+            "math": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 1,
+          "tasks": [
+            {
+              "question_id": "math-1-4",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31380a",
+              "logprob": -3.8799945459137266,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-7-1",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -1.7808404725532536,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-1%3",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31380a",
+              "logprob": -3.8591154419994558,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-7-5",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31380a",
+              "logprob": -3.914067218071855,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-2*2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "6e2e0a",
+              "logprob": -3.279105227999279,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": "expected one integer on the first line"
+            },
+            {
+              "question_id": "math-6*8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "6e2e0a",
+              "logprob": -2.586843355271273,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": "expected one integer on the first line"
+            },
+            {
+              "question_id": "coding-10",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31360a0a",
+              "logprob": -5.087773193592964,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-20",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31360a0a",
+              "logprob": -5.120098373244908,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-18",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31360a0a",
+              "logprob": -5.221422460637282,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-14",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31360a0a",
+              "logprob": -5.1649689080736145,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-1",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31360a0a",
+              "logprob": -4.64781084865797,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-12",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a31360a0a",
+              "logprob": -5.126329005967643,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-17",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d342c423d350a",
+              "logprob": -3.788675942042038,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-3",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d342c423d350a",
+              "logprob": -4.1475064540577655,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-20",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d342c423d350a",
+              "logprob": -3.7921596923513476,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-5",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d342c423d350a",
+              "logprob": -4.164027469646226,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-11",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d342c423d350a",
+              "logprob": -3.7614890550000273,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-22",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d342c423d350a",
+              "logprob": -3.842648359582148,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-8",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a2020202072657475726e20782a31360a0a",
+              "logprob": -11.989286197581345,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-19",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "69642c76616c75650a6964650a0a",
+              "logprob": -12.648863865145337,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "invalid table shape"
+            },
+            {
+              "question_id": "data_analysis-22",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a2020202072657475726e20782a31360a0a",
+              "logprob": -13.189187153260308,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-3",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64652031362e0a676f2031360a0a",
+              "logprob": -10.597125426820776,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-16",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -5.638616920394387,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-7",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64652031362e0a676f2031360a0a",
+              "logprob": -10.500583177426307,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-9",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -5.01077327552107,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-13",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -3.735307827318866,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-1",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -4.81301586173901,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-5",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -4.737810552337977,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-10",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -3.7273186900900637,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-2",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -4.853101939194034,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            }
+          ],
+          "decoded_bytes": 288,
+          "candidate_seconds": 0.5975218070088886,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "f5ce58c85a2ccb1faff14a0a0a6e8f638f6a4411c5949e20f74c8d396c084818"
+        },
+        "16": {
+          "math": 0.16666666666666666,
+          "coding": 0.0,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.0,
+          "overall_score": 0.03333333333333333,
+          "counts": {
+            "math": {
+              "passed": 1,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 16,
+          "tasks": [
+            {
+              "question_id": "math-1-4",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -3.1389614699295714,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-7-1",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -1.7808404725532536,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-1%3",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -3.3816645630100055,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-7-5",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31380a",
+              "logprob": -3.914067218071855,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-2*2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "340a",
+              "logprob": -4.187998443694669,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-6*8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "6e2e0a",
+              "logprob": -2.586843355271273,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": "expected one integer on the first line"
+            },
+            {
+              "question_id": "coding-10",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a340a0a",
+              "logprob": -4.229068840838239,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-20",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a340a0a",
+              "logprob": -4.2607700819340595,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-18",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a340a0a",
+              "logprob": -4.350115218683079,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-14",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a340a0a",
+              "logprob": -4.297648632212589,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-1",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a340a0a",
+              "logprob": -4.120785601295929,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-12",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782a340a0a",
+              "logprob": -4.279231809781795,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-17",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d6e2e0a",
+              "logprob": -3.564020782315851,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-3",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d340a",
+              "logprob": -3.120866175380133,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "assignment must supply exactly one in-domain value per variable"
+            },
+            {
+              "question_id": "reasoning-20",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d360a",
+              "logprob": -3.300919320128366,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-5",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d360a",
+              "logprob": -3.5465329979002282,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "assignment must supply exactly one in-domain value per variable"
+            },
+            {
+              "question_id": "reasoning-11",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d6e2e0a",
+              "logprob": -3.630759473304243,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-22",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d340a",
+              "logprob": -3.395318351037483,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-8",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f20370a0a",
+              "logprob": -6.444103923850333,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-19",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -5.93501757259871,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-22",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "5b7b22696420342e0a0a",
+              "logprob": -9.999520662621354,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Unterminated string starting at: line 1 column 3 (char 2)"
+            },
+            {
+              "question_id": "data_analysis-3",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -5.6669455061441205,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-16",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -5.638616920394387,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-7",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64652031390a0a",
+              "logprob": -8.171273714788155,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-9",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -3.774063150126321,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-13",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -3.735307827318866,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-1",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -3.8784658652882715,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-5",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -4.187008356842269,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-10",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -3.7273186900900637,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-2",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -4.853101939194034,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            }
+          ],
+          "decoded_bytes": 6870,
+          "candidate_seconds": 13.246996525645955,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "f5ce58c85a2ccb1faff14a0a0a6e8f638f6a4411c5949e20f74c8d396c084818"
+        }
+      },
+      "prefix": null,
+      "file_replay_exact": true,
+      "wall_seconds": 13.249784420011565,
+      "replay_wall_seconds": 13.39008722899598,
+      "replay_donor_forward_calls": 0
+    },
+    {
+      "seed": 3504,
+      "training": {
+        "report": {
+          "command": "train",
+          "saved_snapshot": "/tmp/phase21-livebench-scoreboard-emh8zm45/3504/unified.pt",
+          "neural_state_sha256": "4ed9d7cd23800acbf82f0a86c9828fb9fd1df2f14b69202931f101dee99ffbea",
+          "snapshot_sha256": "0850d2ebab0244ec7e63bc1ef37667dd8604a08aceee6ee0cd99294c9c360217",
+          "donor_forward_calls": 0,
+          "snapshot_quant": "int8",
+          "parity": {
+            "prefix_logits": 0.0,
+            "prefix_hidden": 0.0,
+            "streaming_logits": 0.0,
+            "unified_stream_probabilities": 0.0
+          },
+          "round_trip_probabilities": 0.0,
+          "exact_state": true
+        },
+        "targets": 49152,
+        "updates": 192,
+        "cold_equal": true,
+        "donor_forward_calls": 0,
+        "archive_bytes": 229648,
+        "fit_sha256": "94f312e753e9adfcf0f351436a682ce770f48dbb674542153feec58ae489ec53",
+        "validation_sha256": "6ee48fb8c0f0effaed3f5f000e1f2d75d95fa9401b6e6446a1cacd552ec1fb7c"
+      },
+      "custody": {
+        "fit_tasks": 320,
+        "calibration_tasks": 10,
+        "check_tasks": 30,
+        "shared_task_prompts": 0,
+        "fit_padding_bytes": 43,
+        "check_sha256": "9b84e61888e8b863bb2098d1b4dd364cb41199311e1b772556f040e8ce821ef1"
+      },
+      "scoreboards": {
+        "1": {
+          "math": 0.0,
+          "coding": 0.0,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.0,
+          "overall_score": 0.0,
+          "counts": {
+            "math": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 1,
+          "tasks": [
+            {
+              "question_id": "math-3*5",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "330a",
+              "logprob": -2.938360448175805,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-9-7",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "350a",
+              "logprob": -2.106279420423675,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-1%4",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -2.172078259217769,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4*6",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -1.9139483557154027,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4-8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "310a",
+              "logprob": -2.8128080264773914,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-1+3",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "330a",
+              "logprob": -2.697737376112465,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "coding-19",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b32330a0a",
+              "logprob": -4.7316000659398,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-12",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b32330a0a",
+              "logprob": -4.925242048340745,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-3",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "202020202020202020202072657475726e20782b32330a0a",
+              "logprob": -13.608001575421332,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-6",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b32330a0a",
+              "logprob": -4.548594898614903,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-17",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b32330a0a",
+              "logprob": -4.874920170378933,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-22",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b32330a0a",
+              "logprob": -4.930231478755202,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-1",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d382c423d390a",
+              "logprob": -3.764996481551469,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-21",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d352c423d360a",
+              "logprob": -4.316328063247977,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-23",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d352c423d360a",
+              "logprob": -4.362243201261431,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-4",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d382c423d390a",
+              "logprob": -3.8361312376241368,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-19",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d352c423d360a",
+              "logprob": -4.35972276045702,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-13",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d352c423d360a",
+              "logprob": -4.343707652084009,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-7",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -5.963861200772602,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-13",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "5b7b2269642c76616c756520616e64207265223a2032342c202276616c7565223a2032357d5d0a0a",
+              "logprob": -22.037349545792267,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "invalid delimited table quoting"
+            },
+            {
+              "question_id": "data_analysis-2",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.7639493262928942,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-9",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a69642c76616c756520616e64207265636f72642032342c32352e0a5b7b226964223a2032342c202276616c7565223a",
+              "logprob": -25.61217476021887,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "invalid delimited table quoting"
+            },
+            {
+              "question_id": "data_analysis-22",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a2020202072652020202072652020202072657475726e20782b32330a0a",
+              "logprob": -23.74534063236843,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-4",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.4509620476639,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-6",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -4.9136187665478115,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-2",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -4.871779925446907,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-12",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -5.0769883678428345,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-13",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -4.8971640963878285,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-24",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -5.013740502636487,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-10",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -4.858336580461506,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            }
+          ],
+          "decoded_bytes": 329,
+          "candidate_seconds": 0.678259695036104,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "0850d2ebab0244ec7e63bc1ef37667dd8604a08aceee6ee0cd99294c9c360217"
+        },
+        "16": {
+          "math": 0.3333333333333333,
+          "coding": 0.0,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.0,
+          "overall_score": 0.06666666666666667,
+          "counts": {
+            "math": {
+              "passed": 2,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 16,
+          "tasks": [
+            {
+              "question_id": "math-3*5",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -2.9154713128969885,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-9-7",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -2.9735564052358363,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-1%4",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "310a",
+              "logprob": -2.2614019878488447,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4*6",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -1.9139483557154027,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4-8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "320a",
+              "logprob": -2.791435838323431,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-1+3",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "350a",
+              "logprob": -2.5664467248180625,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "coding-19",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.535769569777267,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-12",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.543799632538851,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-3",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b32330a0a",
+              "logprob": -4.7966425830378405,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-6",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.0659061409009265,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-17",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.681432457416524,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-22",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.560117869547457,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-1",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d382c423d390a",
+              "logprob": -3.764996481551469,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-21",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d350a",
+              "logprob": -3.8439613308142064,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-23",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d350a",
+              "logprob": -3.928137144877941,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-4",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d350a",
+              "logprob": -3.656672143130543,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "assignment must supply exactly one in-domain value per variable"
+            },
+            {
+              "question_id": "reasoning-19",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d350a",
+              "logprob": -4.018785532263602,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-13",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d350a",
+              "logprob": -4.061239223334642,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-7",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -3.9581552599687972,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-13",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a0a",
+              "logprob": -7.525118488018315,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-2",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.7639493262928942,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-9",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -4.305504769994492,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-22",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.882886295662299,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "data_analysis-4",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "0a0a",
+              "logprob": -2.4509620476639,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-6",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -4.9136187665478115,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-2",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -4.871779925446907,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-12",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -3.513582296377189,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-13",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -3.6151438163910727,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-24",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031310a0a",
+              "logprob": -5.013740502636487,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-10",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -3.5997472785150784,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            }
+          ],
+          "decoded_bytes": 5943,
+          "candidate_seconds": 12.882197402970633,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "0850d2ebab0244ec7e63bc1ef37667dd8604a08aceee6ee0cd99294c9c360217"
+        }
+      },
+      "prefix": null,
+      "file_replay_exact": true,
+      "wall_seconds": 12.885332553996705,
+      "replay_wall_seconds": 12.474744192004437,
+      "replay_donor_forward_calls": 0
+    },
+    {
+      "seed": 3505,
+      "training": {
+        "report": {
+          "command": "train",
+          "saved_snapshot": "/tmp/phase21-livebench-scoreboard-emh8zm45/3505/unified.pt",
+          "neural_state_sha256": "a9a44caa60a6ec6b4cbdd404c13c2116358c4b1c8f98671d530498584b153e34",
+          "snapshot_sha256": "217b3a1e3b9dd9049e3cfaf64d85c14415ea6838de34e36a8630ab6036aa85c6",
+          "donor_forward_calls": 0,
+          "snapshot_quant": "int8",
+          "parity": {
+            "prefix_logits": 0.0,
+            "prefix_hidden": 0.0,
+            "streaming_logits": 0.0,
+            "unified_stream_probabilities": 0.0
+          },
+          "round_trip_probabilities": 0.0,
+          "exact_state": true
+        },
+        "targets": 49152,
+        "updates": 192,
+        "cold_equal": true,
+        "donor_forward_calls": 0,
+        "archive_bytes": 225424,
+        "fit_sha256": "25957f8cfefdf7539bce2c7cd1f1f9a8e8c4c7fd861776be8d09f24c344be614",
+        "validation_sha256": "c9a5d8b144fe1a9832586f53e8ed9b6b148524c48704a02fead9bc441239ecb6"
+      },
+      "custody": {
+        "fit_tasks": 320,
+        "calibration_tasks": 10,
+        "check_tasks": 30,
+        "shared_task_prompts": 0,
+        "fit_padding_bytes": 43,
+        "check_sha256": "ea127b6f213c4bde82ae4ec495e9fe5cedd219a2c39abfcfdb7d5af40b09d421"
+      },
+      "scoreboards": {
+        "1": {
+          "math": 0.0,
+          "coding": 0.0,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.0,
+          "overall_score": 0.0,
+          "counts": {
+            "math": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 1,
+          "tasks": [
+            {
+              "question_id": "math-4+8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31340a",
+              "logprob": -3.1368318496665384,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4*5",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31320a",
+              "logprob": -5.346828184534503,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-10-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31322c423d31300a",
+              "logprob": -9.311694951601304,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": "expected one integer on the first line"
+            },
+            {
+              "question_id": "math-9-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31320a",
+              "logprob": -5.273472801173155,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-3%1",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31322c423d31330a",
+              "logprob": -9.752034911029304,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": "expected one integer on the first line"
+            },
+            {
+              "question_id": "math-3-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "31320a",
+              "logprob": -5.2109824003526235,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "coding-16",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31310a0a",
+              "logprob": -5.635454579115285,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-10",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31310a0a",
+              "logprob": -5.448250972391029,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-24",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31310a0a",
+              "logprob": -5.448440281006422,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-22",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31310a0a",
+              "logprob": -5.539691942225492,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-19",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31310a0a",
+              "logprob": -5.600857526569224,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-6",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31310a0a",
+              "logprob": -6.345300868432612,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-13",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31322c423d31330a",
+              "logprob": -6.534093568307809,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-2",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d32332c423d32340a",
+              "logprob": -5.61671538493397,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-21",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31322c423d31330a",
+              "logprob": -6.602506726202899,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-18",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31322c423d31330a",
+              "logprob": -6.542243447401896,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-17",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d31322c423d31330a",
+              "logprob": -6.557359394721588,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-7",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d32332c423d32340a",
+              "logprob": -5.653880112331488,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-16",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031370a0a",
+              "logprob": -3.998496102837228,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-12",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "6465666f7265204220696e2064697374696e637420736c6f74732031322c31332e2055736520413d6e2c423d6e2e0a41",
+              "logprob": -23.910363461900776,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-5",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a2020202072657475726e20782b31310a0a",
+              "logprob": -14.396465497596218,
+              "passed": false,
+              "passed_tests": 1,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-10",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "6465666f7265204220696e2064697374696e637420736c6f74732031322c31332e2055736520413d6e2c423d6e2e0a41",
+              "logprob": -22.929411668503622,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-18",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "64656620662878293a0a2020202072657475726e20782b31310a0a",
+              "logprob": -13.909217391308207,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-20",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "6465666f7265204220696e2064697374696e637420736c6f74732031322c31332e2055736520413d6e2c423d6e2e0a41",
+              "logprob": -23.637398933274174,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "instruction_following-23",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f20310a0a",
+              "logprob": -4.973778840751928,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-7",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -4.631179678449542,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-5",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -4.544939724517363,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-22",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f20310a0a",
+              "logprob": -5.063353011816964,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-21",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f20310a0a",
+              "logprob": -5.08289660033365,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-24",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f20310a0a",
+              "logprob": -5.0525259929919475,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            }
+          ],
+          "decoded_bytes": 409,
+          "candidate_seconds": 0.7148839900328312,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "217b3a1e3b9dd9049e3cfaf64d85c14415ea6838de34e36a8630ab6036aa85c6"
+        },
+        "16": {
+          "math": 0.16666666666666666,
+          "coding": 0.0,
+          "reasoning": 0.0,
+          "data_analysis": 0.0,
+          "instruction_following": 0.0,
+          "overall_score": 0.03333333333333333,
+          "counts": {
+            "math": {
+              "passed": 1,
+              "total": 6,
+              "unsupported": 0
+            },
+            "coding": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "reasoning": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "data_analysis": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            },
+            "instruction_following": {
+              "passed": 0,
+              "total": 6,
+              "unsupported": 0
+            }
+          },
+          "graded_categories": 5,
+          "candidates": 16,
+          "tasks": [
+            {
+              "question_id": "math-4+8",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "340a",
+              "logprob": -2.363877769370783,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-4*5",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "340a",
+              "logprob": -3.2957492465475586,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-10-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -3.240297245163174,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-9-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -2.9938136473470593,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-3%1",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -3.2372162391060995,
+              "passed": true,
+              "passed_tests": 1,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "math-3-2",
+              "category": "math",
+              "mode": "arithmetic",
+              "selected_hex": "300a",
+              "logprob": -2.9874548505896095,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 1,
+              "error": null
+            },
+            {
+              "question_id": "coding-16",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b31310a0a",
+              "logprob": -5.635454579115285,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-10",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.75168234889505,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-24",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.749193950461502,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-22",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -4.841431105304409,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "coding-19",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "726578293a0a0a",
+              "logprob": -4.338671326866438,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": "invalid verifier syntax"
+            },
+            {
+              "question_id": "coding-6",
+              "category": "coding",
+              "mode": "python_fn",
+              "selected_hex": "72657475726e20782b370a0a",
+              "logprob": -5.2623064492192,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 6,
+              "error": null
+            },
+            {
+              "question_id": "reasoning-13",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d320a",
+              "logprob": -3.34369442308057,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-2",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d390a",
+              "logprob": -3.5403062489242374,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-21",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d320a",
+              "logprob": -3.422294119386763,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-18",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d320a",
+              "logprob": -3.3446297754565837,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-17",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d390a",
+              "logprob": -3.724461122510906,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "reasoning-7",
+              "category": "reasoning",
+              "mode": "logic_csp",
+              "selected_hex": "413d390a",
+              "logprob": -3.500906648618278,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 2,
+              "error": "invalid or ambiguous assignment token"
+            },
+            {
+              "question_id": "data_analysis-16",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031370a0a",
+              "logprob": -3.998496102837228,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-12",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031370a0a",
+              "logprob": -5.9668242162420455,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-5",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -6.050824979899658,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": null
+            },
+            {
+              "question_id": "data_analysis-10",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031360a0a",
+              "logprob": -5.967935010216064,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-18",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -5.634720833545827,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "data_analysis-20",
+              "category": "data_analysis",
+              "mode": "table_format",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -5.575002096644507,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 3,
+              "error": "Expecting value: line 1 column 1 (char 0)"
+            },
+            {
+              "question_id": "instruction_following-23",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -4.49469195905038,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-7",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -4.631179678449542,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-5",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f2031380a0a",
+              "logprob": -4.544939724517363,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            },
+            {
+              "question_id": "instruction_following-22",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -4.504219275826202,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-21",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "0a0a",
+              "logprob": -4.4451857462642375,
+              "passed": false,
+              "passed_tests": 0,
+              "total_tests": 5,
+              "error": "empty continuation"
+            },
+            {
+              "question_id": "instruction_following-24",
+              "category": "instruction_following",
+              "mode": "instruction_constraints",
+              "selected_hex": "676f20310a0a",
+              "logprob": -5.0525259929919475,
+              "passed": false,
+              "passed_tests": 4,
+              "total_tests": 5,
+              "error": null
+            }
+          ],
+          "decoded_bytes": 6918,
+          "candidate_seconds": 13.292946922127157,
+          "donor_forward_calls": 0,
+          "unsupported": [],
+          "snapshot_sha256": "217b3a1e3b9dd9049e3cfaf64d85c14415ea6838de34e36a8630ab6036aa85c6"
+        }
+      },
+      "prefix": null,
+      "file_replay_exact": true,
+      "wall_seconds": 13.295907521009212,
+      "replay_wall_seconds": 13.512777186988387,
+      "replay_donor_forward_calls": 0
+    }
+  ],
+  "summary": {
+    "engineering": "PASS",
+    "scientific": "PASS",
+    "strict_win_seeds": 5,
+    "donor_forward_calls": 0,
+    "replay_exact": true
+  }
+}

@@ -27,7 +27,8 @@ Run `python -m nexus_expanse.cli <command> --help` for arguments and defaults.
 | `stream` | Observes raw hex byte chunks, reports next-byte candidates and optionally generates a continuation. |
 | `generate` | Generates raw bytes from a unified snapshot with greedy or seeded top-p decoding on `cpu`, `cuda`, or `auto`. |
 | `build-engram` | Builds an immutable on-disk index of exact byte suffixes and their observed successors. |
-| `search-verified` | Searches greedy and seeded byte continuations and checks bounded arithmetic or Python tasks. |
+| `search-verified` | Searches greedy and seeded byte continuations and applies the selected objective verifier. |
+| `eval-livebench` | Scores local five-category task files or the built-in offline suite. |
 | `solve` | Searches a bounded expression library and checks the output against the target bytes. |
 | `import-skill` | Converts a compatible static donor checkpoint into a verified native skill. |
 | `route-stream` | Forecasts from a saved multi-skill bank or named unified snapshots using the selected router. |
@@ -128,6 +129,17 @@ python -m nexus_expanse.cli search-verified --snapshot ../unified.pt \
 For `--verifier python_fn`, end the prompt with a plain `def` signature and supply `--tests-json` as an inline list or local file of `{"args": [...], "expected": ...}` cases. Candidates may supply a `return` continuation or one matching function definition. The verifier interprets a bounded AST and checks every supplied case. Search ranks passing candidates by causal log probability. When none pass, the result explicitly reports `verified: false` and returns the highest-logprob candidate it tried.
 
 The five-seed CPU DEV comparison solved **6/80, 15/80, and 18/80** tasks at `K=1,8,16`, respectively, with the same counts in the Engram arm. All solves were arithmetic. Python remained at **0/30** under both arms at every budget. The `K=16` arm spent about **16×** the `K=1` candidate time. [Preregistration](docs/PHASE20_VERIFIED_TEST_TIME_SEARCH_PREREG.md) · [Raw evidence](evidence/phase20-verified-search-dev-001.json)
+
+## Phase 21 local five-category scoreboard (DEV)
+
+```sh
+python -m nexus_expanse.cli eval-livebench --snapshot ../unified.pt \
+  --builtin-dev-suite --always-wake --candidates 16
+```
+
+Use `--tasks-jsonl ../questions.jsonl` for local LiveBench-shaped rows. Each row identifies a `question_id`, `category`, and single text prompt in `turns`. Custom tasks can provide the matching `verifier` and `spec` or Python `tests`. The report lists uncovered rows with reasons and reports the macro average across categories with graded rows. Official grading rules and leaderboard scores are outside this local report. [Task schema](docs/ARCHITECTURE_V1.md#phase-21-local-five-category-scoreboard)
+
+The CPU DEV macro score improved in **5/5 seeds**, from **1.33% to 7.33%**. With 30 held tasks per category across seeds, `K=16` solved **9 math**, **1 coding**, and **1 instruction following** task. Reasoning and table formatting each scored **0/30**. Cumulative candidate time rose from 3.26 s to 66.52 s. [Preregistration](docs/PHASE21_LIVEBENCH_VERIFIERS_PREREG.md) · [Raw evidence](evidence/phase21-livebench-verifiers-dev-001.json)
 
 ## Release-candidate evidence
 

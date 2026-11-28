@@ -323,3 +323,36 @@ Across all seeds, verified search solved 6, 15, and 18 of 50 arithmetic tasks. I
 | Neural + Engram | 479 / 1.58 s | 4,381 / 12.97 s | 8,723 / 25.72 s |
 
 These times include snapshot restore, prefill, decoding, and verification on the benchmark CPU. All seeded repeats were exact, the active Engram prefix test had `0.0` differences across 100 perturbations, unsafe probes were rejected without file effects, and donor forwards were zero. Live CUDA, broader task transfer, and independent qualification remain open. [Preregistration](PHASE20_VERIFIED_TEST_TIME_SEARCH_PREREG.md) · [Unrounded evidence](../evidence/phase20-verified-search-dev-001.json)
+
+## Phase 21 local five-category scoreboard
+
+`eval-livebench` restores the same snapshot types as `search-verified` and accepts the same CPU/CUDA, always-wake, and SSD Engram options. It uses objective checks on local rows with no LLM judge. The report includes category accuracy, passed and graded counts, uncovered rows with reasons, and overall macro accuracy across categories with at least one graded task. An ungraded category has a `null` score. A file with no covered tasks has a `null` overall score. `graded_categories` and `counts` give the denominators.
+
+A custom row can declare its verifier. `search-verified` accepts the same `spec` object through `--spec-json` as inline JSON or a local file. `python_fn` continues to use `--tests-json`. The Phase 20 arithmetic and Python rules still apply.
+
+```json
+{"question_id":"slots-1","category":"reasoning","turns":["Assign A and B distinct slots 1 or 2, with A before B. Reply A=n,B=n."],"verifier":"logic_csp","spec":{"variables":{"A":[1,2],"B":[1,2]},"constraints":[{"type":"all_different","variables":["A","B"]},{"type":"before","left":"A","right":"B"}]}}
+```
+
+| Category | Verifier | Exact local check |
+| --- | --- | --- |
+| Math | `arithmetic` | The bounded final equation and decimal answer from Phase 20. |
+| Coding | `python_fn` | The matching plain function and bounded `{args, expected}` cases from Phase 20. |
+| Reasoning | `logic_csp` | A complete JSON object or comma/newline-separated `key=value` assignment. `all_different` takes `variables`. `equals` and `not_equals` take `left` and either `right` or `value`. `before` and `adjacent` take two integer-position variables. `implies` takes nested `if` and `then` clauses. |
+| Data analysis | `table_format` | `format`, `columns`, and ordered `rows`. Formats are CSV, TSV, Markdown, and JSON. JSON accepts ordered row objects or a `columns`/`rows` object. Column order, row count, and cells must all match. |
+| Instruction following | `instruction_constraints` | `min_words`, `max_words`, `required_substrings`, `forbidden_substrings`, `must_start_with`, `must_end_with`, `exact_lines`, and `bullet_count`. Word tokens are whitespace-separated, punctuation stays literal, and each substring has its own pass count. |
+
+For upstream-shaped rows, the adapter recognizes bounded scalar `ground_truth` in math and reasoning, structured assignment and table references, supported `tablereformat` targets, pure JSON coding cases under a matching signature, and structured instruction constraints. The instruction adapter maps a subset of upstream word-count, bullet-count, and end-phrase IDs to local semantics. Executable coding tests, multi-turn rows, language tasks, and grader-specific formats without a supported local rule are listed as uncovered. These are strict local scores with explicit coverage. The official leaderboard uses its own graders and dataset rules. [Upstream row and grader dispatch](https://github.com/LiveBench/LiveBench/blob/1d1006a0d10ece52c2e706f8a208a659b5bbb96f/livebench/gen_ground_truth_judgment.py)
+
+The study scored six held instances per category at each seed. `K=16` beat `K=1` in each of the five seeds. The table reports exact solves out of 30 per category across those seeds.
+
+| Category | K=1 | K=16 |
+| --- | ---: | ---: |
+| Math | 2/30 | 9/30 |
+| Coding | 0/30 | 1/30 |
+| Reasoning | 0/30 | 0/30 |
+| Data analysis | 0/30 | 0/30 |
+| Instruction following | 0/30 | 1/30 |
+| Macro accuracy | 1.33% | 7.33% |
+
+Candidate time rose from 3.26 s to 66.52 s and decoded bytes from 1,663 to 33,640 across the five seeds. The in-memory and JSONL replays matched exactly apart from timing. All 100 prefix probes had `0.0` difference and donor forwards were zero. Official task performance, live CUDA, and independent scientific qualification remain open. [Preregistration](PHASE21_LIVEBENCH_VERIFIERS_PREREG.md) · [Unrounded evidence](../evidence/phase21-livebench-verifiers-dev-001.json)
