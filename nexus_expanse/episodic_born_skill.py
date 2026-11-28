@@ -7,6 +7,7 @@ import torch
 from torch import nn
 
 from nexus_expanse.checkpoint_transport import ImportedSkill
+from nexus_expanse.unified_receiver import UnifiedSnapshotSkill
 
 
 SUFFIX_BYTES = 3
@@ -20,10 +21,10 @@ class EpisodicAssistedBornSkill(nn.Module):
     successors falls back to the neural receiver, as does an unseen suffix.
     """
 
-    def __init__(self, neural: ImportedSkill, keys: torch.Tensor, successors: torch.Tensor):
+    def __init__(self, neural: ImportedSkill | UnifiedSnapshotSkill, keys: torch.Tensor, successors: torch.Tensor):
         super().__init__()
-        if type(neural) is not ImportedSkill:
-            raise ValueError("episodic memory requires an ImportedSkill receiver")
+        if type(neural) not in (ImportedSkill, UnifiedSnapshotSkill):
+            raise ValueError("episodic memory requires a recognized neural receiver")
         if (
             not isinstance(keys, torch.Tensor) or keys.dtype != torch.int32 or keys.ndim != 1
             or not isinstance(successors, torch.Tensor) or successors.dtype != torch.uint8

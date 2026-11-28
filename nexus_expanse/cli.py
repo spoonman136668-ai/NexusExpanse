@@ -29,7 +29,7 @@ from nexus_expanse.unified import NexusExpanseUnified
 from nexus_expanse.verifier_agent import VerifierGatedNexusAgent
 from nexus_expanse.checkpoint_transport import CONFIG as SKILL_CONFIG, CorrectedLinear, ImportedSkill, METHODS as SKILL_METHODS, load_skill
 from nexus_expanse.donor_assimilation import forbid_donor_forward
-from nexus_expanse.multi_skill_router import load_bank
+from nexus_expanse.multi_skill_router import MultiSkillBank, load_bank
 from nexus_expanse.cache_assimilation import assimilate
 from nexus_expanse.shard_stream_assimilation import STUDENT_DIMS, STUDENT_LAYERS, assimilate_zero_exec
 from nexus_expanse.weight_editing import (
@@ -492,7 +492,13 @@ def route_stream_command(args):
         raise ValueError("provide at least one observed hex byte")
 
     with forbid_donor_forward() as guard:
-        bank = load_bank(args.bank)
+        if args.bank:
+            bank = load_bank(args.bank)
+        else:
+            paths = dict(args.skill_snapshot)
+            if len(paths) != len(args.skill_snapshot):
+                raise ValueError("snapshot skill names must be unique")
+            bank = MultiSkillBank.from_unified_snapshots(paths)
         route = getattr(bank, f"forward_{args.router}")
         raw = torch.tensor(list(data), dtype=torch.long).unsqueeze(0)
         result = route(raw, include_next=True)
@@ -637,7 +643,10 @@ def parser():
     edit.set_defaults(handler=weight_edit_command)
 
     route = sub.add_parser("route-stream", help="forecast raw bytes with a saved multi-skill bank")
-    route.add_argument("--bank", type=Path, required=True)
+    bank_source = route.add_mutually_exclusive_group(required=True)
+    bank_source.add_argument("--bank", type=Path)
+    bank_source.add_argument("--skill-snapshot", action="append", nargs=2, metavar=("NAME", "PATH"),
+                             help="repeat to route named unified snapshots directly")
     route.add_argument(
         "--router", choices=("bayes_bma", "bayes_argmax", "surprise_sparse", "hmm_bma",
                              "hmm_sparse", "hmm_bma_hierarchical", "hmm_sparse_hierarchical",

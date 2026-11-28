@@ -13,6 +13,7 @@ from torch.nn import functional as F
 from nexus_expanse.episodic_born_skill import EpisodicAssistedBornSkill
 from nexus_expanse.jepa import state_hash
 from nexus_expanse.multi_skill_router import MultiSkillBank, load_bank, save_bank
+from nexus_expanse.unified_receiver import UnifiedSnapshotSkill
 
 
 NOVELTY_WINDOW = 64
@@ -222,6 +223,8 @@ class OpenWorldSkillBank(nn.Module):
             before = {key: state_hash(skill) for key, skill in self.bank.skills.items()}
             candidate = copy.deepcopy(self.bank.base)
             adapt_skill(candidate, raw, steps)
+            if isinstance(candidate, UnifiedSnapshotSkill):
+                candidate = candidate.repack()
             if mode == EPISODIC_BIRTH:
                 candidate = EpisodicAssistedBornSkill.from_encounter(candidate, raw)
             after = {key: state_hash(skill) for key, skill in self.bank.skills.items()}
