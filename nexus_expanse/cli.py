@@ -409,16 +409,20 @@ def corpus_paths(directory):
     return scaling.corpus_paths(directory)
 
 
-def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32", focus_domain="all"):
+def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32", focus_domain="all", init_snapshot=None):
     report = json.loads((directory / "gate17.json").read_text())
     identity = report["identity"]
     geometry = scaling.Geometry(**identity["geometry"])
+    architecture = identity.get("snapshot_architecture")
+    expected_init = identity.get("init_snapshot_sha256")
+    if (digest(init_snapshot) if init_snapshot is not None else None) != expected_init:
+        raise ValueError("initial snapshot SHA-256 changed before export")
     if (scaling.git("status", "--porcelain")
             or identity["source_sha"] != scaling.git("rev-parse", "HEAD").decode().strip()
             or identity["tree"] != scaling.git("rev-parse", "HEAD^{tree}").decode().strip()
-            or identity["backbone"] != scaling.selected_backbone(
+            or (architecture is None and identity["backbone"] != scaling.selected_backbone(
                 use_sdpa=identity.get("use_sdpa", False), skill_backbone=identity.get("skill_backbone", False),
-            )
+            ))
             or identity["gate15_sha256"] != digest(scaling.GATE15)):
         raise ValueError("training result does not bind the current committed source")
     train, _, manifest = scaling.load_corpora(SimpleNamespace(smoke=False, focus_domain=focus_domain, **paths))
@@ -428,7 +432,8 @@ def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32", 
     verified = spec.read()
     if any(verified["fresh_evaluation"]["parity"].values()):
         raise ValueError("training checkpoint has no exact parity evidence")
-    model = scaling.model_for(geometry, identity["backbone"], torch.device("cpu"))
+    options = {} if architecture is None else dict(snapshot_architecture=architecture)
+    model = scaling.model_for(geometry, identity["backbone"], torch.device("cpu"), **options)
     model.load_state_dict(torch.load(spec.checkpoint, weights_only=True, map_location="cpu"))
     if state_hash(model) != verified["final_hash"]:
         raise ValueError("restored neural weights disagree with the committed training receipt")
@@ -437,9 +442,11 @@ def export_trained_snapshot(directory, paths, target, *, snapshot_quant="fp32", 
         snapshot, checks = snapshot_checks(scaling.build_unified(model, train, focus_domain=focus_domain),
                                            snapshot_quant=snapshot_quant)
     atomic_bytes(target, snapshot)
+    init_receipt = {} if expected_init is None else dict(init_snapshot_sha256=expected_init)
     emit(dict(command="train", saved_snapshot=str(target), neural_state_sha256=verified["final_hash"],
               snapshot_sha256=hashlib.sha256(snapshot).hexdigest(),
-              donor_forward_calls=verified.get("donor_forward_calls", 0) + guard.donor_forward_calls, **checks))
+              donor_forward_calls=verified.get("donor_forward_calls", 0) + guard.donor_forward_calls,
+              **checks, **init_receipt))
 
 
 def train_command(args):
@@ -471,14 +478,17 @@ def train_command(args):
         command.append("--use-sdpa")
     if args.init_skill:
         command.extend(("--init-skill", str(args.init_skill)))
+    if args.init_snapshot:
+        command.extend(("--init-snapshot", str(args.init_snapshot)))
     if args.skill_backbone:
         command.append("--skill-backbone")
     if args.until_complete:
         command.append("--until-complete")
     scaling.main(command)
     if args.save_snapshot and (args.directory / "gate17.json").is_file():
+        options = {} if args.init_snapshot is None else dict(init_snapshot=args.init_snapshot)
         export_trained_snapshot(args.directory.resolve(), paths, args.save_snapshot,
-                                snapshot_quant=args.snapshot_quant, focus_domain=args.focus_domain)
+                                snapshot_quant=args.snapshot_quant, focus_domain=args.focus_domain, **options)
 
 
 def solve_command(args):
@@ -702,7 +712,9 @@ def parser():
     train.add_argument("--dim", type=int, choices=scaling.TRAIN_DIMS, metavar="{32,64,...,512}")
     train.add_argument("--layers", type=int, choices=scaling.TRAIN_LAYERS)
     scaling.add_lr_arguments(train)
-    train.add_argument("--init-skill", type=Path, help="start from a verified local standalone byte skill")
+    initial = train.add_mutually_exclusive_group()
+    initial.add_argument("--init-skill", type=Path, help="start from a verified local standalone byte skill")
+    initial.add_argument("--init-snapshot", type=Path, help="initialize neural weights from a verified unified snapshot")
     train.add_argument("--skill-backbone", action="store_true", help="match a warm-start model from scratch")
     train.add_argument("--use-sdpa", action="store_true", help="causal SDPA training up to 4096 bytes")
     train.add_argument("--until-complete", action="store_true")

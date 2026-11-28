@@ -23,6 +23,7 @@ from benchmarks.dev_artifacts import atomic, digest
 from benchmarks.gate_custody import EpochRun, peak_rss, prepare_directory, update
 from benchmarks.unified_checks import exactness
 from nexus_expanse.core import NexusExpanseByteCore
+from nexus_expanse.deltanet import DeltaNetMonarchByteCore
 from nexus_expanse.donor_assimilation import forbid_donor_forward
 from nexus_expanse.hybrid_backbone import HybridDeltaAttentionCore
 from nexus_expanse.jepa import state_hash
@@ -164,10 +165,20 @@ def selected_backbone(*, use_sdpa=False, skill_backbone=False):
     return "causal_attention_skill" if skill_backbone else "causal_attention_monarch"
 
 
-def model_for(geometry, backbone, device, *, use_sdpa=False):
+def model_for(geometry, backbone, device, *, use_sdpa=False, snapshot_architecture=None):
     torch.manual_seed(geometry.seed)
     common = dict(dim=geometry.dim, n_heads=4, ffn_mult=2, max_seq_len=geometry.context)
-    if backbone == "hybrid":
+    if snapshot_architecture is not None:
+        kind, config = snapshot_architecture["kind"], snapshot_architecture["config"]
+        if kind == "attention":
+            model = NexusExpanseByteCore(**config, dropout=0.0, enable_skip=False, use_sdpa=use_sdpa)
+        elif kind == "hybrid":
+            model = HybridDeltaAttentionCore(**config)
+        elif kind == "delta":
+            model = DeltaNetMonarchByteCore(**config)
+        else:
+            raise ValueError("unsupported initial snapshot backbone")
+    elif backbone == "hybrid":
         model = HybridDeltaAttentionCore(**common)
     else:
         skill_shape = backbone == "causal_attention_skill"
@@ -184,6 +195,54 @@ def read_init_skill(path):
     if not 0 < len(payload) <= INIT_SKILL_LIMIT:
         raise ValueError("initial skill is empty or exceeds the snapshot size limit")
     return restore_skill(payload), hashlib.sha256(payload).hexdigest()
+
+
+def read_init_snapshot(path):
+    with path.open("rb") as source:
+        payload = source.read(NexusExpanseUnified.SNAPSHOT_LIMIT + 1)
+    if not 0 < len(payload) <= NexusExpanseUnified.SNAPSHOT_LIMIT:
+        raise ValueError("initial snapshot is empty or exceeds the snapshot size limit")
+    return NexusExpanseUnified.restore(payload), hashlib.sha256(payload).hexdigest()
+
+
+def snapshot_geometry(snapshot, args):
+    kind, config = snapshot._config()
+    model = snapshot.backbone
+    dim, layers = model.dim, len(model.layers)
+    if (args.dim is not None and args.dim != dim) or (args.layers is not None and args.layers != layers):
+        raise ValueError("initial snapshot width or depth does not match training geometry")
+    context = snapshot.max_seq_len if args.context is None else args.context
+    if context < snapshot.max_seq_len:
+        raise ValueError("training context cannot be smaller than the initial snapshot context")
+    if kind == "attention":
+        dense = config.get("ffn_kind") == "dense"
+        untied = config.get("untied_readout", False)
+        backbone = ("causal_attention_skill" if dense and untied else "causal_attention_monarch"
+                    if not dense and not untied else "causal_attention_snapshot")
+    else:
+        backbone = kind
+    if args.skill_backbone and backbone != "causal_attention_skill":
+        raise ValueError("--skill-backbone contradicts the initial snapshot backbone")
+    if args.use_sdpa and kind != "attention":
+        raise ValueError("--use-sdpa requires an attention snapshot backbone")
+    if "max_seq_len" in config:
+        config["max_seq_len"] = context
+    if "schedule" in config:
+        config["schedule"] = list(config["schedule"])
+    return dim, layers, context, backbone, dict(kind=kind, config=config)
+
+
+@torch.no_grad()
+def initialize_from_snapshot(model, snapshot):
+    state = snapshot.backbone.state_dict()
+    if "pos_emb.weight" in state:
+        source = state["pos_emb.weight"]
+        target = model.pos_emb.weight
+        if target.shape[0] < source.shape[0] or target.shape[1:] != source.shape[1:]:
+            raise ValueError("initial snapshot position embeddings do not match training geometry")
+        target[:len(source)].copy_(source)
+        state["pos_emb.weight"] = target
+    model.load_state_dict(state, strict=True)
 
 
 @torch.no_grad()
@@ -283,9 +342,10 @@ def build_unified(model, train, *, focus_domain="all"):
 
 
 @torch.inference_mode()
-def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
+def cold_evaluate(path, args, geometry, backbone, train, evaluation, device, *, snapshot_architecture=None):
     start = time.perf_counter()
-    model = model_for(geometry, backbone, device, use_sdpa=args.use_sdpa).eval()
+    architecture = {} if snapshot_architecture is None else dict(snapshot_architecture=snapshot_architecture)
+    model = model_for(geometry, backbone, device, use_sdpa=args.use_sdpa, **architecture).eval()
     state = torch.load(path, map_location="cpu", weights_only=True)
     model.load_state_dict(state)
     if not args.use_sdpa:
@@ -317,7 +377,7 @@ def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
     if args.use_sdpa:
         # The CPU unified runtime uses the legacy cache's exact reference geometry.
         del model
-        model = model_for(geometry, backbone, torch.device("cpu")).eval()
+        model = model_for(geometry, backbone, torch.device("cpu"), **architecture).eval()
         model.load_state_dict(state)
     unified = build_unified(model, train, focus_domain=args.focus_domain)
     parity_domain = corpus_domains(evaluation, args.focus_domain)[-1]
@@ -331,7 +391,8 @@ def cold_evaluate(path, args, geometry, backbone, train, evaluation, device):
                 unified_initial_serialized_bytes=len(checkpoint), parity_bytes=len(raw), **gpu)
 
 
-def experiment_identity(args, geometry, backbone, manifest, device, *, init_skill_sha256=None):
+def experiment_identity(args, geometry, backbone, manifest, device, *, init_skill_sha256=None,
+                        init_snapshot_sha256=None, snapshot_architecture=None):
     if git("status", "--porcelain"):
         raise ValueError("train from a clean committed checkout")
     cuda = None if device.type == "cpu" else dict(
@@ -350,6 +411,8 @@ def experiment_identity(args, geometry, backbone, manifest, device, *, init_skil
         identity["skill_backbone"] = True
     if init_skill_sha256 is not None:
         identity["init_skill_sha256"] = init_skill_sha256
+    if init_snapshot_sha256 is not None:
+        identity.update(init_snapshot_sha256=init_snapshot_sha256, snapshot_architecture=snapshot_architecture)
     # The legacy identity already means a constant rate of 0.003.
     if args.lr != DEFAULT_LR or args.lr_schedule != "constant":
         identity.update(lr=args.lr, lr_schedule=args.lr_schedule)
@@ -358,9 +421,10 @@ def experiment_identity(args, geometry, backbone, manifest, device, *, init_skil
     return identity
 
 
-def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None, guard):
-    model = model_for(geometry, backbone, torch.device("cpu") if skill is not None else device,
-                      use_sdpa=args.use_sdpa)
+def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None, initial_snapshot=None, guard):
+    options = {} if initial_snapshot is None else dict(snapshot_architecture=spec.identity["snapshot_architecture"])
+    model = model_for(geometry, backbone, torch.device("cpu") if skill is not None or initial_snapshot is not None else device,
+                      use_sdpa=args.use_sdpa, **options)
     prior = None
     prior_alpha = 0.0
     if skill is not None:
@@ -369,6 +433,9 @@ def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None
         if skill.prior_alpha:
             prior = skill.static_byte_prior.to(device)
             prior_alpha = skill.prior_alpha
+    if initial_snapshot is not None:
+        initialize_from_snapshot(model, initial_snapshot)
+        model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=.01)
     scheduled = args.lr_schedule == "cosine"
     total_steps = geometry.epochs * geometry.steps_per_epoch
@@ -419,8 +486,10 @@ def run_slice(spec, args, geometry, backbone, train, device, argv, *, skill=None
             optimizer.state.clear()
             optimizer.param_groups.clear()
             torch.cuda.empty_cache()
-        result = subprocess.check_output([sys.executable, __file__, *argv, "--cold", str(path)],
-                                         text=True)
+        command = [sys.executable, __file__, *argv, "--cold", str(path)]
+        if initial_snapshot is not None:
+            command.extend(("--cold-init-snapshot-sha256", spec.identity["init_snapshot_sha256"]))
+        result = subprocess.check_output(command, text=True)
         cold_report.update(json.loads(result))
         if cold_report["worker_pid"] == os.getpid():
             raise ValueError("restoration did not use a fresh process")
@@ -465,13 +534,15 @@ def main(argv=None):
     p.add_argument("--dtype", choices=("fp32", "bf16"), default="fp32")
     p.add_argument("--smoke", action="store_true")
     p.add_argument("--use-sdpa", action="store_true")
-    p.add_argument("--init-skill", type=Path, help="initialize from a local standalone byte skill")
+    initial = p.add_mutually_exclusive_group()
+    initial.add_argument("--init-skill", type=Path, help="initialize from a local standalone byte skill")
+    initial.add_argument("--init-snapshot", type=Path, help="initialize neural weights from a unified snapshot")
     p.add_argument("--layers", type=int, choices=TRAIN_LAYERS)
     p.add_argument("--skill-backbone", action="store_true", help="use dense FFNs and an untied readout from scratch")
     p.add_argument("--epoch-limit", type=int, default=1, choices=range(1, 9))
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--dim", type=int, default=64, choices=TRAIN_DIMS, metavar="{32,64,...,512}")
-    p.add_argument("--context", type=int, default=128)
+    p.add_argument("--dim", type=int, choices=TRAIN_DIMS, metavar="{32,64,...,512}")
+    p.add_argument("--context", type=int)
     p.add_argument("--epochs", type=int, default=20)
     p.add_argument("--steps-per-epoch", type=int, default=32)
     p.add_argument("--batch-per-domain", type=int, default=2)
@@ -489,6 +560,7 @@ def main(argv=None):
                         help="run bounded slices in the foreground until the final verified receipt")
     action.add_argument("--smoke-evidence", type=Path)
     action.add_argument("--cold", type=Path, help=argparse.SUPPRESS)
+    p.add_argument("--cold-init-snapshot-sha256", help=argparse.SUPPRESS)
     args = p.parse_args(argv)
     if args.smoke and (args.lr != DEFAULT_LR or args.lr_schedule != "constant"):
         p.error("the frozen smoke profile uses its original constant learning rate")
@@ -497,11 +569,12 @@ def main(argv=None):
     torch.set_num_threads(1)
     torch.use_deterministic_algorithms(True)
     geometry = SMOKE if args.smoke else Geometry(
-        args.seed, args.dim, args.context, args.epochs, args.steps_per_epoch, args.batch_per_domain,
+        args.seed, args.dim or 64, args.context if args.context is not None else 128,
+        args.epochs, args.steps_per_epoch, args.batch_per_domain,
         args.eval_blocks, args.layers or 2,
     )
     max_context = 4096 if args.use_sdpa else 512
-    if not (8 <= geometry.context <= max_context and 1 <= geometry.epochs <= 5000
+    if not ((args.init_snapshot or 8 <= geometry.context <= max_context) and 1 <= geometry.epochs <= 5000
             and 1 <= geometry.steps_per_epoch <= MAX_STEPS_PER_EPOCH
             and 1 <= geometry.batch_per_domain <= MAX_BATCH_PER_DOMAIN
             and 1 <= geometry.eval_blocks <= 128):
@@ -517,11 +590,14 @@ def main(argv=None):
         raise RuntimeError("bounded slices ended without a final receipt")
     with forbid_donor_forward() as guard:
         try:
-            if args.smoke and (args.init_skill or args.layers or args.skill_backbone):
+            if args.smoke and (args.init_skill or args.init_snapshot or args.layers or args.skill_backbone):
                 raise ValueError("the frozen smoke profile uses its original training architecture")
             device = device_for(args.device, args.dtype)
             train, evaluation, manifest = load_corpora(args)
             skill, skill_sha = read_init_skill(args.init_skill) if args.init_skill else (None, None)
+            snapshot, snapshot_sha = read_init_snapshot(args.init_snapshot) if args.init_snapshot else (None, None)
+            if args.cold_init_snapshot_sha256 is not None and snapshot_sha != args.cold_init_snapshot_sha256:
+                raise ValueError("initial snapshot SHA-256 changed before cold evaluation")
             if skill is not None:
                 if args.layers is None:
                     geometry = replace(geometry, layers=len(skill.core.layers))
@@ -529,23 +605,35 @@ def main(argv=None):
                     raise ValueError(f"initial skill depth must be one of {TRAIN_LAYERS}")
                 if geometry.dim != skill.readout.in_features or geometry.layers != len(skill.core.layers):
                     raise ValueError("initial skill width or depth does not match training geometry")
+            architecture = None
+            if snapshot is not None:
+                dim, layers, context, backbone, architecture = snapshot_geometry(snapshot, args)
+                if not min(8, snapshot.max_seq_len) <= context <= max(4096, snapshot.max_seq_len):
+                    raise ValueError("invalid context for snapshot fine-tuning")
+                geometry = replace(geometry, dim=dim, layers=layers, context=context)
+                if architecture["kind"] == "attention" and context > 512:
+                    args.use_sdpa = True
+            else:
+                backbone = selected_backbone(use_sdpa=args.use_sdpa, skill_backbone=bool(skill or args.skill_backbone))
         except (ValueError, OSError) as exc:
             p.error(str(exc))
 
-        backbone = selected_backbone(use_sdpa=args.use_sdpa, skill_backbone=bool(skill or args.skill_backbone))
-        if backbone == "hybrid" and geometry.layers != 2:
+        if snapshot is None and backbone == "hybrid" and geometry.layers != 2:
             p.error("select --skill-backbone or --use-sdpa for a different layer depth")
         if args.cold:
-            result = cold_evaluate(args.cold, args, geometry, backbone, train, evaluation, device)
+            options = {} if architecture is None else dict(snapshot_architecture=architecture)
+            result = cold_evaluate(args.cold, args, geometry, backbone, train, evaluation, device, **options)
             print(json.dumps(dict(result, donor_forward_calls=guard.donor_forward_calls), allow_nan=False))
             return
         directory = prepare_directory(args.directory, ROOT)
-        ident = experiment_identity(args, geometry, backbone, manifest, device, init_skill_sha256=skill_sha)
+        ident = experiment_identity(args, geometry, backbone, manifest, device, init_skill_sha256=skill_sha,
+                                    init_snapshot_sha256=snapshot_sha, snapshot_architecture=architecture)
         spec = EpochRun(directory, "gate17", ident, geometry.epochs, geometry.steps_per_epoch, device=device)
         if args.smoke_evidence:
             emit_smoke(spec, args, device, args.smoke_evidence)
         else:
-            run_slice(spec, args, geometry, backbone, train, device, argv, skill=skill, guard=guard)
+            options = {} if snapshot is None else dict(initial_snapshot=snapshot)
+            run_slice(spec, args, geometry, backbone, train, device, argv, skill=skill, guard=guard, **options)
 
 
 if __name__ == "__main__":
