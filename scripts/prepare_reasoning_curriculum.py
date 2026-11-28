@@ -64,7 +64,8 @@ def examples(seed, split, index, rng, *, include_think=False):
     spec = dict(variables={"A":[shift,next_slot], "B":[shift,next_slot]}, constraints=constraints)
     answer = f"A={shift},B={next_slot}\n"
     if include_think:
-        answer = scratchpad(f"{next_slot}: drop A, no later B. Keep A={shift}, then B={next_slot}.", answer)
+        steps = f"{split}: drop A={next_slot}, no later B; {split}: keep A={shift}, B={next_slot}."
+        answer = scratchpad(steps, answer)
     yield "reasoning", mark+f"Slots {shift},{next_slot}. A before B. A=n,B=n.\n", answer, None, spec
 
     target = ("csv", "json", "tsv", "markdown")[index % 4]

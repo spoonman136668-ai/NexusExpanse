@@ -105,6 +105,14 @@ def test_curriculum_cli_includes_verified_deterministic_work_and_zero_overlap(tm
     assert final_answer(b"<think>example</think>\n4") == b"4"
 
 
+def test_curriculum_scratchpads_remain_disjoint_at_two_megabytes(tmp_path):
+    report = curriculum.prepare(tmp_path, size_bytes=2_000_000, seed=42, include_think=True)
+    assert report["shared_32_byte_windows"] == {"train_eval": 0, "train_builtin": 0, "eval_builtin": 0}
+    assert report["verifier_passed"] == sum(file["examples"] for file in report["files"].values()) > 0
+    written_bytes = sum((tmp_path / name).stat().st_size for name in report["files"])
+    assert 1_990_000 < written_bytes <= 2_000_000
+
+
 def test_grad_accum_weights_partial_microbatches_by_target_byte_count():
     g = scaling.Geometry(13, 32, 8, 1, 1, 1, 1, n_heads=8, grad_accum=2)
     model, reference = (scaling.model_for(g, "causal_attention_monarch", CPU) for _ in range(2))
