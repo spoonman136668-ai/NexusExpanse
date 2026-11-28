@@ -358,6 +358,7 @@ class VerifiedByteSearch:
     def _proposal(self, prompt, length, stop_bytes, temperature, top_p, generator, *, allow_think=False):
         output = bytearray()
         logprob = 0.0
+        deferred_stop = None
         with closing(self._forecasts(prompt)) as trace:
             probs = next(trace)
             for pos in range(length):
@@ -365,8 +366,20 @@ class VerifiedByteSearch:
                         else nucleus_byte(probs.log(), temperature, top_p, generator))
                 logprob += math.log(float(probs[byte]))
                 output.append(byte)
-                tail = final_answer(output) if allow_think else output
-                if (tail and tail.endswith(stop_bytes)) or pos + 1 == length:
+                if allow_think and len(output) < len(THINK_OPEN) and THINK_OPEN.startswith(output):
+                    # Preserve the first stop in case these bytes never form a complete opening tag.
+                    if deferred_stop is None and output.endswith(stop_bytes):
+                        deferred_stop = (bytes(output), logprob)
+                else:
+                    if deferred_stop is not None and not output.startswith(THINK_OPEN):
+                        return deferred_stop
+                    deferred_stop = None
+                    tail = final_answer(output) if allow_think else output
+                    if tail is not None and tail.endswith(stop_bytes):
+                        break
+                if pos + 1 == length:
                     break
                 probs = trace.send(byte)
+        if deferred_stop is not None:
+            return deferred_stop
         return bytes(output), logprob

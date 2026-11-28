@@ -12,6 +12,7 @@ import torch
 from benchmarks import gate17_gpu_scaling_harness as scaling
 from benchmarks.phase24_cot_and_scaling import large_geometry
 from nexus_expanse import cli, core
+from nexus_expanse.livebench_eval import builtin_dev_suite, dev_records
 from nexus_expanse.structured_verifiers import final_answer
 from nexus_expanse.unified import NexusExpanseUnified
 from nexus_expanse.verified_search import VerifiedByteSearch, make_verifier
@@ -55,16 +56,16 @@ def test_all_verifiers_strip_only_closed_leading_think(kind, prompt, tests, spec
     assert verify(b"<think>ignored</think>\nwrong") == direct(b"wrong")
 
 
+def byte_forecasts(raw):
+    for byte in raw:
+        distribution = torch.zeros(256, dtype=torch.float64)
+        distribution[byte] = 1.0
+        yield distribution
+
+
 def test_cli_search_and_jsonl_eval_wait_for_post_scratchpad_answer(tmp_path, monkeypatch, capsys):
     candidate = b"<think>4+2\n\n equals 6</think>\n\n6\n"
-
-    def forecasts(self, prompt):
-        for byte in candidate:
-            distribution = torch.zeros(256, dtype=torch.float64)
-            distribution[byte] = 1.0
-            yield distribution
-
-    monkeypatch.setattr(VerifiedByteSearch, "_forecasts", forecasts)
+    monkeypatch.setattr(VerifiedByteSearch, "_forecasts", lambda self, prompt: byte_forecasts(candidate))
     snapshot = tmp_path / "model.pt"
     snapshot.write_bytes(cli.default_model().snapshot())
     common = ("--snapshot", str(snapshot), "--max-bytes", str(len(candidate)), "--device", "cpu",
@@ -83,6 +84,68 @@ def test_cli_search_and_jsonl_eval_wait_for_post_scratchpad_answer(tmp_path, mon
     result = json.loads(capsys.readouterr().out)
     assert result["counts"]["math"]["passed"] == 1
     assert result["allow_think"] and result["donor_forward_calls"] == 0
+
+
+def test_builtin_eval_think_budget_can_reach_the_answer(tmp_path, monkeypatch, capsys):
+    scratchpad_categories = {"math", "reasoning"}
+    prefix = b"<think>" + b"x" * 126 + b"\n</think>\r\n\n"
+    proposals = {
+        row["turns"][0].encode(): (prefix if row["category"] in scratchpad_categories else b"") + answer
+        for row, answer in dev_records()[2]
+    }
+    monkeypatch.setattr(VerifiedByteSearch, "_forecasts", lambda self, prompt: byte_forecasts(proposals[prompt]))
+    snapshot = tmp_path / "model.pt"
+    snapshot.write_bytes(cli.default_model().snapshot())
+    argv = ["eval-livebench", "--builtin-dev-suite", "--allow-think", "--snapshot", str(snapshot),
+            "--device", "cpu", "--always-wake", "--no-episodic", "--candidates", "1"]
+    cli.main(argv)
+    full = json.loads(capsys.readouterr().out)
+    for category in scratchpad_categories:
+        assert full["counts"][category]["passed"] == full["counts"][category]["total"] == 6
+    assert full["donor_forward_calls"] == 0
+
+    plain = builtin_dev_suite()
+    opted_in = builtin_dev_suite(allow_think=True)
+    for original, expanded in zip(plain.tasks, opted_in.tasks, strict=True):
+        if original.category in scratchpad_categories:
+            assert original.max_bytes in (8, 22)
+            assert expanded.max_bytes >= len(proposals[original.prompt]) > 128
+        else:
+            assert expanded.max_bytes == original.max_bytes
+
+    cli.main([*argv, "--max-bytes", "120"])
+    capped = json.loads(capsys.readouterr().out)
+    for row in capped["tasks"]:
+        if row["category"] in scratchpad_categories:
+            assert len(bytes.fromhex(row["selected_hex"])) == 120
+            assert not row["passed"] and row["error"] == "unterminated think block"
+
+
+@pytest.mark.parametrize("stop,answer", [(b"\n", b"6\n"), (b"\n\n", b"6\n\n"), (b"<t", b"6\n<t")])
+def test_search_delimiter_only_ends_the_final_answer(monkeypatch, stop, answer):
+    prompt = b"4+2="
+    expected = b"<think>4+2\n\n<t 6</think>\r\n\n" + answer
+    candidate = expected + b"extra"
+    monkeypatch.setattr(VerifiedByteSearch, "_forecasts", lambda self, prompt: byte_forecasts(candidate))
+    model = VerifiedByteSearch(cli.default_model().snapshot())
+    verify = make_verifier("arithmetic", prompt, allow_think=True)
+    result = model.run(prompt, verify, candidates=1, max_bytes=len(candidate), stop_bytes=stop, allow_think=True)
+    assert result.selected.raw == expected and result.selected.verification.passed
+    assert result.donor_forward_calls == 0
+
+
+def test_custom_stop_preserves_untagged_output_matching_partial_opener(monkeypatch):
+    prompt = b"4+2="
+    candidate = b"<thinX\n"
+    monkeypatch.setattr(VerifiedByteSearch, "_forecasts", lambda self, prompt: byte_forecasts(candidate))
+    model = VerifiedByteSearch(cli.default_model().snapshot())
+    verify = make_verifier("arithmetic", prompt, allow_think=True)
+    for length in (4, len(candidate)):
+        options = dict(candidates=1, max_bytes=length, stop_bytes=b"<t")
+        legacy = model.run(prompt, verify, **options).selected
+        tagged = model.run(prompt, verify, **options, allow_think=True).selected
+        assert (tagged.raw, tagged.logprob, tagged.verification) == (legacy.raw, legacy.logprob, legacy.verification)
+        assert tagged.raw == b"<t"
 
 
 def test_curriculum_cli_includes_verified_deterministic_work_and_zero_overlap(tmp_path):

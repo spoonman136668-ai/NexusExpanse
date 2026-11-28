@@ -19,6 +19,7 @@ VERIFIERS = {"math": "arithmetic", "coding": "python_fn", "reasoning": "logic_cs
 CATEGORIES = tuple(VERIFIERS)
 MAX_JSONL_LINE = 65_536
 BUILTIN_SEED = 3501
+SCRATCHPAD_MIN_BYTES = 160
 
 
 @dataclass(frozen=True)
@@ -174,6 +175,8 @@ def _task(row, key, category, *, allow_think):
         raise ValueError("invalid search limits in task row")
     if allow_think:
         verify = scratchpad_verifier(verify)
+        if category in ("math", "reasoning"):
+            max_bytes = max(max_bytes, SCRATCHPAD_MIN_BYTES)
     return Task(key, category, raw, verify, max_bytes, stop.encode("utf-8"), mode)
 
 
