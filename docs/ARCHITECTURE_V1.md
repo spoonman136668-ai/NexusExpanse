@@ -256,3 +256,25 @@ Raw-file mode uses `batch_per_domain` sequences per update and stores separate t
 | 3105 | 5.424893 | 4.805348 |
 
 Both new modes matched their uninterrupted epoch and final hashes and INT8 exports in all five seeds. CLI verification had `0.0` round-trip and causal differences, and `generate --always-wake` accepted every tested snapshot with zero donor forward calls. [Preregistration](PHASE17_DOMAIN_FOCUS_PREREG.md) · [Unrounded scores and custody evidence](../evidence/phase17-domain-focus-dev-001.json)
+
+## Phase 18 multimodal byte skills
+
+Audio frames store a pitch marker and 64 μ-law sample levels. Image frames store a tile marker and 64 row-major grayscale values. Telemetry packets store a type marker, a positive little-endian counter delta, three correlated byte channels, and a checksum. The generators can reject overlapping 32-byte windows between FIT, CAL, and CHECK. All three use the existing 256-way byte head, including zero and bytes outside UTF-8.
+
+`MultiSkillBank.from_unified_snapshots` accepts named unified archives with different widths, depths, and contexts. A receiver exposes the restored neural backbone with its own causal context. Its archived unified cursor and adaptive memory do not feed the router. Bank snapshots preserve the embedded archive bytes and load with weights-only deserialization. INT8 reduces storage and the receiver forecasts in FP32. The bank still restores legacy imported skills and episodic entries.
+
+Sticky-HMM BMA updates routing weights from observed-byte likelihoods and keeps each resident model frozen. `OpenWorldSkillBank` tests novelty on a trailing window. On a trigger it copies the base receiver, adapts the copy on observed bytes and repacks its neural archive at the source precision before registering it with suffix memory. The relative mixture weights can change after registration even when the resident weights and component forecasts are exact.
+
+The four `128×4` residents used a combined 16,384 training targets and 256 updates, matching the `128×4` monolith's budget. On the switched stream, Sticky-HMM BMA averaged 5.2269 BPB, the uniform mixture 6.2814, the best single model 5.9257, and the labeled oracle 5.1973. The switched-stream arm passed in all five seeds.
+
+| Seed | HMM BPB | Uniform BPB | Best single BPB | Oracle BPB | Settled routing |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 3201 | 5.3932 | 6.3941 | 6.0717 | 5.3870 | 87.2% |
+| 3202 | 5.2975 | 6.4213 | 6.2466 | 5.3156 | 89.4% |
+| 3203 | 5.2005 | 6.1526 | 5.6813 | 5.2122 | 86.6% |
+| 3204 | 5.1913 | 6.3363 | 5.7605 | 5.1036 | 94.5% |
+| 3205 | 5.0519 | 6.1026 | 5.8683 | 4.9682 | 90.2% |
+
+The telemetry arm passed in 0/5 seeds. Seeds 3201 and 3205 triggered at byte 160 during the encounter. Their held telemetry BPB fell from 7.8046 to 7.2707 and from 8.9472 to 7.4520. Settled cold telemetry routing reached 27.7% and 37.5%, below the 80% per-domain target. Both seeds also flagged the held audio control. Maximum upward drift across residents was 0.0151 BPB, within the +0.05 limit. The other three seeds registered no new skill. The joint DEV verdict is **MIXED**.
+
+All five seeds had zero shared 32-byte train/eval windows, exact `0.0` prefix differences, exact cold bank forecasts, unchanged resident weights, and zero donor forwards. Individual INT8 snapshots compressed by at least 3.104× versus FP32. The complete four-skill bank was about 4× the size of the single INT8 monolith. The two five-skill banks each used about 4.20 MB. These are Linux CPU results on repository prose/code and synthetic binary streams. External media, scale-up, and independent scientific qualification remain open. [Preregistration](PHASE18_MULTIMODAL_BYTE_SKILLS_PREREG.md) · [Unrounded results and custody](../evidence/phase18-multimodal-byte-skills-dev-001.json)

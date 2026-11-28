@@ -28,7 +28,7 @@ Run `python -m nexus_expanse.cli <command> --help` for arguments and defaults.
 | `generate` | Generates raw bytes from a unified snapshot with greedy or seeded top-p decoding on `cpu`, `cuda`, or `auto`. |
 | `solve` | Searches a bounded expression library and checks the output against the target bytes. |
 | `import-skill` | Converts a compatible static donor checkpoint into a verified native skill. |
-| `route-stream` | Forecasts from a saved multi-skill bank using the selected router. |
+| `route-stream` | Forecasts from a saved multi-skill bank or named unified snapshots using the selected router. |
 | `assimilate` | Trains a native byte skill from static donor-cache shards. |
 | `assimilate-zero-exec` | Initializes a native skill from local or streamed safetensors without running the donor. Offers configurable student width and depth. |
 | `weight-edit` | Inspects or ablates an attention subspace in a saved skill. |
@@ -86,6 +86,21 @@ python -m nexus_expanse.cli train --train-file ../nexus-stream-data/stream-train
 Use `--single-hf REPO[:CONFIG]` to pack one Hub text stream. The packager verifies zero shared 32-byte train/eval windows before writing the split files and `corpus_manifest.json`. It may use less than the size cap to preserve intact records or raw spans and a leakage-free split.
 
 In the matched CPU DEV study, focused prose beat mixed training in all five seeds and reduced mean held-out prose BPB by 0.50394. Mean held-out math BPB increased. Both new modes reproduced their final hashes and INT8 exports after cold resume. [Preregistration](docs/PHASE17_DOMAIN_FOCUS_PREREG.md) · [Raw evidence](evidence/phase17-domain-focus-dev-001.json)
+
+## Phase 18 multimodal byte skills (DEV)
+
+Train each receiver with `train --train-file ... --eval-file ... --snapshot-quant int8`. Supply the resulting snapshots to the router by name. Audio frames, image tiles, and telemetry packets use the same 256 byte IDs as text and code.
+
+```sh
+python -m nexus_expanse.cli route-stream --router hmm_bma \
+  --skill-snapshot prose ../prose.pt --skill-snapshot code ../code.pt \
+  --skill-snapshot audio ../audio.pt --skill-snapshot image ../image.pt \
+  --input-hex 48656c6c6f --input-hex f00080ff
+```
+
+The router preserves one history across input chunks. It restores INT8 snapshot weights to FP32 for inference. `--bank` still loads saved banks. The Python `OpenWorldSkillBank` API can register a new receiver after observing a novelty window and adapting a clone of the base receiver.
+
+In five offline CPU seeds, Sticky-HMM BMA beat the uniform mixture and best single model in every run. Mean settled routing accuracy was 89.6%. Telemetry triggered a new skill in 2/5 seeds, and both births lowered held telemetry BPB. Neither cleared all birth criteria, so the DEV verdict is **MIXED**. Each trained INT8 archive was at least 3.104× smaller than its FP32 counterpart. The four-skill bank occupied about 3.36 MB, while the single INT8 monolith occupied about 0.84 MB. The study used synthetic audio, images, and telemetry. [Preregistration](docs/PHASE18_MULTIMODAL_BYTE_SKILLS_PREREG.md) · [Raw evidence](evidence/phase18-multimodal-byte-skills-dev-001.json)
 
 ## Release-candidate evidence
 
