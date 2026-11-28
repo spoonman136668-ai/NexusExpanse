@@ -28,6 +28,7 @@ from nexus_expanse.jepa import state_hash
 from nexus_expanse.livebench_eval import VERIFIERS, builtin_dev_suite, evaluate_budgets, load_tasks_jsonl
 from nexus_expanse.patching import CompactBigram
 from nexus_expanse.snapshot_quant import SNAPSHOT_QUANTS
+from nexus_expanse.self_distill import builtin_train_suite, harvest_verified_traces, write_harvest
 from nexus_expanse.ssd_engram import SSDEngramStore
 from nexus_expanse.structured_verifiers import strict_json
 from nexus_expanse.unified import NexusExpanseUnified
@@ -360,6 +361,28 @@ def eval_livebench_command(args):
             report["engram_index_sha256"] = engram.index_sha256
         emit(dict(command="eval-livebench", scope="local_objective", device=device.type,
                   source="builtin_dev_suite" if args.builtin_dev_suite else "tasks_jsonl",
+                  wall_seconds=time.perf_counter() - started, **report))
+
+
+def harvest_verified_command(args):
+    started = time.perf_counter()
+    suite = builtin_train_suite() if args.builtin_train_suite else load_tasks_jsonl(args.tasks_jsonl)
+    evaluation = args.eval_file.read_bytes() if args.eval_file is not None else None
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+    device = scaling.device_for(args.device, "fp32")
+    raw = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT)
+    with open_engram(args) as engram:
+        engine = VerifiedByteSearch(raw, expected_sha256=args.snapshot_sha256, device=device,
+                                    always_wake=args.always_wake, engram=engram, engram_alpha=args.engram_alpha)
+        harvest = harvest_verified_traces(engine, suite, candidates=args.candidates, max_bytes=args.max_bytes,
+                                          temperature=args.temperature, top_p=args.top_p, seed=args.seed)
+        write_harvest(harvest, args.out_bin, out_jsonl=args.out_jsonl, evaluation=evaluation)
+        report = harvest.report()
+        if engram is not None:
+            report["engram_index_sha256"] = engram.index_sha256
+        if evaluation is not None:
+            report.update(heldout_sha256=hashlib.sha256(evaluation).hexdigest(), shared_32_byte_windows=0)
+        emit(dict(command="harvest-verified", device=device.type, candidates=args.candidates,
                   wall_seconds=time.perf_counter() - started, **report))
 
 
@@ -726,6 +749,16 @@ def parser():
     tasks.add_argument("--tasks-jsonl", type=Path, help="local LiveBench-shaped task rows")
     tasks.add_argument("--builtin-dev-suite", action="store_true", help="use the deterministic offline suite")
     livebench.set_defaults(handler=eval_livebench_command)
+
+    harvest = sub.add_parser("harvest-verified", help="write independently re-verified byte traces")
+    add_search_runtime_arguments(harvest, max_bytes=MAX_OUTPUT)
+    train_tasks = harvest.add_mutually_exclusive_group(required=True)
+    train_tasks.add_argument("--tasks-jsonl", type=Path, help="local training-only task rows")
+    train_tasks.add_argument("--builtin-train-suite", action="store_true")
+    harvest.add_argument("--out-bin", type=Path, required=True)
+    harvest.add_argument("--out-jsonl", type=Path, help="write accepted trace offsets and verification counts")
+    harvest.add_argument("--eval-file", type=Path, help="reject any shared 32-byte window with this held stream")
+    harvest.set_defaults(handler=harvest_verified_command)
 
     engram = sub.add_parser("build-engram", help="index raw-byte suffix counts in a new immutable SQLite file")
     engram.add_argument("--input", type=Path, required=True)
