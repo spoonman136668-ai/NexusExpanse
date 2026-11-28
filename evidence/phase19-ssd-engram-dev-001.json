@@ -1,0 +1,1273 @@
+{
+  "schema": "nexus.phase19-ssd-engram.v1",
+  "base": "fa8a42a35ca36d010842ed4aed49bae594cdb89a",
+  "source_commit": "a0ddd2e43cd8ec3cb29f366019c12f93c71baed3",
+  "source_tree": "e7389e05455943677a35a65b66c6be1a8b907246",
+  "prereg_sha256": "89e3dacc241da9ca8c9b1d5bdc271a460f41012dc4553575fe9a9be6b16010a0",
+  "corpus_source_sha": "105e6e754abe940de5c66ca41a75c3bf825aa1cb",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "torch": "2.10.0+cpu",
+  "offline": true,
+  "seconds": 97.16664646199206,
+  "parent_peak_rss_bytes": 325828608,
+  "seeds": [
+    {
+      "seed": 3301,
+      "corpus": {
+        "source": {
+          "fit": {
+            "base_python": {
+              "sha256": "d8675ff09849128d80e522aeee3f52df000512ed12dfef8fab84eb0e8d45b03e",
+              "files": [
+                "nexus_expanse/core.py",
+                "nexus_expanse/unified.py"
+              ],
+              "windows": 96
+            },
+            "markdown_prose": {
+              "sha256": "66d3abbfd3ac7b9e388669ed9847b45784dd8f35393ac14288b307c153acfcb8",
+              "files": [
+                "README.md",
+                "docs/ARCHITECTURE_V1.md"
+              ],
+              "windows": 96
+            }
+          },
+          "val": {
+            "base_python": {
+              "sha256": "8f22bed17751a13b931911e8a71c111c9524a1844bbf1f46dd855be0d42dc4ca",
+              "files": [
+                "nexus_expanse/cli.py",
+                "nexus_expanse/donor_assimilation.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "197bb867b84490344cd1921a6c207abcf394e2b17ca45f912d1a81fd7f692db9",
+              "files": [
+                "docs/GATE19_PREREG.md",
+                "docs/GATE20_PREREG.md",
+                "docs/GATE21_PREREG.md"
+              ],
+              "windows": 24
+            }
+          },
+          "check": {
+            "base_python": {
+              "sha256": "0beab8628d40d43d9531da17db179b4640e580d19b92d5a36cd8d130f3687ee0",
+              "files": [
+                "nexus_expanse/verifier_agent.py",
+                "nexus_expanse/deltanet.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "92a3d027ec27c98d409dc838de0dd48549ec91d8187295520aacbfaf188dbb3b",
+              "files": [
+                "docs/GATE25_PREREG.md",
+                "docs/CHECKPOINT_TRANSFER_PROTOCOL.md"
+              ],
+              "windows": 24
+            }
+          }
+        },
+        "corpus_seed": 3301,
+        "rejected": [],
+        "sha256": {
+          "code-eval.bin": "0beab8628d40d43d9531da17db179b4640e580d19b92d5a36cd8d130f3687ee0",
+          "code-train.bin": "4c3b950a3e7f4c7def6628d926dfca4deef9da082fce19247978dfafa92df8ad",
+          "math-eval.bin": "1fde302624730b117ba8126e82fc50d98bb3acf40f077de531e422e5990c13ba",
+          "math-train.bin": "da27c16485fedf80c09430166a01a0bd4507869bedd0c893ec2ee6f87767fc14",
+          "prose-eval.bin": "92a3d027ec27c98d409dc838de0dd48549ec91d8187295520aacbfaf188dbb3b",
+          "prose-train.bin": "f16ccbdca0671f4435a3f931cc1ffa2761297717546388730cff2f41523b4306"
+        }
+      },
+      "overlap_32b": 0,
+      "training": {
+        "all": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3301/all.pt",
+            "neural_state_sha256": "16adc0ac60cb696f79c664f411c7bad10fc351945d824da41753ccbf469aa1d2",
+            "snapshot_sha256": "031116b9f26ab25d5f043f8ad3a26af30444cf80bd4ad40b536076ccf2c77fab",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "prose": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3301/prose.pt",
+            "neural_state_sha256": "95853182ae971bdcdbf8c9a964d86386f4c5c77fcd8afae7d1a10eafe4986670",
+            "snapshot_sha256": "c59f78ec12a25d2dc3d81b1a7eb154c72ba92a0934e0b7b32de146cd7837d6fe",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "code": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3301/code.pt",
+            "neural_state_sha256": "75f6b286dd1917c8ba9b32790a52e5569a2909eaf7ec5534a816ebd271e35c3b",
+            "snapshot_sha256": "a88c3eaece05c431b2eee871256f8a492b98a6654f056bedc4985dc83777521e",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        }
+      },
+      "indexes": {
+        "all": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "0c8cd4008f2df0cbe6f4f2979e51a933765e5229d328df8a3f6d4b4a08cea19c",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 12218,
+          "index_bytes": 262144,
+          "index_sha256": "4e4bc3f96ca8622fa96b1e8cc9ab77de1829be73da7478d98405e8500e432c40"
+        },
+        "prose": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "f16ccbdca0671f4435a3f931cc1ffa2761297717546388730cff2f41523b4306",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 4665,
+          "index_bytes": 106496,
+          "index_sha256": "13bc47ea1ce936e52837a39f7c148d3d5b18746246c24e5103b5dd564f94bc0a"
+        },
+        "code": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "4c3b950a3e7f4c7def6628d926dfca4deef9da082fce19247978dfafa92df8ad",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 5527,
+          "index_bytes": 126976,
+          "index_sha256": "aef6bf7fefa49f148d1f5a812c712309e7332f0dc1c2d4e1d2e2fb2c32f85f2c"
+        }
+      },
+      "domains": {
+        "math": {
+          "targets": 1535,
+          "neural_bits": 7532.904758878209,
+          "engram_bits": 7532.7529394362955,
+          "neural_bpb": 4.90742981034411,
+          "engram_bpb": 4.907330905170225,
+          "delta_bpb": -9.89051738848052e-05,
+          "hits": 41,
+          "hit_rate": 0.026710097719869708,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 7298.940210493209,
+          "engram_bits": 7063.749412265159,
+          "neural_bpb": 4.7550099091160964,
+          "engram_bpb": 4.601791148055478,
+          "delta_bpb": -0.15321876106061888,
+          "hits": 651,
+          "hit_rate": 0.4241042345276873,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 7354.990266327679,
+          "engram_bits": 7300.8786481279485,
+          "neural_bpb": 4.7915246034708,
+          "engram_bpb": 4.756272734936775,
+          "delta_bpb": -0.03525186853402632,
+          "hits": 504,
+          "hit_rate": 0.3283387622149837,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "ood": {
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 7183.469351191184,
+          "engram_bits": 7174.113510027311,
+          "neural_bpb": 4.679784593609892,
+          "engram_bpb": 4.673689583079682,
+          "delta_bpb": -0.006095010530210004,
+          "hits": 206,
+          "hit_rate": 0.13420195439739413,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 6870.097585732645,
+          "engram_bits": 6851.1619060750245,
+          "neural_bpb": 4.475633606340486,
+          "engram_bpb": 4.463297658680798,
+          "delta_bpb": -0.0123359476596875,
+          "hits": 147,
+          "hit_rate": 0.09576547231270359,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "pooled": {
+        "neural": 4.817988107643669,
+        "engram": 4.755131596054159
+      },
+      "prefix": {
+        "seeds": 100,
+        "active": 100,
+        "maximum": 0.0,
+        "failures": []
+      }
+    },
+    {
+      "seed": 3302,
+      "corpus": {
+        "source": {
+          "fit": {
+            "base_python": {
+              "sha256": "f8151c5c09bab808e897dcceb437cc5c9bed26e4653caa6bbd0e54948ba09707",
+              "files": [
+                "nexus_expanse/core.py",
+                "nexus_expanse/unified.py"
+              ],
+              "windows": 96
+            },
+            "markdown_prose": {
+              "sha256": "ac93f336c09d3686351680c1af04a09c19d57aa0f41205988f57f1b4ea1e922f",
+              "files": [
+                "README.md",
+                "docs/ARCHITECTURE_V1.md"
+              ],
+              "windows": 96
+            }
+          },
+          "val": {
+            "base_python": {
+              "sha256": "83cf8157ae6c5f372fadba707ef9bdfb50833999fcfdb042b758cff9d93e3655",
+              "files": [
+                "nexus_expanse/cli.py",
+                "nexus_expanse/donor_assimilation.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "28c14ef4eec8bd42d0f27d6e2556a1aca6116d3632693303f7ea0ab8df25472b",
+              "files": [
+                "docs/GATE19_PREREG.md",
+                "docs/GATE20_PREREG.md",
+                "docs/GATE21_PREREG.md"
+              ],
+              "windows": 24
+            }
+          },
+          "check": {
+            "base_python": {
+              "sha256": "2410c95998d14aed0fff870be4bd02e3a9061d2d74bb694ca4fb183baad47eb6",
+              "files": [
+                "nexus_expanse/verifier_agent.py",
+                "nexus_expanse/deltanet.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "9a3731ce2efd48ce3ee83b65694e30bcfbc2fec5eacbb48e67379e0d4b240916",
+              "files": [
+                "docs/GATE25_PREREG.md",
+                "docs/CHECKPOINT_TRANSFER_PROTOCOL.md"
+              ],
+              "windows": 24
+            }
+          }
+        },
+        "corpus_seed": 3302,
+        "rejected": [],
+        "sha256": {
+          "code-eval.bin": "2410c95998d14aed0fff870be4bd02e3a9061d2d74bb694ca4fb183baad47eb6",
+          "code-train.bin": "97015c1fdefe49ea7fb855808be6f7e57c5494629b9f5d5d0ff146568f13d450",
+          "math-eval.bin": "e1fc295705e2030cbea5595ac3e2d5d459404cb47c4579e3a4926e3731c59ebe",
+          "math-train.bin": "df620938a3a7c66a51966a947fd91e0d30e6d1c31f13d242613baacf6a0722ee",
+          "prose-eval.bin": "9a3731ce2efd48ce3ee83b65694e30bcfbc2fec5eacbb48e67379e0d4b240916",
+          "prose-train.bin": "d2b6205e891e88be70f1549bafd6ae92a1bc4ea4d3db8a147c8ee496835e15e9"
+        }
+      },
+      "overlap_32b": 0,
+      "training": {
+        "all": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3302/all.pt",
+            "neural_state_sha256": "9f5f13a0059a586475944803b4fb60045e0c8bfba788c142b26afa6b99c6c28d",
+            "snapshot_sha256": "f59d8bd8899682bc1fe9ef79f241dbb95af319fd26604b82eeddf28493625b64",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "prose": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3302/prose.pt",
+            "neural_state_sha256": "6693cf28f5ad763f30e6ba6d0b1bf00a5dcbef1c394e32230a3111d154cb25c0",
+            "snapshot_sha256": "95a83be57cd28a5004261a7743a1d45d95d2bc20333d319cece2b06c9ea67503",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "code": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3302/code.pt",
+            "neural_state_sha256": "45559232815e9925dd6007347b67f3772f8af6f699217b15f85a3232043f9377",
+            "snapshot_sha256": "120f2e41041d14ac165e464505922bfd69d774e44a0023595ee1169699bcb622",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        }
+      },
+      "indexes": {
+        "all": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "71e1ccca4debc717bfffdd453c80e3c967ac9bf97d907ac0216e44a05e6e2cdf",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 11653,
+          "index_bytes": 249856,
+          "index_sha256": "c55c52fe306a907c888f97aac37a5d7a1897fbc2a8d8a37fa610bc04ab28be77"
+        },
+        "prose": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "d2b6205e891e88be70f1549bafd6ae92a1bc4ea4d3db8a147c8ee496835e15e9",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 4448,
+          "index_bytes": 102400,
+          "index_sha256": "98df8e7b7b8ef2b9d3f6164d5baaee3ecb6124550e38e5a7b699a70896d366b4"
+        },
+        "code": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "97015c1fdefe49ea7fb855808be6f7e57c5494629b9f5d5d0ff146568f13d450",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 5594,
+          "index_bytes": 126976,
+          "index_sha256": "22c0a28184c3688de9690ec8aee5654e7115bedda13fb73fe600d55c82b89057"
+        }
+      },
+      "domains": {
+        "math": {
+          "targets": 1535,
+          "neural_bits": 8676.653717474752,
+          "engram_bits": 8676.69558170189,
+          "neural_bpb": 5.652543138420034,
+          "engram_bpb": 5.652570411532175,
+          "delta_bpb": 2.727311214196825e-05,
+          "hits": 31,
+          "hit_rate": 0.020195439739413682,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 7389.594114802653,
+          "engram_bits": 7172.879860497531,
+          "neural_bpb": 4.814067827232999,
+          "engram_bpb": 4.672885902604254,
+          "delta_bpb": -0.14118192462874415,
+          "hits": 620,
+          "hit_rate": 0.40390879478827363,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 7870.908408193863,
+          "engram_bits": 7825.838270055561,
+          "neural_bpb": 5.1276276274878585,
+          "engram_bpb": 5.098265973977564,
+          "delta_bpb": -0.0293616535102941,
+          "hits": 483,
+          "hit_rate": 0.31465798045602605,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "ood": {
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 7709.794828699314,
+          "engram_bits": 7697.0807448303685,
+          "neural_bpb": 5.022667640846459,
+          "engram_bpb": 5.014384850052357,
+          "delta_bpb": -0.008282790794101392,
+          "hits": 240,
+          "hit_rate": 0.1563517915309446,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 6882.980239106855,
+          "engram_bits": 6873.379149936496,
+          "neural_bpb": 4.48402621440186,
+          "engram_bpb": 4.477771433183385,
+          "delta_bpb": -0.006254781218474948,
+          "hits": 127,
+          "hit_rate": 0.08273615635179153,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "pooled": {
+        "neural": 5.198079531046964,
+        "engram": 5.141240762704665
+      },
+      "prefix": null
+    },
+    {
+      "seed": 3303,
+      "corpus": {
+        "source": {
+          "fit": {
+            "base_python": {
+              "sha256": "b13ec127300cd81bf0de63876a2148a825aa8c910bec85edf0ddab1850c635d6",
+              "files": [
+                "nexus_expanse/core.py",
+                "nexus_expanse/unified.py"
+              ],
+              "windows": 96
+            },
+            "markdown_prose": {
+              "sha256": "131c7431b7f4272ee357791d02aa3159dae56e9f8ad0bbcf9fc29f9903abde0c",
+              "files": [
+                "README.md",
+                "docs/ARCHITECTURE_V1.md"
+              ],
+              "windows": 96
+            }
+          },
+          "val": {
+            "base_python": {
+              "sha256": "85283ca1573cef68b812a5d6b4d82354eb4f905e277817d2f713ce13aeaee917",
+              "files": [
+                "nexus_expanse/cli.py",
+                "nexus_expanse/donor_assimilation.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "33289b121c865133ba9ef68a0279d0d6142c63e2dc2104495d04f9d61fd81105",
+              "files": [
+                "docs/GATE19_PREREG.md",
+                "docs/GATE20_PREREG.md",
+                "docs/GATE21_PREREG.md"
+              ],
+              "windows": 24
+            }
+          },
+          "check": {
+            "base_python": {
+              "sha256": "b7a53bdcf577b74cb3f60015e5627ebc7080f9738f057c758d923705de55e69e",
+              "files": [
+                "nexus_expanse/verifier_agent.py",
+                "nexus_expanse/deltanet.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "ed8bc5ed614505892309e38ddab4daf325fd793b9955fab7d14c0a712eb1fdfc",
+              "files": [
+                "docs/GATE25_PREREG.md",
+                "docs/CHECKPOINT_TRANSFER_PROTOCOL.md"
+              ],
+              "windows": 24
+            }
+          }
+        },
+        "corpus_seed": 3303,
+        "rejected": [],
+        "sha256": {
+          "code-eval.bin": "b7a53bdcf577b74cb3f60015e5627ebc7080f9738f057c758d923705de55e69e",
+          "code-train.bin": "591c393850e8cb8071dd754d12a83e61a3e7180540b55fe3ac20675f9494fb65",
+          "math-eval.bin": "fbecb12cc1c19699e489966dd219bdc8aa8191ec7f5b65cca66e5c33d2ce1167",
+          "math-train.bin": "fa8c627dc99132755a76ca3e2f760f3d3116f5270ef1e91082852d0b7232c740",
+          "prose-eval.bin": "ed8bc5ed614505892309e38ddab4daf325fd793b9955fab7d14c0a712eb1fdfc",
+          "prose-train.bin": "0e6f47ed0d21240f24bdc5cb0e3f232c3391b3e6b516e4fefc603e489299cfe7"
+        }
+      },
+      "overlap_32b": 0,
+      "training": {
+        "all": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3303/all.pt",
+            "neural_state_sha256": "acd094e5a4ddea988937d3662f4f69b45bbc0cbfa0700293bc28e48754915dee",
+            "snapshot_sha256": "26057cdb0f0e909d3f1f8834ae63828d52eaae6f746dbf82c7fa5b1b5d0c9a4f",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "prose": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3303/prose.pt",
+            "neural_state_sha256": "a2c86171447b0eddccbd4350f510f6dcf066d24f96080a61aa42de20ec1989b5",
+            "snapshot_sha256": "17e05946dc7e267008178cfa0b583636db9f6a746d96fd8051263c2a884f82d2",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "code": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3303/code.pt",
+            "neural_state_sha256": "bd53931e241bd3a47aa55f42e16914bd43103ddabc3b98533f6ced0d03c68ad0",
+            "snapshot_sha256": "274aff870df703eee80015392e0621b2550146cf3829e1d9800865a890c1e141",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        }
+      },
+      "indexes": {
+        "all": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "b869aaae4de49af568c70f3364b2eeeaa6050b92fc5ab614b719e25c36fcc33f",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 11489,
+          "index_bytes": 245760,
+          "index_sha256": "61bbe2705fb0f55b32ea3096d2b52a5535908b8176f18b96cc3072b9706d9fd1"
+        },
+        "prose": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "0e6f47ed0d21240f24bdc5cb0e3f232c3391b3e6b516e4fefc603e489299cfe7",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 4644,
+          "index_bytes": 106496,
+          "index_sha256": "f42fb4e1982ae769d46b5f5d4c884006624b2f95438007873eaf2a9f5c985b7e"
+        },
+        "code": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "591c393850e8cb8071dd754d12a83e61a3e7180540b55fe3ac20675f9494fb65",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 5224,
+          "index_bytes": 118784,
+          "index_sha256": "b07a2bba3ce2fc403da3865b3d956651c70f6c0a85962b6a7c343886503a9922"
+        }
+      },
+      "domains": {
+        "math": {
+          "targets": 1535,
+          "neural_bits": 7584.584206287664,
+          "engram_bits": 7584.431608195084,
+          "neural_bpb": 4.941097202793266,
+          "engram_bpb": 4.9409977903551034,
+          "delta_bpb": -9.941243816277843e-05,
+          "hits": 38,
+          "hit_rate": 0.024755700325732898,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 7113.186615730447,
+          "engram_bits": 6785.073166261511,
+          "neural_bpb": 4.6339977952641345,
+          "engram_bpb": 4.420243105056358,
+          "delta_bpb": -0.21375469020777582,
+          "hits": 762,
+          "hit_rate": 0.49641693811074916,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 7464.156486072463,
+          "engram_bits": 7394.6892072964265,
+          "neural_bpb": 4.862642661936458,
+          "engram_bpb": 4.817387105730571,
+          "delta_bpb": -0.04525555620588693,
+          "hits": 536,
+          "hit_rate": 0.349185667752443,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "ood": {
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 7284.642221834883,
+          "engram_bits": 7261.98905901024,
+          "neural_bpb": 4.7456952585243535,
+          "engram_bpb": 4.730937497726541,
+          "delta_bpb": -0.01475776079781244,
+          "hits": 210,
+          "hit_rate": 0.13680781758957655,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 6544.380150011825,
+          "engram_bits": 6534.537828860832,
+          "neural_bpb": 4.263439837141254,
+          "engram_bpb": 4.2570279015380015,
+          "delta_bpb": -0.006411935603253084,
+          "hits": 111,
+          "hit_rate": 0.07231270358306188,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "pooled": {
+        "neural": 4.812579219997953,
+        "engram": 4.726209333714011
+      },
+      "prefix": null
+    },
+    {
+      "seed": 3304,
+      "corpus": {
+        "source": {
+          "fit": {
+            "base_python": {
+              "sha256": "293ea91af29e43d834114147a7397e975e791589351c249eed08620fefcfb103",
+              "files": [
+                "nexus_expanse/core.py",
+                "nexus_expanse/unified.py"
+              ],
+              "windows": 96
+            },
+            "markdown_prose": {
+              "sha256": "5c21b35a26041cb20bacb52f58e8efd3bcc9e006bef20d84ce6d8e6a1bdd6979",
+              "files": [
+                "README.md",
+                "docs/ARCHITECTURE_V1.md"
+              ],
+              "windows": 96
+            }
+          },
+          "val": {
+            "base_python": {
+              "sha256": "b3cb96d9e51a3ab42aa4489b8fdc2a26336495c239c4233fe3213df6c673e2d2",
+              "files": [
+                "nexus_expanse/cli.py",
+                "nexus_expanse/donor_assimilation.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "f79043b54519a6476479fc56e268ef1708b8623c9ea34012a96826298f76b7c5",
+              "files": [
+                "docs/GATE19_PREREG.md",
+                "docs/GATE20_PREREG.md",
+                "docs/GATE21_PREREG.md"
+              ],
+              "windows": 24
+            }
+          },
+          "check": {
+            "base_python": {
+              "sha256": "60770f248a745e1640f917e0241280bdb749dd9cb9e353f50931ce8da9dfe9cb",
+              "files": [
+                "nexus_expanse/verifier_agent.py",
+                "nexus_expanse/deltanet.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "3a4c7868bfc3b8f0d8a5a832ed5c864ab4b3ac65e28c13a7a558a84c0141b0a1",
+              "files": [
+                "docs/GATE25_PREREG.md",
+                "docs/CHECKPOINT_TRANSFER_PROTOCOL.md"
+              ],
+              "windows": 24
+            }
+          }
+        },
+        "corpus_seed": 3304,
+        "rejected": [],
+        "sha256": {
+          "code-eval.bin": "60770f248a745e1640f917e0241280bdb749dd9cb9e353f50931ce8da9dfe9cb",
+          "code-train.bin": "366586770519bf2939194612b68fe7f0b6093b596595c42a0884595613985421",
+          "math-eval.bin": "e9e4858abda3723af976c90bdb6a238bba38bf1817372040f3a673420a0c9a2e",
+          "math-train.bin": "7f43fcdfa5996ba7cf7209ada4cb3d3fc13b9d01af8770aa16bdf6cc1416bfc5",
+          "prose-eval.bin": "3a4c7868bfc3b8f0d8a5a832ed5c864ab4b3ac65e28c13a7a558a84c0141b0a1",
+          "prose-train.bin": "46d8f6b9119b6093676a28db68b1ae2ef6a61004cbb3fef72d785a6d30fd311b"
+        }
+      },
+      "overlap_32b": 0,
+      "training": {
+        "all": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3304/all.pt",
+            "neural_state_sha256": "6f866f3b1c7e9614f346d2f3f74e0c1560a4da9e910bad9d5aaf645da40604ba",
+            "snapshot_sha256": "8a6a2b16e70e1d90e550a1ce95a514aff67fe52a1934abc5586c87b3004e03b0",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "prose": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3304/prose.pt",
+            "neural_state_sha256": "1c70b00d59bc74b6b5c233a155d65e4ca0a4ffad691d1c12b3a131b2a4de96a1",
+            "snapshot_sha256": "6c0e5097d3d861f847fd7eaccce8ec171c899d3374b15adde2a935a400e10419",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "code": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3304/code.pt",
+            "neural_state_sha256": "de31d4394409b31ed8dd2103e9704a7b44a583545908a9c3f34da95eca1d0681",
+            "snapshot_sha256": "ea91174e9b2554c10a35d2a74675cae222e588aa06fa003a145169ae784648e6",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        }
+      },
+      "indexes": {
+        "all": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "ddea3a29247a56bc3f9cfba3379d223a85e2bdc930c824c2d1f2108bd6eb7b9e",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 11686,
+          "index_bytes": 249856,
+          "index_sha256": "1c0aeac23fb6eac2126541d7fc5dcb3d4736e6d997e57c00845b7a9864b6d8a5"
+        },
+        "prose": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "46d8f6b9119b6093676a28db68b1ae2ef6a61004cbb3fef72d785a6d30fd311b",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 4915,
+          "index_bytes": 110592,
+          "index_sha256": "2adf19cd23c537d0277dece543cbd8b51785eb95e0186d60ab97eb4728768032"
+        },
+        "code": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "366586770519bf2939194612b68fe7f0b6093b596595c42a0884595613985421",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 4997,
+          "index_bytes": 114688,
+          "index_sha256": "d334228f31ea67b94049a4a5ca374d0e6e0bdd298285b9e96e3c7fc2d314cfd8"
+        }
+      },
+      "domains": {
+        "math": {
+          "targets": 1535,
+          "neural_bits": 8628.65952733101,
+          "engram_bits": 8628.608874909616,
+          "neural_bpb": 5.621276565036489,
+          "engram_bpb": 5.6212435667163625,
+          "delta_bpb": -3.2998320126554515e-05,
+          "hits": 43,
+          "hit_rate": 0.028013029315960912,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 7257.404345923565,
+          "engram_bits": 6960.673514440501,
+          "neural_bpb": 4.72795071395672,
+          "engram_bpb": 4.5346407260198704,
+          "delta_bpb": -0.19330998793684973,
+          "hits": 728,
+          "hit_rate": 0.4742671009771987,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 7317.523278038816,
+          "engram_bits": 7267.052106603138,
+          "neural_bpb": 4.767116142044832,
+          "engram_bpb": 4.7342359000671905,
+          "delta_bpb": -0.032880241977640466,
+          "hits": 567,
+          "hit_rate": 0.36938110749185665,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "ood": {
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 6843.784326371197,
+          "engram_bits": 6834.15101099829,
+          "neural_bpb": 4.458491417831398,
+          "engram_bpb": 4.452215642344163,
+          "delta_bpb": -0.0062757754872355105,
+          "hits": 224,
+          "hit_rate": 0.14592833876221498,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 6424.592356990127,
+          "engram_bits": 6415.7569313974755,
+          "neural_bpb": 4.185402186964252,
+          "engram_bpb": 4.179646209379463,
+          "delta_bpb": -0.005755977584789263,
+          "hits": 138,
+          "hit_rate": 0.08990228013029317,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "pooled": {
+        "neural": 5.038781140346013,
+        "engram": 4.963373397601141
+      },
+      "prefix": null
+    },
+    {
+      "seed": 3305,
+      "corpus": {
+        "source": {
+          "fit": {
+            "base_python": {
+              "sha256": "ab64b365764231719ee394d0bfcc84634e875400e8a0c34ee0979c81701181d6",
+              "files": [
+                "nexus_expanse/core.py",
+                "nexus_expanse/unified.py"
+              ],
+              "windows": 96
+            },
+            "markdown_prose": {
+              "sha256": "ff0e3602bd7ff91415cf47e348236b2b95f7577129117a9dbaabfc0ce9421025",
+              "files": [
+                "README.md",
+                "docs/ARCHITECTURE_V1.md"
+              ],
+              "windows": 96
+            }
+          },
+          "val": {
+            "base_python": {
+              "sha256": "6857a06f03ea8bf9e0555be3b116d7d1615222868071f7acd786251f1f793007",
+              "files": [
+                "nexus_expanse/cli.py",
+                "nexus_expanse/donor_assimilation.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "54886302b24e3c7c0c21f70f7983e692d2d1dcc355f85d24e27900308a4683b5",
+              "files": [
+                "docs/GATE19_PREREG.md",
+                "docs/GATE20_PREREG.md",
+                "docs/GATE21_PREREG.md"
+              ],
+              "windows": 24
+            }
+          },
+          "check": {
+            "base_python": {
+              "sha256": "c95dcd823f52ede650efcf7b55e04c087dd79488c2dbc777d6fd096f5cad22b7",
+              "files": [
+                "nexus_expanse/verifier_agent.py",
+                "nexus_expanse/deltanet.py"
+              ],
+              "windows": 24
+            },
+            "markdown_prose": {
+              "sha256": "1ce6593ed07090f1238a93ee01cf48bcd68d7699976b005836f54acac4f39f95",
+              "files": [
+                "docs/GATE25_PREREG.md",
+                "docs/CHECKPOINT_TRANSFER_PROTOCOL.md"
+              ],
+              "windows": 24
+            }
+          }
+        },
+        "corpus_seed": 3305,
+        "rejected": [],
+        "sha256": {
+          "code-eval.bin": "c95dcd823f52ede650efcf7b55e04c087dd79488c2dbc777d6fd096f5cad22b7",
+          "code-train.bin": "7d845ca746b605ded1681346367adce22d56b51c29d3ff10423ccbc37613f4e0",
+          "math-eval.bin": "de5a53796de8bd1c02a7e387a28472923470c4bad7d546beda1e2fbd981c8e29",
+          "math-train.bin": "bb0b4f088abca19691ccc89d048cd4ab4ae1176cd47673fd25e5532f8bdfc535",
+          "prose-eval.bin": "1ce6593ed07090f1238a93ee01cf48bcd68d7699976b005836f54acac4f39f95",
+          "prose-train.bin": "a88c9e93fa4b4a87c8dab34ca6ca3ea4cb5ba5bd976fc5e9518cc61296891a9a"
+        }
+      },
+      "overlap_32b": 0,
+      "training": {
+        "all": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3305/all.pt",
+            "neural_state_sha256": "378dfcc91f14b47296d2f165338a505c6fcbb4e90bf931c0c86fde3e09fbeac3",
+            "snapshot_sha256": "c9e4f3324b0633ad442737f48247e9ba1c93fd1c69ce5df61a00556b3107fad6",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "prose": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3305/prose.pt",
+            "neural_state_sha256": "6b9ac36fedfbd1dc5e6417ee8fb12a62cdf52a7602f606f67c91f523f39e245f",
+            "snapshot_sha256": "7df017b685b05436c12bb52d1d9d2d7e0aa22633e1f35a226c935cbaa8914e35",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        },
+        "code": {
+          "archive": {
+            "command": "train",
+            "saved_snapshot": "/tmp/phase19-ssd-engram-wj60cnof/3305/code.pt",
+            "neural_state_sha256": "4997ade0b50a19b5f29664542c585c4d78567763b8a582d31ce37047e8fd80ec",
+            "snapshot_sha256": "6eb50c619240e5ac5683bbb26c644400a4552e3be59752c9cb0d2ba34436a2b4",
+            "donor_forward_calls": 0,
+            "snapshot_quant": "fp32",
+            "parity": {
+              "prefix_logits": 0.0,
+              "prefix_hidden": 0.0,
+              "streaming_logits": 0.0,
+              "unified_stream_probabilities": 0.0
+            },
+            "round_trip_probabilities": 0.0,
+            "exact_state": true
+          },
+          "target_bytes": 6144,
+          "updates": 64,
+          "cold_equal": true,
+          "donor_forward_calls": 0
+        }
+      },
+      "indexes": {
+        "all": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "6e7e803b663c083f807de9285a130f621ba84fb12e44c04176ae37454218ee0f",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 11109,
+          "index_bytes": 237568,
+          "index_sha256": "2f31d346f53495628a3a9b876f5ec13a96f49d6dd4167addefc7e232d806daa7"
+        },
+        "prose": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "a88c9e93fa4b4a87c8dab34ca6ca3ea4cb5ba5bd976fc5e9518cc61296891a9a",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 4053,
+          "index_bytes": 94208,
+          "index_sha256": "389db55b8f8a01e840eb0127f417df47e808cdfac25064e7f48e7c8a288ff258"
+        },
+        "code": {
+          "schema": "nexus-ssd-engram-v1",
+          "source_sha256": "7d845ca746b605ded1681346367adce22d56b51c29d3ff10423ccbc37613f4e0",
+          "min_order": 4,
+          "max_order": 12,
+          "min_support": 2,
+          "entry_count": 5239,
+          "index_bytes": 122880,
+          "index_sha256": "aa9c0f08a901ce5fc0e863aea3202440638ec5a95fc5b4fe769428fdf6a597fa"
+        }
+      },
+      "domains": {
+        "math": {
+          "targets": 1535,
+          "neural_bits": 8194.695931213992,
+          "engram_bits": 8193.890843894147,
+          "neural_bpb": 5.338564124569376,
+          "engram_bpb": 5.338039637716057,
+          "delta_bpb": -0.0005244868533188669,
+          "hits": 53,
+          "hit_rate": 0.03452768729641694,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 7318.307396543002,
+          "engram_bits": 7021.276488134319,
+          "neural_bpb": 4.767626968431923,
+          "engram_bpb": 4.57412149064125,
+          "delta_bpb": -0.19350547779067295,
+          "hits": 753,
+          "hit_rate": 0.4905537459283388,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 7438.241596827464,
+          "engram_bits": 7400.947168555933,
+          "neural_bpb": 4.845759997933201,
+          "engram_bpb": 4.821463953456634,
+          "delta_bpb": -0.024296044476567236,
+          "hits": 487,
+          "hit_rate": 0.3172638436482085,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "ood": {
+        "prose": {
+          "targets": 1535,
+          "neural_bits": 7364.973881539975,
+          "engram_bits": 7360.233688103163,
+          "neural_bpb": 4.7980285873224595,
+          "engram_bpb": 4.794940513422256,
+          "delta_bpb": -0.003088073900203095,
+          "hits": 185,
+          "hit_rate": 0.12052117263843648,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        },
+        "code": {
+          "targets": 1535,
+          "neural_bits": 6806.506214995077,
+          "engram_bits": 6786.702365454204,
+          "neural_bpb": 4.434206003254122,
+          "engram_bpb": 4.421304472608601,
+          "delta_bpb": -0.012901530645520307,
+          "hits": 189,
+          "hit_rate": 0.12312703583061889,
+          "cold_max_diff": 0.0,
+          "same_hits": true
+        }
+      },
+      "pooled": {
+        "neural": 4.983983696978167,
+        "engram": 4.911208360604648
+      },
+      "prefix": null
+    }
+  ],
+  "lookup": {
+    "build_seconds": 4.718286248011282,
+    "report": {
+      "schema": "nexus-ssd-engram-v1",
+      "source_sha256": "a084acc72a53ca563f2c3e1badd0281d1eac46f814439cffe2ee4ccd48c3acf4",
+      "min_order": 4,
+      "max_order": 12,
+      "min_support": 2,
+      "entry_count": 589823,
+      "index_bytes": 12152832,
+      "index_sha256": "1a9d550d17a204c00de81e4a8f8d7d76ae1fb9fbfcba5b7cdc4010da12f341d1"
+    },
+    "trials": [
+      {
+        "digest": "92f171609fb4a53ba032f7318bb4a83633a3efa546bdd02af8e98f51ffe2afcc",
+        "hits": 2048,
+        "queries": 4096,
+        "open_ms": 9.498270024778321,
+        "ms_per_byte": 0.018623622558777697,
+        "peak_rss_bytes": 15253504
+      },
+      {
+        "digest": "92f171609fb4a53ba032f7318bb4a83633a3efa546bdd02af8e98f51ffe2afcc",
+        "hits": 2048,
+        "queries": 4096,
+        "open_ms": 9.420032001798972,
+        "ms_per_byte": 0.030779920898282853,
+        "peak_rss_bytes": 15257600
+      }
+    ],
+    "exact": true
+  },
+  "summary": {
+    "engineering": "PASS",
+    "scientific": "PASS",
+    "pooled_win_seeds": 5,
+    "ood_max_degradation_bpb": -0.003088073900203095,
+    "ood_pass": true,
+    "donor_forward_calls": 0,
+    "cold_max_diff": 0.0,
+    "max_lookup_ms_per_byte": 0.030779920898282853,
+    "max_lookup_peak_rss_bytes": 15257600
+  }
+}

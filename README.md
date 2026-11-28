@@ -26,6 +26,7 @@ Run `python -m nexus_expanse.cli <command> --help` for arguments and defaults.
 | `verify` | Checks prefix, streaming and snapshot round-trip parity. Accepts a snapshot and optional SHA-256. |
 | `stream` | Observes raw hex byte chunks, reports next-byte candidates and optionally generates a continuation. |
 | `generate` | Generates raw bytes from a unified snapshot with greedy or seeded top-p decoding on `cpu`, `cuda`, or `auto`. |
+| `build-engram` | Builds an immutable on-disk index of exact byte suffixes and their observed successors. |
 | `solve` | Searches a bounded expression library and checks the output against the target bytes. |
 | `import-skill` | Converts a compatible static donor checkpoint into a verified native skill. |
 | `route-stream` | Forecasts from a saved multi-skill bank or named unified snapshots using the selected router. |
@@ -101,6 +102,20 @@ python -m nexus_expanse.cli route-stream --router hmm_bma \
 The router preserves one history across input chunks. It restores INT8 snapshot weights to FP32 for inference. `--bank` still loads saved banks. The Python `OpenWorldSkillBank` API can register a new receiver after observing a novelty window and adapting a clone of the base receiver.
 
 In five offline CPU seeds, Sticky-HMM BMA beat the uniform mixture and best single model in every run. Mean settled routing accuracy was 89.6%. Telemetry triggered a new skill in 2/5 seeds, and both births lowered held telemetry BPB. Neither cleared all birth criteria, so the DEV verdict is **MIXED**. Each trained INT8 archive was at least 3.104× smaller than its FP32 counterpart. The four-skill bank occupied about 3.36 MB, while the single INT8 monolith occupied about 0.84 MB. The study used synthetic audio, images, and telemetry. [Preregistration](docs/PHASE18_MULTIMODAL_BYTE_SKILLS_PREREG.md) · [Raw evidence](evidence/phase18-multimodal-byte-skills-dev-001.json)
+
+## Phase 19 disk-backed byte Engram (DEV)
+
+Build the index from training bytes, then pass it to generation. A directory can contain raw text, code, or binary files. Suffix history restarts at each file.
+
+```sh
+python -m nexus_expanse.cli build-engram --input ../fit-bytes --out ../fit.sqlite
+python -m nexus_expanse.cli generate --snapshot ../unified.pt --prompt-text "def " \
+  --always-wake --engram-index ../fit.sqlite --engram-alpha 0.35
+```
+
+Use `--engram-index-sha256` with the build's reported `index_sha256` to reject a changed index. The default searches orders 12 down to 4 and requires at least two training occurrences with a successor. A miss leaves the original forecast unchanged. With an index, generation reports its digest and how many emitted-byte forecasts used it. Existing generation works as before with the index omitted.
+
+In the five-seed CPU DEV study, average pooled held-out BPB fell from **4.9703 to 4.8994**, with a win in all five seeds. None of the ten prose/code cross-domain pairs worsened. The largest signed change across those pairs was **−0.00309 BPB**. These checks cover local repository text, synthetic arithmetic, and an 11.59 MiB lookup fixture. Live CUDA and multi-GB builds remain unverified. [Preregistration](docs/PHASE19_SSD_ENGRAM_MEMORY_PREREG.md) · [Raw evidence](evidence/phase19-ssd-engram-dev-001.json)
 
 ## Release-candidate evidence
 
