@@ -22,6 +22,7 @@ from benchmarks import gate17_gpu_scaling_harness as scaling
 from benchmarks.dev_artifacts import atomic_bytes, digest
 from benchmarks.gate_custody import EpochRun
 from benchmarks.unified_checks import exactness
+from nexus_expanse.byte_decode import engram_forecast, nucleus_byte
 from nexus_expanse.expr_verifier import EXPRESSIONS, MAX_LENGTH, run_pipeline, verify as verify_expression
 from nexus_expanse.jepa import state_hash
 from nexus_expanse.patching import CompactBigram
@@ -37,6 +38,7 @@ from nexus_expanse.shard_stream_assimilation import STUDENT_DIMS, STUDENT_LAYERS
 from nexus_expanse.weight_editing import (
     apply_surgical_edit, exact_skill_receipt, inspect_fault_direction, restore_skill, verify_skill,
 )
+from nexus_expanse.verified_search import MAX_CASE_BYTES, MAX_OUTPUT, VerifiedByteSearch, make_verifier
 
 VERSION = "1.2.0-rc1"
 TRAIN_OPTIONS = ("device", "dtype", "epoch_limit", "seed", "dim", "context",
@@ -162,16 +164,6 @@ def repetition_adjusted_logs(probabilities, recent, penalty):
     return logs
 
 
-def engram_forecast(probabilities, history, store, alpha):
-    gain, match = store.lookup(history, max_alpha=alpha)
-    if not gain:
-        return probabilities, 0.0
-    indices, counts = zip(*match.counts, strict=True)
-    mixed = probabilities * (1 - gain)
-    mixed[list(indices)] += mixed.new_tensor([gain * count / match.support for count in counts])
-    return mixed / mixed.sum(), gain
-
-
 def continuation(model, forecast, length, *, adapt=False, temperature=0.0, top_p=1.0, seed=42,
                  repetition_penalty=1.0, repeat_window=64, prompt=b"", forecast_filter=None):
     if not math.isfinite(repetition_penalty) or repetition_penalty < 1.0:
@@ -192,11 +184,7 @@ def continuation(model, forecast, length, *, adapt=False, temperature=0.0, top_p
         else:
             logs = (forecast_probs.log() if recent is None else
                     repetition_adjusted_logs(forecast_probs, recent, repetition_penalty))
-            probabilities = ((logs - logs.max()) / temperature).softmax(0)
-            sorted_probs, ids = probabilities.sort(descending=True, stable=True)
-            keep = sorted_probs.cumsum(0) - sorted_probs < top_p
-            selected = torch.multinomial(sorted_probs * keep, 1, generator=generator)
-            byte = int(ids[selected].item())
+            byte = nucleus_byte(logs, temperature, top_p, generator)
         output.append(byte)
         if recent is not None:
             recent.append(byte)
@@ -243,6 +231,20 @@ def parse_engram_alpha(text):
     return value
 
 
+def open_engram(args):
+    if args.engram_index_sha256 is not None and args.engram_index is None:
+        raise ValueError("--engram-index-sha256 requires --engram-index")
+    if args.engram_index is None:
+        return nullcontext()
+    return SSDEngramStore(args.engram_index, expected_sha256=args.engram_index_sha256)
+
+
+def add_engram_arguments(parser):
+    parser.add_argument("--engram-index", type=Path, help="read-only byte suffix index")
+    parser.add_argument("--engram-index-sha256", help="verify the index against a pinned digest")
+    parser.add_argument("--engram-alpha", type=parse_engram_alpha, default=0.35)
+
+
 def generate_command(args):
     if (not math.isfinite(args.temperature) or args.temperature < 0
             or not math.isfinite(args.top_p) or not 0 < args.top_p <= 1):
@@ -253,11 +255,7 @@ def generate_command(args):
             raise ValueError(f"expected between 1 and {MAX_STREAM_CHUNK} prompt bytes")
     else:
         prompt = parsed_hex(args.prompt_hex, MAX_STREAM_CHUNK)
-    if args.engram_index_sha256 is not None and args.engram_index is None:
-        raise ValueError("--engram-index-sha256 requires --engram-index")
-    index = (SSDEngramStore(args.engram_index, expected_sha256=args.engram_index_sha256)
-             if args.engram_index is not None else nullcontext())
-    with index as engram, forbid_donor_forward() as guard:
+    with open_engram(args) as engram, forbid_donor_forward() as guard:
         hits = 0
         forecast_filter = None
         if engram is not None:
@@ -297,6 +295,51 @@ def generate_command(args):
             donor_forward_calls=guard.donor_forward_calls,
             **engram_report,
         ))
+
+
+def read_verifier_cases(value):
+    if value is None:
+        return None
+    if value.lstrip().startswith("["):
+        raw = value.encode("utf-8")
+    else:
+        with Path(value).open("rb") as source:
+            raw = source.read(MAX_CASE_BYTES + 1)
+    if len(raw) > MAX_CASE_BYTES:
+        raise ValueError("verifier cases exceed their size limit")
+    try:
+        return json.loads(raw)
+    except (UnicodeError, ValueError, RecursionError) as exc:
+        raise ValueError("invalid verifier test JSON") from exc
+
+
+def search_verified_command(args):
+    prompt = args.prompt_text.encode("utf-8")
+    if args.verifier == "arithmetic" and args.tests_json is not None:
+        raise ValueError("arithmetic does not take test cases")
+    verifier = make_verifier(args.verifier, prompt, read_verifier_cases(args.tests_json))
+    stop = (args.stop_text.encode("utf-8") if args.stop_text is not None else
+            b"\n" if args.verifier == "arithmetic" else b"\n\n")
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+    device = scaling.device_for(args.device, "fp32")
+    data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT)
+    start = time.perf_counter()
+    with open_engram(args) as engram:
+        engine = VerifiedByteSearch(data, expected_sha256=args.snapshot_sha256, device=device,
+                                    always_wake=args.always_wake, engram=engram, engram_alpha=args.engram_alpha)
+        result = engine.run(prompt, verifier, candidates=args.candidates, max_bytes=args.max_bytes,
+                            temperature=args.temperature, top_p=args.top_p, seed=args.seed, stop_bytes=stop)
+        selected = result.selected
+        report = dict(command="search-verified", verified=selected.verification.passed,
+                      candidates_tried=len(result.candidates), verified_count=sum(c.verification.passed for c in result.candidates),
+                      selected_text=selected.raw.decode("utf-8", errors="replace"), selected_hex=selected.raw.hex(),
+                      selected_logprob=selected.logprob, passed_tests=selected.verification.passed_tests,
+                      total_tests=selected.verification.total_tests, error=selected.verification.error,
+                      snapshot_sha256=engine.snapshot_sha256, device=device.type, always_wake=args.always_wake,
+                      donor_forward_calls=result.donor_forward_calls, wall_ms=(time.perf_counter() - start) * 1000)
+        if engram is not None:
+            report["engram_index_sha256"] = engram.index_sha256
+        emit(report)
 
 
 def corpus_paths(directory):
@@ -631,10 +674,25 @@ def parser():
                           metavar="1..512")
     generate.add_argument("--always-wake", action="store_true", help="keep every observed byte on the neural path")
     generate.add_argument("--adapt", action="store_true", help="adapt online memory in the restored session")
-    generate.add_argument("--engram-index", type=Path, help="read-only byte suffix index")
-    generate.add_argument("--engram-index-sha256", help="verify the index against a pinned digest")
-    generate.add_argument("--engram-alpha", type=parse_engram_alpha, default=0.35)
+    add_engram_arguments(generate)
     generate.set_defaults(handler=generate_command)
+
+    search = sub.add_parser("search-verified", help="sample byte continuations and verify bounded tasks")
+    search.add_argument("--snapshot", type=Path, required=True)
+    search.add_argument("--snapshot-sha256")
+    search.add_argument("--device", choices=("auto", "cpu", "cuda"), default="cpu")
+    add_engram_arguments(search)
+    search.add_argument("--always-wake", action="store_true")
+    search.add_argument("--verifier", choices=("arithmetic", "python_fn"), required=True)
+    search.add_argument("--prompt-text", required=True)
+    search.add_argument("--tests-json", help="bounded Python test list as JSON or a local file")
+    search.add_argument("--candidates", type=int, choices=range(1, 65), default=16, metavar="1..64")
+    search.add_argument("--max-bytes", type=int, choices=range(1, MAX_OUTPUT + 1), default=128, metavar="1..512")
+    search.add_argument("--temperature", type=float, default=0.7)
+    search.add_argument("--top-p", type=float, default=0.9)
+    search.add_argument("--seed", type=int, default=42)
+    search.add_argument("--stop-text", help="stop after emitting this exact UTF-8 delimiter")
+    search.set_defaults(handler=search_verified_command)
 
     engram = sub.add_parser("build-engram", help="index raw-byte suffix counts in a new immutable SQLite file")
     engram.add_argument("--input", type=Path, required=True)
