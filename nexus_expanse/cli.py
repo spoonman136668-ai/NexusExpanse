@@ -392,8 +392,7 @@ def harvest_verified_command(args):
         if evaluation is not None:
             report.update(heldout_sha256=hashlib.sha256(evaluation).hexdigest(), shared_32_byte_windows=0)
         emit(dict(command="harvest-verified", device=device.type, candidates=args.candidates,
-                  no_episodic=bool(args.no_episodic), allow_think=args.allow_think,
-                  wall_seconds=time.perf_counter() - started, **report))
+                  no_episodic=bool(args.no_episodic), wall_seconds=time.perf_counter() - started, **report))
 
 
 def add_search_runtime_arguments(parser, *, max_bytes):

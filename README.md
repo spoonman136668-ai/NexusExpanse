@@ -1,6 +1,6 @@
-# Nexus Expanse v2.1.0-rc1
+# Nexus Expanse v2.3.0-dev
 
-Nexus Expanse is an independent raw-byte research prototype. The release candidate includes raw-byte streaming, resumable training, checkpoint assimilation, SSD Engram lookup, deterministic verified search, and verified trace harvesting. [Architecture](docs/ARCHITECTURE_V1.md) · [Checkpoint transfer findings](docs/CHECKPOINT_TRANSFER_FINDINGS.md) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
+Nexus Expanse is an independent raw-byte research prototype. The current development branch includes raw-byte streaming, resumable training, checkpoint assimilation, SSD Engram lookup, deterministic verified search, and verified trace harvesting. [Architecture](docs/ARCHITECTURE_V1.md) · [Checkpoint transfer findings](docs/CHECKPOINT_TRANSFER_FINDINGS.md) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
 
 ## Quick start
 
@@ -70,7 +70,7 @@ python -m nexus_expanse.cli train --corpus-dir ./data --directory ../nexus-cosin
 python -m nexus_expanse.cli generate --snapshot ../nexus-cosine/unified.pt --prompt-text "Hello" --seed 42 --temperature 0.7 --top-p 0.9 --repetition-penalty 1.5 --repeat-window 64
 ```
 
-Training defaults to a constant rate of `0.003`. Cosine uses the committed optimizer step to resume the same schedule after a restart. Keep the rate and schedule fixed across invocations. Training now accepts widths from 32 through 512 in increments of 32, 2/4/6/8 layers, up to 1,024 steps per epoch, and up to 32 blocks per domain per batch. Offline checks cover constructing and restoring the largest supported snapshot geometry. Full-scale GPU throughput remains unverified.
+Training defaults to a constant rate of `0.003`. Cosine uses the committed optimizer step to resume the same schedule after a restart. Keep the rate and schedule fixed across invocations. Phase 15 raised the limits to width 512, eight layers, 1,024 steps per epoch, and 32 blocks per domain per batch. Phase 24 extends the geometry below.
 
 Generation disables the penalty at `1.0`. Higher values scale the log scores of bytes present in the last `--repeat-window` bytes, including the prompt tail. The default window is 64 bytes and the supported range is 1–512. The five CPU DEV seeds passed exact resume and generation checks. Cosine lowered pooled held-out BPB in 2/5 seeds and raised the mean by 0.01255 BPB. [Preregistration](docs/PHASE15_COSINE_LR_AND_SAMPLING_PREREG.md) · [Raw results](evidence/phase15-cosine-lr-dev-001.json)
 
@@ -178,6 +178,21 @@ python -m nexus_expanse.cli train --init-snapshot ../pretrained.pt \
 `--init-snapshot` loads neural weights from a verified FP32, FP16, or INT8 unified snapshot and starts a fresh optimizer. Omitted geometry comes from the archive. Explicit width and depth must match. Context can grow, keeping the learned position rows. Keep using the same source archive to resume. The curriculum writes balanced, verifier-checked train and eval streams and verifies their exact 32-byte separation from each other and the built-in DEV prompts and answers.
 
 All five scoped CPU runs reproduced the uninterrupted INT8 export after cold resume. The scientific result was **MIXED** under the preregistered rule. Fine-tuning improved one seed at `K=16`, while aggregate solves fell from **3/150 to 1/150**. Greedy and all four non-math categories stayed at zero. [Preregistration](docs/PHASE23_SNAPSHOT_FINETUNE_PREREG.md) · [Raw evidence](evidence/phase23-snapshot-finetune-dev-001.json)
+
+## Phase 24 scratchpad grading and training scale (DEV)
+
+`search-verified` and `eval-livebench` accept `--allow-think`. The verifier grades the bytes after the first closing `</think>` when a continuation starts with `<think>`. An unclosed block fails. Untagged answers use the existing rules. Use the offline curriculum builder to include worked math and logic examples.
+
+```sh
+python scripts/prepare_reasoning_curriculum.py --out-dir ../scratchpad-curriculum --size-mb 1 --seed 3801 --include-think
+python -m nexus_expanse.cli eval-livebench --snapshot ../unified.pt --builtin-dev-suite --allow-think --always-wake --no-episodic
+```
+
+`train` accepts widths 32–1024 in increments of 32 and layer depths 2, 4, 6, 8, 12, and 16. Select `--use-sdpa` or `--skill-backbone` for a fresh attention model at depths other than two. Set `--n-heads` to 4, 8, or 16, with four as the default for fresh training. `--grad-accum` accepts 1–32 micro-batches per optimizer update. `--grad-checkpoint` recomputes layer activations during training.
+
+The largest CPU fixture had 139,134,992 parameters. It produced finite three-byte logits and a 141,316,269-byte INT8 archive. The eight-head CPU training case with two micro-batches per update matched epoch hashes, final weights, and INT8 bytes after cold resume. The curriculum passed 660/660 verifier checks with zero shared 32-byte windows.
+
+The five-seed scientific DEV verdict was **FAIL**. The direct and scratchpad curricula scored **0/60 and 0/60** at K=1 and **0/60 and 0/60** at K=16, respectively. Live 12 GB CUDA training and official LiveBench performance remain unmeasured. [Protocol](docs/PHASE24_COT_AND_SCALING_PREREG.md) · [Raw results](evidence/phase24-cot-and-scaling-dev-001.json)
 
 ## Release-candidate evidence
 
