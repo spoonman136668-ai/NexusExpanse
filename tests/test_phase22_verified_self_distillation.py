@@ -4,16 +4,18 @@ import hashlib
 import json
 from types import SimpleNamespace
 
+import numpy as np
 import pytest
 import torch
 
 from benchmarks import gate17_gpu_scaling_harness as scaling
 from benchmarks.phase15_cosine_lr_and_sampling import call_cli, space_snapshot
 from nexus_expanse.livebench_eval import CATEGORIES, suite_from_rows
+from nexus_expanse.patching import CompactBigram
 from nexus_expanse.self_distill import DELIMITER, builtin_train_suite, distillation_partitions, harvest_verified_traces, write_harvest
 from nexus_expanse.ssd_engram import SSDEngramStore
 from nexus_expanse.unified import NexusExpanseUnified
-from nexus_expanse.verified_search import ByteCandidate, SearchResult, Verification
+from nexus_expanse.verified_search import ByteCandidate, SearchResult, Verification, VerifiedByteSearch
 from scripts.prepare_gpu_corpus import CorpusOverlapError
 
 
@@ -132,3 +134,98 @@ def test_builtin_train_pool_covers_all_categories_without_held_prompts():
     assert len(result.tasks) == 40 and not result.unsupported
     assert {t.category for t in result.tasks} == set(CATEGORIES)
     assert {t.prompt for t in result.tasks}.isdisjoint(row["turns"][0].encode() for row,_ in held)
+
+
+@pytest.fixture
+def conflicting_memory(tmp_path):
+    base = NexusExpanseUnified.restore(space_snapshot(22))
+    counts = np.zeros((256, 256), dtype="<u4")
+    counts[ord("2"), ord("=")] = 64
+    counts[ord("="), ord("3")] = 64
+    model = NexusExpanseUnified(base.backbone, CompactBigram.from_dense(counts))
+    clear = model.snapshot(snapshot_quant="int8")
+    text = b"1+2=9\nRepeated conflicting phrase.\n" * 40
+    for i in range(1, len(text)):
+        model.episodic.observe_transition(text[max(0, i-8):i], text[i])
+    path = tmp_path / "conflicting.pt"
+    path.write_bytes(model.snapshot(snapshot_quant="int8"))
+    return path, clear
+
+
+@pytest.mark.parametrize("command", ("generate", "search-verified", "eval-livebench", "harvest-verified"))
+def test_no_episodic_cli_ignores_conflicting_memory_and_replays(command, tmp_path, conflicting_memory):
+    path, _ = conflicting_memory
+    args = (command, "--snapshot", path, "--max-bytes", "1")
+    if command == "generate":
+        args += ("--prompt-text", "1+2=")
+    elif command == "search-verified":
+        args += ("--prompt-text", "1+2=", "--verifier", "arithmetic", "--candidates", "1")
+    else:
+        tasks = tmp_path / "tasks.jsonl"
+        tasks.write_text(json.dumps(dict(question_id="math", category="math", turns=["1+2="])) + "\n")
+        args += ("--tasks-jsonl", tasks, "--candidates", "1")
+
+    def run(index, *flags):
+        output = tmp_path / f"harvest{index}.bin"
+        extra = ("--out-bin", output) if command == "harvest-verified" else ()
+        result = call_cli(*args, *extra, *flags)
+        assert result["donor_forward_calls"] == 0
+        timed = {"prefill_ms", "ms_per_byte", "wall_ms", "wall_seconds", "candidate_seconds"}
+        return {key: value for key, value in result.items() if key not in timed}, (
+            output.read_bytes() if extra else b"")
+
+    legacy, legacy_bin = run(0)
+    clean, clean_bin = run(1, "--no-episodic")
+    assert clean["no_episodic"] is True and legacy["no_episodic"] is False
+    assert (clean, clean_bin) == run(2, "--no-episodic")
+    if command == "generate":
+        stream = call_cli("stream", "--snapshot", path, "--input-hex", b"1+2=".hex(), "--no-adapt", "--continuation", "1")
+        assert legacy["generated_hex"] == stream["continuation_hex"] == b"9".hex()
+        assert clean["generated_hex"] == b"3".hex()
+        assert (clean, clean_bin) == run(3, "--no-episodic", "--adapt")
+    elif command == "search-verified":
+        assert not legacy["verified"] and legacy["selected_text"] == "9"
+        assert clean["verified"] and clean["selected_text"] == "3"
+    elif command == "eval-livebench":
+        assert legacy["overall_score"] == 0.0 and clean["overall_score"] == 1.0
+        assert legacy["tasks"][0]["selected_hex"] == b"9".hex()
+        assert clean["tasks"][0]["selected_hex"] == b"3".hex()
+    else:
+        assert legacy["accepted"] == 0 and legacy_bin == b""
+        assert clean["accepted"] == 1 and clean_bin == b"1+2=3\n\n"
+
+
+def test_clean_decode_prefix_and_active_engram_are_independent_of_episodic_state(tmp_path, conflicting_memory, monkeypatch):
+    path, clear = conflicting_memory
+    raw = path.read_bytes()
+    runtime = NexusExpanseUnified.restore(raw, fast_decode=True)
+    assert runtime.no_episodic is False
+    runtime.no_episodic = True
+
+    def forbidden(*_args):
+        pytest.fail("clean decode consulted or updated episodic memory")
+
+    monkeypatch.setattr(type(runtime.episodic), "predict_probs", forbidden)
+    monkeypatch.setattr(type(runtime.episodic), "observe_transition", forbidden)
+    forecast = runtime.prefill(b"1+2=", adapt=True)
+    assert torch.equal(forecast.mixed, forecast.patch)
+    after = runtime.step(ord("3"), adapt=True)
+    assert torch.equal(after.mixed, after.patch)
+    assert runtime.arbitrator.updates == 0
+
+    source, index = tmp_path / "training.bin", tmp_path / "training.sqlite"
+    source.write_bytes(b"1+2=3\n" * 50)
+    SSDEngramStore.build(source, index)
+    prompt = b"1+2="
+    with SSDEngramStore(index) as store:
+        assert store.lookup(prompt)[0] > 0
+        opts = dict(no_episodic=True, always_wake=True, engram=store)
+        engine = VerifiedByteSearch(raw, **opts)
+        clean = VerifiedByteSearch(clear, **opts)
+        prefix = b"3\x00\xff"
+        a = engine.forecast_trace(prompt, prefix + b"first")
+        b = engine.forecast_trace(prompt, prefix + b"other")
+        n = len(prefix) + 1
+        assert torch.equal(a, clean.forecast_trace(prompt, prefix + b"first"))
+        assert torch.equal(a[:n], b[:n])
+        assert torch.equal(a[:n], engine.forecast_trace(prompt, prefix))

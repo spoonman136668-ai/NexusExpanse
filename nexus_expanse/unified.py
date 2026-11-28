@@ -100,6 +100,7 @@ class NexusExpanseUnified:
             raise ValueError("unified DEV requires FP32 CPU weights")
         self.backbone = backbone.requires_grad_(False).eval()
         self.snapshot_quant = "fp32"
+        self.no_episodic = False
         self.max_seq_len = getattr(backbone, "max_seq_len", 256)
         self.sleep_budget = sleep_budget
         cap = EPISODIC_BYTES if sleep_budget else self.MEMORY_BUDGET
@@ -128,7 +129,7 @@ class NexusExpanseUnified:
     def step(self, observed, *, adapt=True):
         if type(observed) is not int or not 0 <= observed <= 255:
             raise ValueError("expected a raw byte")
-        if adapt and self._previous is not None:
+        if adapt and not self.no_episodic and self._previous is not None:
             patch, episodic, confidence = self._previous
             self.arbitrator.observe(confidence, float(patch[observed]), float(episodic[observed]))
             self.episodic.observe_transition(bytes(self._history), observed)
@@ -138,17 +139,21 @@ class NexusExpanseUnified:
 
     def _forecast(self, patch):
         patch = patch.cpu()
-        episodic, confidence = self.episodic.predict_probs(bytes(self._history))
-        weight = self.arbitrator.weight(confidence)
+        if self.no_episodic:
+            # Keep a normalized cursor forecast while bypassing the memory expert.
+            episodic, confidence, mixed = patch, 0.0, patch
+        else:
+            episodic, confidence = self.episodic.predict_probs(bytes(self._history))
+            weight = self.arbitrator.weight(confidence)
+            mixed = (1 - weight) * patch + weight * episodic
         self._previous = (patch, episodic, confidence)
-        mixed = (1 - weight) * patch + weight * episodic
         return ByteForecast(mixed, patch.clone(), episodic.clone(), confidence)
 
     @torch.inference_mode()
     def prefill(self, raw, *, adapt=False):
         if not raw:
             raise ValueError("expected a nonempty raw-byte prompt")
-        if not adapt and getattr(self.stream, "batched", False):
+        if (not adapt or self.no_episodic) and getattr(self.stream, "batched", False):
             self._history.extend(raw)
             return self._forecast(self.reader.prefill(raw))
         for byte in raw:

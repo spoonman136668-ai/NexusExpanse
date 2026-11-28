@@ -3,8 +3,10 @@
 from collections import Counter
 import errno
 import hashlib
+import io
 from pathlib import Path
 import sqlite3
+from types import SimpleNamespace
 
 import pytest
 import torch
@@ -14,6 +16,65 @@ from benchmarks.phase19_ssd_engram import BINARY_PREFIX, prefix_checks
 from nexus_expanse import cli, ssd_engram
 from nexus_expanse.ssd_engram import SSDEngramStore
 from nexus_expanse.unified import NexusExpanseUnified
+
+
+def test_open_uses_path_identity_when_descriptor_ids_are_zero(tmp_path, monkeypatch):
+    source, index = tmp_path / "input.bin", tmp_path / "fit.sqlite"
+    source.write_bytes(b"a bit of FIT data\n" * 5)
+    receipt = SSDEngramStore.build(source, index)
+    original = ssd_engram.os.fstat
+
+    def zero_ids(descriptor):
+        stat = original(descriptor)
+        fields = {name: getattr(stat, name) for name in dir(stat) if name.startswith("st_")}
+        fields.update(st_dev=0, st_ino=0)
+        return SimpleNamespace(**fields)
+
+    # NTFS path stats still identify the file while descriptor IDs are zero.
+    assert index.stat().st_ino != 0
+    with monkeypatch.context() as scope:
+        scope.setattr(ssd_engram.os, "fstat", zero_ids)
+        with SSDEngramStore(index, expected_sha256=receipt["index_sha256"]) as store:
+            assert store.index_bytes == index.stat().st_size == receipt["index_bytes"]
+            assert store.lookup(b"a bit of FIT")[0] > 0
+
+
+@pytest.mark.parametrize("change", ("replace", "append"))
+def test_open_rejects_changed_path_between_hash_and_connect(tmp_path, monkeypatch, change):
+    source, index, replacement = (tmp_path / name for name in ("data.bin", "index.db", "replacement.db"))
+    source.write_bytes(b"prefix to be indexed" * 5)
+    receipt = SSDEngramStore.build(source, index)
+    replacement.write_bytes(index.read_bytes())
+    connect = sqlite3.connect
+
+    def change_then_connect(*args, **kwargs):
+        if change == "replace":
+            replacement.replace(index)  # Same bytes and size, different file identity.
+        else:
+            with index.open("ab") as stream:
+                stream.write(b"changed")
+        return connect(*args, **kwargs)
+
+    monkeypatch.setattr(ssd_engram.sqlite3, "connect", change_then_connect)
+    with pytest.raises(ValueError, match="engram index changed while opening"):
+        SSDEngramStore(index, expected_sha256=receipt["index_sha256"])
+
+
+def test_open_rejects_a_short_hash_read_with_equal_path_stats(tmp_path, monkeypatch):
+    source, index = tmp_path / "data.bin", tmp_path / "index.db"
+    source.write_bytes(b"a repeated index key" * 5)
+    SSDEngramStore.build(source, index)
+    path_open = Path.open
+    raw = index.read_bytes()[:-1]
+
+    def short_read(path, *args, **kwargs):
+        if path == index.resolve() and args == ("rb",):
+            return io.BytesIO(raw)
+        return path_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", short_read)
+    with pytest.raises(ValueError, match="engram index changed while opening"):
+        SSDEngramStore(index)
 
 
 @pytest.fixture(autouse=True, scope="module")

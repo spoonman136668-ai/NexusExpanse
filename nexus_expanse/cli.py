@@ -43,7 +43,7 @@ from nexus_expanse.weight_editing import (
 )
 from nexus_expanse.verified_search import MAX_CASE_BYTES, MAX_OUTPUT, VerifiedByteSearch, make_verifier
 
-VERSION = "1.2.0-rc1"
+VERSION = "2.1.0-rc1"
 TRAIN_OPTIONS = ("device", "dtype", "epoch_limit", "seed", "dim", "context",
                  "epochs", "steps_per_epoch", "batch_per_domain", "eval_blocks", "layers", "lr", "lr_schedule")
 EXPRESSION_LIBRARY = dict(zip(b"amdrvX", EXPRESSIONS, strict=True))
@@ -275,6 +275,7 @@ def generate_command(args):
         device = scaling.device_for(args.device, "fp32")
         data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT, args.snapshot_sha256)
         model = NexusExpanseUnified.restore(data, fast_decode=True, decode_device=device)
+        model.no_episodic = args.no_episodic
         if args.always_wake:
             model.reader.minimum_probability = 2.0
         start = time.perf_counter()
@@ -294,7 +295,7 @@ def generate_command(args):
             device=device.type, prefill_ms=prefill_elapsed * 1000,
             ms_per_byte=elapsed * 1000 / len(generated), snapshot_sha256=hashlib.sha256(data).hexdigest(),
             repetition_penalty=args.repetition_penalty, repeat_window=args.repeat_window,
-            always_wake=bool(args.always_wake),
+            always_wake=bool(args.always_wake), no_episodic=bool(args.no_episodic),
             donor_forward_calls=guard.donor_forward_calls,
             **engram_report,
         ))
@@ -329,7 +330,8 @@ def search_verified_command(args):
     start = time.perf_counter()
     with open_engram(args) as engram:
         engine = VerifiedByteSearch(data, expected_sha256=args.snapshot_sha256, device=device,
-                                    always_wake=args.always_wake, engram=engram, engram_alpha=args.engram_alpha)
+                                    always_wake=args.always_wake, no_episodic=args.no_episodic,
+                                    engram=engram, engram_alpha=args.engram_alpha)
         result = engine.run(prompt, verifier, candidates=args.candidates, max_bytes=args.max_bytes,
                             temperature=args.temperature, top_p=args.top_p, seed=args.seed, stop_bytes=stop)
         selected = result.selected
@@ -339,6 +341,7 @@ def search_verified_command(args):
                       selected_logprob=selected.logprob, passed_tests=selected.verification.passed_tests,
                       total_tests=selected.verification.total_tests, error=selected.verification.error,
                       snapshot_sha256=engine.snapshot_sha256, device=device.type, always_wake=args.always_wake,
+                      no_episodic=bool(args.no_episodic),
                       donor_forward_calls=result.donor_forward_calls, wall_ms=(time.perf_counter() - start) * 1000)
         if engram is not None:
             report["engram_index_sha256"] = engram.index_sha256
@@ -353,7 +356,8 @@ def eval_livebench_command(args):
     data = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT)
     with open_engram(args) as engram:
         engine = VerifiedByteSearch(data, expected_sha256=args.snapshot_sha256, device=device,
-                                    always_wake=args.always_wake, engram=engram, engram_alpha=args.engram_alpha)
+                                    always_wake=args.always_wake, no_episodic=args.no_episodic,
+                                    engram=engram, engram_alpha=args.engram_alpha)
         boards, _ = evaluate_budgets(engine, suite, (args.candidates,), seed=args.seed, max_bytes=args.max_bytes,
                                      temperature=args.temperature, top_p=args.top_p)
         report = boards[args.candidates]
@@ -361,7 +365,7 @@ def eval_livebench_command(args):
             report["engram_index_sha256"] = engram.index_sha256
         emit(dict(command="eval-livebench", scope="local_objective", device=device.type,
                   source="builtin_dev_suite" if args.builtin_dev_suite else "tasks_jsonl",
-                  wall_seconds=time.perf_counter() - started, **report))
+                  no_episodic=bool(args.no_episodic), wall_seconds=time.perf_counter() - started, **report))
 
 
 def harvest_verified_command(args):
@@ -373,7 +377,8 @@ def harvest_verified_command(args):
     raw = read_snapshot(args.snapshot, NexusExpanseUnified.SNAPSHOT_LIMIT)
     with open_engram(args) as engram:
         engine = VerifiedByteSearch(raw, expected_sha256=args.snapshot_sha256, device=device,
-                                    always_wake=args.always_wake, engram=engram, engram_alpha=args.engram_alpha)
+                                    always_wake=args.always_wake, no_episodic=args.no_episodic,
+                                    engram=engram, engram_alpha=args.engram_alpha)
         harvest = harvest_verified_traces(engine, suite, candidates=args.candidates, max_bytes=args.max_bytes,
                                           temperature=args.temperature, top_p=args.top_p, seed=args.seed)
         write_harvest(harvest, args.out_bin, out_jsonl=args.out_jsonl, evaluation=evaluation)
@@ -383,7 +388,7 @@ def harvest_verified_command(args):
         if evaluation is not None:
             report.update(heldout_sha256=hashlib.sha256(evaluation).hexdigest(), shared_32_byte_windows=0)
         emit(dict(command="harvest-verified", device=device.type, candidates=args.candidates,
-                  wall_seconds=time.perf_counter() - started, **report))
+                  no_episodic=bool(args.no_episodic), wall_seconds=time.perf_counter() - started, **report))
 
 
 def add_search_runtime_arguments(parser, *, max_bytes):
@@ -392,6 +397,7 @@ def add_search_runtime_arguments(parser, *, max_bytes):
     parser.add_argument("--device", choices=("auto", "cpu", "cuda"), default="cpu")
     add_engram_arguments(parser)
     parser.add_argument("--always-wake", action="store_true")
+    parser.add_argument("--no-episodic", action="store_true", help="bypass episodic memory during decode")
     parser.add_argument("--candidates", type=int, choices=range(1, 65), default=16, metavar="1..64")
     parser.add_argument("--max-bytes", type=int, choices=range(1, MAX_OUTPUT + 1), default=max_bytes, metavar="1..512")
     parser.add_argument("--temperature", type=float, default=0.7)
@@ -730,6 +736,7 @@ def parser():
     generate.add_argument("--repeat-window", type=int, choices=range(1, MAX_REPEAT_WINDOW + 1), default=64,
                           metavar="1..512")
     generate.add_argument("--always-wake", action="store_true", help="keep every observed byte on the neural path")
+    generate.add_argument("--no-episodic", action="store_true", help="bypass episodic memory during decode")
     generate.add_argument("--adapt", action="store_true", help="adapt online memory in the restored session")
     add_engram_arguments(generate)
     generate.set_defaults(handler=generate_command)

@@ -224,15 +224,22 @@ class SSDEngramStore:
         path = Path(path).resolve()
         if expected_sha256 is not None and not re.fullmatch(r"[a-f0-9]{64}", expected_sha256):
             raise ValueError("expected a lowercase 64-hex engram SHA-256")
+        before = path.stat()
+        digest = hashlib.sha256()
+        size = 0
         with path.open("rb") as raw:
-            stat = os.fstat(raw.fileno())
-            self.index_bytes = stat.st_size
-            self.index_sha256 = hashlib.file_digest(raw, "sha256").hexdigest()
+            while chunk := raw.read(READ_SIZE):
+                digest.update(chunk)
+                size += len(chunk)
+        self.index_bytes = size
+        self.index_sha256 = digest.hexdigest()
         if expected_sha256 is not None and self.index_sha256 != expected_sha256:
             raise ValueError("engram index SHA-256 mismatch")
         database = sqlite3.connect(path.as_uri() + "?mode=ro&immutable=1", uri=True, cached_statements=64)
         try:
-            if _identity(stat) != _identity(path.stat()):
+            # NTFS can report different device and inode IDs for a descriptor.
+            after = path.stat()
+            if _identity(before) != _identity(after) or size != after.st_size:
                 raise ValueError("engram index changed while opening")
             _configure(database)
             records = database.execute("SELECT * FROM metadata LIMIT 2").fetchall()

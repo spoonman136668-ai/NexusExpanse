@@ -275,7 +275,7 @@ class VerifiedByteSearch:
     """Greedy then seeded nucleus proposals from independently restored cursors."""
 
     def __init__(self, snapshot, *, expected_sha256=None, device="cpu", always_wake=False,
-                 engram=None, engram_alpha=0.35):
+                 no_episodic=False, engram=None, engram_alpha=0.35):
         if type(snapshot) is not bytes or not 1 <= len(snapshot) <= NexusExpanseUnified.SNAPSHOT_LIMIT:
             raise ValueError("expected a bounded unified snapshot")
         self.snapshot_sha256 = hashlib.sha256(snapshot).hexdigest()
@@ -286,11 +286,13 @@ class VerifiedByteSearch:
         self.snapshot = snapshot
         self.device = device
         self.always_wake = always_wake
+        self.no_episodic = no_episodic
         self.engram = engram
         self.engram_alpha = engram_alpha
 
     def _forecasts(self, prompt):
         model = NexusExpanseUnified.restore(self.snapshot, fast_decode=True, decode_device=self.device)
+        model.no_episodic = self.no_episodic
         if self.always_wake:
             model.reader.minimum_probability = 2.0
         forecast = model.prefill(prompt, adapt=False)

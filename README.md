@@ -1,6 +1,6 @@
-# Nexus Expanse v1.2.0-rc1
+# Nexus Expanse v2.1.0-rc1
 
-Nexus Expanse is an independent raw-byte research prototype. The release candidate includes a CPU streaming runtime, a bounded expression solver, resumable training and checkpoint assimilation. [Architecture](docs/ARCHITECTURE_V1.md) · [Checkpoint transfer findings](docs/CHECKPOINT_TRANSFER_FINDINGS.md) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
+Nexus Expanse is an independent raw-byte research prototype. The release candidate includes raw-byte streaming, resumable training, checkpoint assimilation, SSD Engram lookup, deterministic verified search, and verified trace harvesting. [Architecture](docs/ARCHITECTURE_V1.md) · [Checkpoint transfer findings](docs/CHECKPOINT_TRANSFER_FINDINGS.md) · [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
 
 ## Quick start
 
@@ -154,9 +154,20 @@ Use training-only task rows or `--builtin-train-suite`. The optional `--eval-fil
 
 The offline run kept **59/200** traces, all independently re-verified. Verified adaptation beat both controls in **1/5 seeds** at `K=1` and **2/5** at `K=16`, yielding **MIXED**. Greedy held macro accuracy stayed at **2.00%**, and `K=16` moved from **9.33% to 10.67%** versus the unchanged base. [Preregistration](docs/PHASE22_VERIFIED_SELF_DISTILLATION_PREREG.md) · [Raw evidence](evidence/phase22-verified-self-distillation-dev-001.json)
 
+## Phase 22B clean-memory decode and Windows Engram support
+
+```sh
+python -m nexus_expanse.cli generate --snapshot ../unified.pt --prompt-text 'Once upon a time' \
+  --always-wake --no-episodic --max-bytes 64
+```
+
+`generate`, `search-verified`, `eval-livebench`, and `harvest-verified` accept `--no-episodic` and report its value in JSON. It bypasses the snapshot's episodic forecast and online episodic updates for the decode session. The neural or patch forecast still drives decoding, and an optional `--engram-index` can still contribute. With the flag omitted, generation retains its existing parity with `stream --no-adapt`.
+
+SSD Engram opening compares path identity before hashing and after connecting. It also checks the number of bytes hashed against the file size. This handles the Windows NTFS descriptor-ID mismatch and detects file replacement or size changes during open. [Architecture](docs/ARCHITECTURE_V1.md#phase-22b-clean-memory-decoding-and-engram-identity)
+
 ## Release-candidate evidence
 
-The local Linux CPU run using bare `pytest -q` passed **708/708** tests with zero failures, skips or warnings. The prefix benchmark reported **0/100** failures. The owner separately verified TinyStories Hub streaming and reported that forcing wake cleared the repeated-space loop on four Colab prompts. Independent scientific qualification, the live wikitext rerun, multi-GB GPU pretraining, full-scale 256×6 and 512×8 training on L4/A100 GPUs, and live Engram extraction remain open. [Owner Colab receipts](docs/LIVE_COLAB_RECEIPTS.md)
+The Phase 21 CPU DEV scoreboard and Phase 22 self-distillation experiment are linked above. The Windows RTX 5070 Ti receipts cover verified BF16 and INT8 training on the listed revisions, including **1.4363 BPB** on held-out FineWeb-Edu and **0.0%** on the local five-category DEV suite for the same uninstructed prose snapshot. Live Windows retesting of the Phase 22B Engram and clean-memory changes remains open, as do official LiveBench evaluation and independent scientific qualification. [Owner Windows receipts](docs/LIVE_COLAB_RECEIPTS.md#windows-11-rtx-5070-ti-bf16-and-int8-receipts)
 
 ## Windows consumer-GPU launch
 
@@ -166,7 +177,7 @@ With CUDA-enabled PyTorch, place `math-train.bin`, `math-eval.bin`, `code-train.
 python -m nexus_expanse.cli train --device cuda --dtype bf16 --corpus-dir .\data --directory ..\nexus-gpu-run --dim 64 --context 256 --batch-per-domain 4 --steps-per-epoch 64 --epochs 64 --epoch-limit 1 --until-complete --save-snapshot ..\nexus-gpu-run\unified.pt
 ```
 
-Use `--dtype fp32` if the device lacks native BF16. Repeat an interrupted run with identical source, bytes, device and training settings to resume from the last fully committed epoch. The exact training receipt and unified CPU snapshot are written when training completes. The owner recorded a Windows FP32 512×8 run on an RTX 5070 Ti Laptop GPU. The v1.2.1 autocast fix has offline CPU coverage. A Windows CUDA BF16 rerun remains open. [Scaling protocol](docs/GATE17_PREREG.md) · [Owner Windows receipt](docs/LIVE_COLAB_RECEIPTS.md#windows-rtx-5070-ti-laptop-gpu-training-and-generation)
+Use `--dtype fp32` if the device lacks native BF16. Repeat an interrupted run with identical source, bytes, device and training settings to resume from the last fully committed epoch. The exact training receipt and unified CPU snapshot are written when training completes. The owner recorded FP32 and BF16 512×8 runs on an RTX 5070 Ti with exact snapshot verification. [Scaling protocol](docs/GATE17_PREREG.md) · [Owner Windows receipt](docs/LIVE_COLAB_RECEIPTS.md#windows-rtx-5070-ti-laptop-gpu-training-and-generation)
 
 ## Snapshot weight storage
 

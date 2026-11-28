@@ -112,7 +112,21 @@ The FP32 CUDA run used width 512, eight layers, context 512, and 12 epochs of 25
 
 The owner attributed the code result to overfitting on about 60 KB of local Python. The receipt reported `peak_cuda_allocated_bytes: 144,418,304`. Live `generate --device cuda --always-wake` took 4.11–4.28 ms/byte with zero donor forward calls.
 
-The owner also caught a BF16 autocast dtype mismatch in the gated FFN on this hardware. This branch casts the FFN update to the destination dtype before indexed assignment. Offline CPU BF16 tests qualify the fix locally. A Windows CUDA BF16 rerun remains open.
+The owner also caught a BF16 autocast dtype mismatch in the gated FFN on this hardware. The v1.2.1 fix casts the FFN update to the destination dtype before indexed assignment. Later owner-executed Windows BF16 runs are listed below.
+
+## Windows 11 RTX 5070 Ti BF16 and INT8 receipts
+
+The owner executed these runs on Windows 11 with an RTX 5070 Ti and PyTorch `2.11.0+cu128`, with BF16 support reported as `True`. The snapshot identifiers below reproduce the supplied prefixes.
+
+| Run | Snapshot | Verification | Held-out BPB |
+| --- | --- | --- | --- |
+| Monarch BF16 + INT8, 512×8, `v1.2.1` | `ce59bf1a…`, 10,570,865 bytes, 6.62× smaller than 70.02 MB Dense FP32 | PASS, `0.0` parity | Pooled 4.8607, prose 3.5749, code 5.5215, math 5.4858 |
+| Pure-prose TinyStories BF16 + INT8, 512×8, Phase 17 | `d616c75f…`, 18,226,989 bytes, 3.84× INT8 compression | PASS, `0.0` parity | 1.8276 |
+| Expansive FineWeb-Edu BF16 + INT8, 512×8, `v1.3.0` | `e32fd6a9…`, 18,225,581 bytes, 3.84× INT8 compression | PASS, `0.0` parity | 1.4363 |
+
+Monarch CUDA decode took 7.99 ms/byte. The expansive FineWeb-Edu run used a 150 MB source corpus, completed 64/64 epochs, and processed 268,434,685 target bytes. On the uninstructed prose snapshot, `eval-livebench` at `1f02106` with `--builtin-dev-suite`, `K=16`, and CUDA scored 0.0% in 158.7 s and reported `donor_forward_calls: 0`. The owner traced unrelated generation continuations to the snapshot's 40 KB `ConsolidatingMemory` and its FineWeb-Edu training tail.
+
+Phase 22B adds a session-local bypass for that memory and corrects the NTFS Engram identity check. Offline regressions cover both changes. These receipts predate those fixes, and the corresponding live Windows retest remains open.
 
 ## Open qualification
 

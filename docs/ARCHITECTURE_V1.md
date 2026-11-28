@@ -1,4 +1,4 @@
-# Nexus Expanse v1.2.0-rc1 architecture and DEV scorecard
+# Nexus Expanse v2.1.0-rc1 architecture and DEV scorecard
 
 **Verified and kept.** The default RC training route uses causal attention and DirectMonarch. The CPU unified stream uses the exact KV path, a 5,128-byte compact BytePatchReader, bounded ConsolidatingMemory and ReliabilityArbitrator. The Gate 14 unified snapshot measured 442,344 bytes. HopfieldVSAMemory uses fixed 128 KiB codebooks and remains a decoupled relation store. NexusActiveAgent, its PO mode, VerifierGatedNexusAgent and Quine Sleep remain opt-in. The Gate 17 harness owns corpus training, resume and telemetry. The CLI exposes these pieces through train, stream, solve and verify.
 
@@ -384,3 +384,12 @@ Each category below has 30 held tasks across the five seeds. The three arms tied
 | Instruction following | 1 / 1 | 0 / 0 | 0 / 3 |
 
 These are synthetic held-instance results from one adaptation round. Official LiveBench performance and independent scientific qualification remain open. [Preregistration](PHASE22_VERIFIED_SELF_DISTILLATION_PREREG.md) · [Unrounded evidence](../evidence/phase22-verified-self-distillation-dev-001.json)
+
+
+## Phase 22B clean-memory decoding and Engram identity
+
+`--no-episodic` applies to `generate`, `search-verified`, `eval-livebench`, and `harvest-verified`. Each command records the setting in its JSON. The runtime bypasses both `ConsolidatingMemory` lookup and updates and sends the neural or patch probabilities directly to the decode path. An optional SSD Engram blends as usual after that point. The setting belongs to the decode session, and restoring a snapshot defaults to episodic decoding. With `--adapt` and `--no-episodic` together, generation skips episodic adaptation.
+
+`SSDEngramStore` compares a path stat from before hashing with a path stat after connecting in read-only mode. It also counts bytes while hashing and checks the final file size. Using the same stat interface avoids the Windows NTFS discrepancy between descriptor and path file IDs. Stable identity and size are still required, along with an exact SHA-256 match when the caller pins a digest.
+
+The regression fixtures exercise the conflicting episodic phrase across all four commands, bit-exact default generation parity, exact clean prefix forecasts, and zero donor forwards. The release candidate preserves the Phase 21 and 22 DEV outcomes and records owner Windows results as separate runs. [Owner Windows receipts](LIVE_COLAB_RECEIPTS.md#windows-11-rtx-5070-ti-bf16-and-int8-receipts)
