@@ -27,6 +27,7 @@ Run `python -m nexus_expanse.cli <command> --help` for arguments and defaults.
 | `stream` | Observes raw hex byte chunks, reports next-byte candidates and optionally generates a continuation. |
 | `generate` | Generates raw bytes from a unified snapshot with greedy or seeded top-p decoding on `cpu`, `cuda`, or `auto`. |
 | `build-engram` | Builds an immutable on-disk index of exact byte suffixes and their observed successors. |
+| `search-verified` | Searches greedy and seeded byte continuations and checks bounded arithmetic or Python tasks. |
 | `solve` | Searches a bounded expression library and checks the output against the target bytes. |
 | `import-skill` | Converts a compatible static donor checkpoint into a verified native skill. |
 | `route-stream` | Forecasts from a saved multi-skill bank or named unified snapshots using the selected router. |
@@ -116,6 +117,17 @@ python -m nexus_expanse.cli generate --snapshot ../unified.pt --prompt-text "def
 Use `--engram-index-sha256` with the build's reported `index_sha256` to reject a changed index. The default searches orders 12 down to 4 and requires at least two training occurrences with a successor. A miss leaves the original forecast unchanged. With an index, generation reports its digest and how many emitted-byte forecasts used it. Existing generation works as before with the index omitted.
 
 In the five-seed CPU DEV study, average pooled held-out BPB fell from **4.9703 to 4.8994**, with a win in all five seeds. None of the ten prose/code cross-domain pairs worsened. The largest signed change across those pairs was **−0.00309 BPB**. These checks cover local repository text, synthetic arithmetic, and an 11.59 MiB lookup fixture. Live CUDA and multi-GB builds remain unverified. [Preregistration](docs/PHASE19_SSD_ENGRAM_MEMORY_PREREG.md) · [Raw evidence](evidence/phase19-ssd-engram-dev-001.json)
+
+## Phase 20 verified test-time byte search (DEV)
+
+```sh
+python -m nexus_expanse.cli search-verified --snapshot ../unified.pt \
+  --verifier arithmetic --prompt-text '123+45=' --always-wake --candidates 16 --max-bytes 8
+```
+
+For `--verifier python_fn`, end the prompt with a plain `def` signature and supply `--tests-json` as an inline list or local file of `{"args": [...], "expected": ...}` cases. Candidates may supply a `return` continuation or one matching function definition. The verifier interprets a bounded AST and checks every supplied case. Search ranks passing candidates by causal log probability. When none pass, the result explicitly reports `verified: false` and returns the highest-logprob candidate it tried.
+
+The five-seed CPU DEV comparison solved **6/80, 15/80, and 18/80** tasks at `K=1,8,16`, respectively, with the same counts in the Engram arm. All solves were arithmetic. Python remained at **0/30** under both arms at every budget. The `K=16` arm spent about **16×** the `K=1` candidate time. [Preregistration](docs/PHASE20_VERIFIED_TEST_TIME_SEARCH_PREREG.md) · [Raw evidence](evidence/phase20-verified-search-dev-001.json)
 
 ## Release-candidate evidence
 

@@ -298,3 +298,28 @@ Both scientific DEV criteria passed. The baseline below is each seed's frozen mi
 Mean math BPB was 5.29218 without the Engram and 5.29204 with it. Mean code BPB fell from 4.73973 to 4.56074, and prose fell from 4.87893 to 4.84553. The cross-domain hit rates ranged from 7.2% to 15.6%. The interference criterion measures BPB under those matches and leaves broader collision safety open.
 
 Active Engram prefix and cold-reopen differences were exactly `0.0`, with 100/100 active prefix checks and zero donor forwards. The isolated lookup fixture stored 589,823 suffixes in 12,152,832 bytes. Across two fresh CPU processes, the slower mean lookup was 0.0308 ms per byte and the larger peak RSS was 14.55 MiB. Opening and hashing took about 9.5 ms. These figures describe the fixture hardware and index size. Live CUDA generation, multi-GB builds, and independent scientific qualification remain open. [Preregistration](PHASE19_SSD_ENGRAM_MEMORY_PREREG.md) · [Unrounded evidence](../evidence/phase19-ssd-engram-dev-001.json)
+
+## Phase 20 verified test-time byte search
+
+`VerifiedByteSearch` starts each proposal from an independent restore of the same frozen snapshot. Candidate zero uses the ordinary greedy byte choice. Later candidates use the shared nucleus sampler with seed `seed + candidate_index`. The optional SSD Engram plugs into the same probability blend as generation. Each score sums natural log probabilities before sampling temperature and truncation, including the emitted stop delimiter. Byte forecasts depend only on the prompt and preceding emitted bytes. The verifier runs after each candidate and affects selection. It never updates the model or supplies bytes to a later candidate.
+
+The arithmetic verifier interprets bounded integer operations on the final prompt equation and checks the decimal integer on the candidate's first line. The Python verifier accepts a single `return` expression under a matching plain signature. The allowlist includes bounded integer arithmetic, comparisons, conditionals, indexing, and four pure functions (`abs`, `min`, `max`, `len`). It rejects side-effecting syntax across the entire AST, including untaken branches. The case, source, node, depth, step, and value limits bound evaluation. Verification establishes exact agreement with the supplied cases. Python results do not establish equivalence on inputs outside those cases.
+
+Both search arms passed the preregistered aggregate DEV gate. The per-seed `K=1/8/16` solve counts were identical in the two arms.
+
+| Seed | Greedy K=1 | K=8 | K=16 |
+| --- | ---: | ---: | ---: |
+| 3401 | 0/16 | 2/16 | 2/16 |
+| 3402 | 1/16 | 2/16 | 3/16 |
+| 3403 | 2/16 | 5/16 | 5/16 |
+| 3404 | 2/16 | 4/16 | 5/16 |
+| 3405 | 1/16 | 2/16 | 3/16 |
+
+Across all seeds, verified search solved 6, 15, and 18 of 50 arithmetic tasks. It solved 0 of 30 Python tasks at every budget. Ranking the same candidates by logprob alone solved 6, 9, and 10 of 80 tasks. The nested candidate sets preserve earlier verified solutions by construction. K=16 found additional verified solutions over K=1 in all five seeds. The Engram changed some candidate traces and produced the same overall solve counts.
+
+| Arm | K=1 decoded bytes / candidate time | K=8 decoded bytes / candidate time | K=16 decoded bytes / candidate time |
+| --- | ---: | ---: | ---: |
+| Neural | 478 / 1.51 s | 4,492 / 12.77 s | 9,020 / 24.86 s |
+| Neural + Engram | 479 / 1.58 s | 4,381 / 12.97 s | 8,723 / 25.72 s |
+
+These times include snapshot restore, prefill, decoding, and verification on the benchmark CPU. All seeded repeats were exact, the active Engram prefix test had `0.0` differences across 100 perturbations, unsafe probes were rejected without file effects, and donor forwards were zero. Live CUDA, broader task transfer, and independent qualification remain open. [Preregistration](PHASE20_VERIFIED_TEST_TIME_SEARCH_PREREG.md) · [Unrounded evidence](../evidence/phase20-verified-search-dev-001.json)
